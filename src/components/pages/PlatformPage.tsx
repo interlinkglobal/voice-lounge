@@ -65,12 +65,12 @@ function makeSection(page: PageKey, title: string, index: number, query = ""): S
 
 function HeroVisual({ page }: { page: PageKey }) {
   const cards = useMemo(() => {
-    if (page === "creators") return creators.slice(0, 3).map(creatorCard);
-    if (page === "news") return news.slice(0, 3).map(newsCard);
-    if (page === "live") return liveEvents.slice(0, 3).map(liveCard);
-    if (page === "premium") return q.premiumPodcasts(3).map(podcastCard);
-    if (page === "watch") return q.videoEpisodes(3).map(episodeCard);
-    return q.trendingEpisodes(3).map(episodeCard);
+    if (page === "creators") return creators.slice(0, 3).map((item) => creatorCard(item));
+    if (page === "news") return news.slice(0, 3).map((item) => newsCard(item));
+    if (page === "live") return liveEvents.slice(0, 3).map((item) => liveCard(item));
+    if (page === "premium") return q.premiumPodcasts(3).map((item) => podcastCard(item));
+    if (page === "watch") return q.videoEpisodes(3).map((item) => episodeCard(item));
+    return q.trendingEpisodes(3).map((item) => episodeCard(item));
   }, [page]);
 
   return (
