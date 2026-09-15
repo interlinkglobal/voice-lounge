@@ -1,12 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo } from "react";
 import { ArrowRight, Crown, Headphones, Search } from "lucide-react";
-import { Artwork } from "@/components/media/Artwork";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
 import { useLibrary } from "@/components/system/library";
-import { creatorCard, episodeCard, liveCard, newsCard, podcastCard, q } from "@/lib/content/adapters";
-import { creators, demoProfile, episodes, liveEvents, news, podcasts } from "@/lib/content/catalog";
+import { demoProfile, episodes, podcasts } from "@/lib/content/catalog";
 import { pageCards, chipsFor } from "@/lib/voice-lounge/page-data";
 import { PAGE_INFO, SECTION_TITLES, routeName, type PageKey } from "@/lib/voice-lounge/routes";
 import {
@@ -23,6 +20,27 @@ import {
 import { cn } from "@/lib/utils";
 
 export type { PageKey } from "@/lib/voice-lounge/routes";
+
+const HERO_MEMBERSHIP_CARDS = [
+  {
+    id: "casey-t-special-viewer",
+    src: "/card 2.png",
+    alt: "The Voice Lounge premium special viewer card for Casey T.",
+    href: "/watch",
+  },
+  {
+    id: "emihle-s-special-guest-host",
+    src: "/card 1.png",
+    alt: "The Voice Lounge premium special guest host card for Emihle S.",
+    href: "/shows",
+  },
+  {
+    id: "sihle-p-premium-member",
+    src: "/card 3.png",
+    alt: "The Voice Lounge premium member card for Sihle P.",
+    href: "/premium",
+  },
+] as const;
 
 function slugify(value: string) {
   return value.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 62);
@@ -63,29 +81,37 @@ function makeSection(page: PageKey, title: string, index: number, query = ""): S
   return spec;
 }
 
-function HeroVisual({ page }: { page: PageKey }) {
-  const cards = useMemo(() => {
-    if (page === "creators") return creators.slice(0, 3).map((item) => creatorCard(item));
-    if (page === "news") return news.slice(0, 3).map((item) => newsCard(item));
-    if (page === "live") return liveEvents.slice(0, 3).map((item) => liveCard(item));
-    if (page === "premium") return q.premiumPodcasts(3).map((item) => podcastCard(item));
-    if (page === "watch") return q.videoEpisodes(3).map((item) => episodeCard(item));
-    return q.trendingEpisodes(3).map((item) => episodeCard(item));
-  }, [page]);
-
+function HeroVisual() {
   return (
     <div className="relative hidden min-h-[25rem] md:block" style={{ perspective: "1200px" }}>
-      <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_22%,transparent),transparent_58%)] blur-2xl" />
-      {cards.map((card, i) => {
+      <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
+      {HERO_MEMBERSHIP_CARDS.map((card, i) => {
         const transforms = [
           "translate3d(-11%,8%,0) rotateY(16deg) rotateZ(-7deg)",
           "translate3d(25%,-3%,55px) rotateY(-10deg) rotateZ(5deg)",
           "translate3d(4%,38%,95px) rotateY(7deg) rotateZ(-1deg)",
         ];
         return (
-          <Link key={card.id} to={card.href} className={cn("card-lift absolute w-[58%] overflow-hidden rounded-[1.4rem] border border-white/10 bg-card shadow-lift", i === 0 ? "left-[4%] top-[14%]" : i === 1 ? "right-[2%] top-[5%]" : "left-[20%] top-[40%]")} style={{ transform: transforms[i], animation: `vl-float ${4.2 + i * 0.65}s ease-in-out ${i * -0.7}s infinite` }}>
-            <Artwork artwork={{ ...card.artwork, ratio: "16/9" }} label={card.title} priority={i === 0} />
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 to-transparent p-4 text-white"><p className="line-clamp-1 font-display text-sm font-bold sm:text-base">{card.title}</p><p className="mt-0.5 line-clamp-1 text-[0.7rem] text-white/70">{card.subtitle ?? card.category ?? "The Voice Lounge"}</p></div>
+          <Link
+            key={card.id}
+            to={card.href}
+            aria-label={card.alt}
+            className={cn(
+              "absolute w-[64%] transition-[filter] duration-200 hover:brightness-110 focus-visible:brightness-110",
+              i === 0 ? "left-[4%] top-[14%]" : i === 1 ? "right-[2%] top-[5%]" : "left-[20%] top-[40%]",
+            )}
+            style={{ transform: transforms[i], transformStyle: "preserve-3d" }}
+          >
+            <img
+              src={card.src}
+              alt={card.alt}
+              loading="eager"
+              decoding="async"
+              fetchPriority={i === 2 ? "high" : "auto"}
+              draggable={false}
+              className="block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.48)]"
+              style={{ animation: `vl-float ${4.2 + i * 0.65}s ease-in-out ${i * -0.7}s infinite` }}
+            />
           </Link>
         );
       })}
@@ -112,7 +138,7 @@ function PlatformHero({ page, query = "" }: { page: PageKey; query?: string }) {
           )}
           <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-2 border-t border-hairline pt-5"><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Catalogue</dt><dd className="mt-1 font-display text-xl font-black">{podcasts.length} shows</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Episodes</dt><dd className="mt-1 font-display text-xl font-black">{episodes.length}+</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Languages</dt><dd className="mt-1 font-display text-xl font-black">6 ready</dd></div></dl>
         </div>
-        <HeroVisual page={page} />
+        <HeroVisual />
       </div>
     </section>
   );
