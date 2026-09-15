@@ -372,3 +372,55 @@ export function SectionList({ sections }: { sections: SectionSpec[] }) {
     </>
   );
 }
+
+/** Wrapper for bespoke (non-spec) route sections so they share rhythm + a11y. */
+export function Band({
+  id,
+  eyebrow,
+  title,
+  blurb,
+  tone,
+  children,
+  bare,
+}: {
+  id: string;
+  eyebrow?: string;
+  title: string;
+  blurb?: string;
+  tone?: "default" | "gold";
+  children?: React.ReactNode;
+  bare?: boolean;
+}) {
+  return (
+    <section
+      id={id}
+      aria-labelledby={`${id}-h`}
+      className="shell deferred"
+      style={{ marginBlockStart: "var(--section-gap)" }}
+    >
+      {bare ? (
+        <h2 id={`${id}-h`} className="sr-only">
+          {title}
+        </h2>
+      ) : (
+        <header className="mb-[clamp(0.9rem,1.6vw,1.6rem)]">
+          {eyebrow && (
+            <p
+              className={cn(
+                "mb-1.5 text-[0.7rem] font-bold uppercase tracking-[0.2em]",
+                tone === "gold" ? "text-[var(--gold)]" : "text-[var(--green)]",
+              )}
+            >
+              {eyebrow}
+            </p>
+          )}
+          <h2 id={`${id}-h`} className="font-display text-[var(--step-3)] font-extrabold leading-[1.05]">
+            {title}
+          </h2>
+          {blurb && <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{blurb}</p>}
+        </header>
+      )}
+      {children}
+    </section>
+  );
+}
