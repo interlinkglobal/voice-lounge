@@ -38,7 +38,7 @@ export const PAGE_INFO: Record<PageKey, {
   account: { title: "Your listening life, organised.", lede: "Continue where you left off, tune recommendations and control your Voice Lounge experience.", primary: { to: "/discover", label: "Find something new" }, secondary: { to: "/premium", label: "View Premium" } }
 };
 
-export const SECTION_TITLES: Record<PageKey, readonly string[]> = {
+export const SECTION_TITLES: Record<PageKey, readonly [string, ...string[]]> = {
   home: [
     "Cinematic Hero",
     "Trending Now",
@@ -376,5 +376,5 @@ for (const [route, names] of Object.entries(SECTION_TITLES)) {
 }
 
 export function routeName(page: PageKey) {
-  return page === "home" ? "The Voice Lounge" : page[0].toUpperCase() + page.slice(1);
+  return page === "home" ? "The Voice Lounge" : page.slice(0, 1).toUpperCase() + page.slice(1);
 }
