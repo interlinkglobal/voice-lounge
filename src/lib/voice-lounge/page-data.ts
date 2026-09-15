@@ -39,30 +39,30 @@ export function pageCards(page: PageKey, title: string, index: number, query = "
       ["sport", "Sport"], ["opinion", "Opinion"], ["features", "Features"], ["entertainment", "Entertainment"],
     ];
     const hit = aliases.find(([needle]) => t.includes(needle));
-    return (hit ? q.newsBySection(hit[1], 10) : q.latestNews(12)).map(newsCard);
+    return (hit ? q.newsBySection(hit[1], 10) : q.latestNews(12)).map((item) => newsCard(item));
   }
 
   if (page === "creators" || t.includes("creator") || t.includes("host") || t.includes("voices") || t.includes("contributors")) {
-    return creators.slice(index % 7, (index % 7) + 10).map(creatorCard);
+    return creators.slice(index % 7, (index % 7) + 10).map((item) => creatorCard(item));
   }
 
   if (page === "live" || t.includes("live") || t.includes("schedule") || t.includes("premiere") || t.includes("replay")) {
     const rows = t.includes("currently") ? q.liveNow() : t.includes("starting") ? q.liveSoon() : t.includes("past") || t.includes("replay") ? q.liveEnded() : liveEvents;
-    return rows.slice(0, 10).map(liveCard);
+    return rows.slice(0, 10).map((item) => liveCard(item));
   }
 
   if (t.includes("news") || t.includes("stories") || t.includes("announcements") || t.includes("press") || t.includes("media industry")) {
-    return q.latestNews(10).map(newsCard);
+    return q.latestNews(10).map((item) => newsCard(item));
   }
   if (t.includes("continue")) return q.continueItems(10);
-  if (t.includes("hidden gems")) return q.hiddenGems(10).map(podcastCard);
-  if (t.includes("original")) return q.originals(10).map(podcastCard);
-  if (t.includes("premium")) return q.premiumPodcasts(10).map(podcastCard);
-  if (t.includes("short") || t.includes("under 20")) return q.shortEpisodes(10).map(episodeCard);
-  if (t.includes("long-form") || t.includes("deep-dive")) return q.longEpisodes(10).map(episodeCard);
-  if (t.includes("video") || page === "watch") return q.videoEpisodes(10).map(episodeCard);
-  if (t.includes("audio-first")) return q.audioEpisodes(10).map(episodeCard);
-  if (t.includes("latest") || t.includes("recent") || t.includes("new this")) return q.latestEpisodes(10).map(episodeCard);
+  if (t.includes("hidden gems")) return q.hiddenGems(10).map((item) => podcastCard(item));
+  if (t.includes("original")) return q.originals(10).map((item) => podcastCard(item));
+  if (t.includes("premium")) return q.premiumPodcasts(10).map((item) => podcastCard(item));
+  if (t.includes("short") || t.includes("under 20")) return q.shortEpisodes(10).map((item) => episodeCard(item));
+  if (t.includes("long-form") || t.includes("deep-dive")) return q.longEpisodes(10).map((item) => episodeCard(item));
+  if (t.includes("video") || page === "watch") return q.videoEpisodes(10).map((item) => episodeCard(item));
+  if (t.includes("audio-first")) return q.audioEpisodes(10).map((item) => episodeCard(item));
+  if (t.includes("latest") || t.includes("recent") || t.includes("new this")) return q.latestEpisodes(10).map((item) => episodeCard(item));
   if (t.includes("trending") || t.includes("most played") || t.includes("top 10") || t.includes("charts") || t.includes("most watched")) {
     return q.trendingEpisodes(10).map((item, rank) => episodeCard(item, { rank: rank + 1 }));
   }
@@ -77,14 +77,17 @@ export function pageCards(page: PageKey, title: string, index: number, query = "
   const category = categoryAliases.find(([needle]) => t.includes(needle));
   if (category) {
     const rows = q.podcastsByCategory(category[1], 10);
-    if (rows.length) return rows.map(podcastCard);
+    if (rows.length) return rows.map((item) => podcastCard(item));
   }
 
   if (t.includes("podcast") || page === "podcasts" || page === "shows" || page === "categories") {
     return q.topPodcasts(10).map((item, rank) => podcastCard(item, { rank: rank + 1 }));
   }
 
-  const mixed = [...q.latestEpisodes(6).map(episodeCard), ...q.topPodcasts(6).map(podcastCard)];
+  const mixed = [
+    ...q.latestEpisodes(6).map((item) => episodeCard(item)),
+    ...q.topPodcasts(6).map((item) => podcastCard(item)),
+  ];
   const shift = index % mixed.length;
   return [...mixed.slice(shift), ...mixed.slice(0, shift)].slice(0, 10);
 }
