@@ -1,0 +1,24 @@
+name: Voice Lounge quality
+
+on:
+  push:
+    branches:
+      - main
+      - "chatgpt/**"
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Production build
+        run: bun run build
