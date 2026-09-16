@@ -6,6 +6,8 @@ import { track } from "@/lib/analytics";
 import { Artwork } from "./Artwork";
 import { WatchButton } from "./WatchButton";
 import { useLibrary } from "@/components/system/library";
+import { YouTubeVideoCard } from "@/components/youtube/YouTubeFeedGrid";
+import { useYouTubeVideoForKey } from "@/components/youtube/YouTubeFeedProvider";
 import type { MediaCardModel } from "@/lib/content/types";
 
 export type CardVariant =
@@ -94,7 +96,24 @@ export function MediaCard({
   className?: string;
 }) {
   const [showMore, setShowMore] = useState(false);
+  const youtubeVideo = useYouTubeVideoForKey(item.id);
   const onOpen = () => track("card_click", { id: item.id, kind: item.kind });
+
+  // Once the official channel is connected, every video surface uses the real
+  // YouTube upload data and the same visual language as /youtube. The seeded
+  // card remains the fallback while environment variables are absent or the
+  // feed is temporarily unavailable.
+  if (item.kind === "video" && youtubeVideo) {
+    return (
+      <YouTubeVideoCard
+        video={youtubeVideo}
+        priority={priority}
+        compact={variant === "compact" || variant === "micro"}
+        featured={variant === "featured"}
+        className={cn(variant === "featured" ? "w-full" : WIDTH[variant], className)}
+      />
+    );
+  }
 
   /* ---- micro (smartwatch) ---- */
   if (variant === "micro") {
