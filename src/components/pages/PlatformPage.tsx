@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { ArrowRight, Crown, Headphones, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
@@ -81,42 +82,95 @@ function makeSection(page: PageKey, title: string, index: number, query = ""): S
   return spec;
 }
 
-function HeroVisual() {
+function HomeMembershipCards() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setActive((index) => (index + 1) % HERO_MEMBERSHIP_CARDS.length), 1500);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const mobileCard = HERO_MEMBERSHIP_CARDS[active] ?? HERO_MEMBERSHIP_CARDS[0];
+
   return (
-    <div className="relative hidden min-h-[25rem] md:block" style={{ perspective: "1200px" }}>
+    <div className="relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
       <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
-      {HERO_MEMBERSHIP_CARDS.map((card, i) => {
-        const transforms = [
-          "translate3d(-11%,8%,0) rotateY(16deg) rotateZ(-7deg)",
-          "translate3d(25%,-3%,55px) rotateY(-10deg) rotateZ(5deg)",
-          "translate3d(4%,38%,95px) rotateY(7deg) rotateZ(-1deg)",
-        ];
-        return (
-          <Link
-            key={card.id}
-            to={card.href}
-            aria-label={card.alt}
-            className={cn(
-              "absolute w-[64%] transition-[filter] duration-200 hover:brightness-110 focus-visible:brightness-110",
-              i === 0 ? "left-[4%] top-[14%]" : i === 1 ? "right-[2%] top-[5%]" : "left-[20%] top-[40%]",
-            )}
-            style={{ transform: transforms[i], transformStyle: "preserve-3d" }}
-          >
-            <img
-              src={card.src}
-              alt={card.alt}
-              loading="eager"
-              decoding="async"
-              fetchPriority={i === 2 ? "high" : "auto"}
-              draggable={false}
-              className="block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.48)]"
-              style={{ animation: `vl-float ${4.2 + i * 0.65}s ease-in-out ${i * -0.7}s infinite` }}
-            />
-          </Link>
-        );
-      })}
+
+      <div className="absolute inset-0 grid place-items-center md:hidden">
+        <Link key={mobileCard.id} to={mobileCard.href} aria-label={mobileCard.alt} className="block w-[94%] max-w-[32rem] [transform-style:preserve-3d]">
+          <img
+            src={mobileCard.src}
+            alt={mobileCard.alt}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            draggable={false}
+            className="vl-mobile-card-flip block h-auto w-full select-none drop-shadow-[0_22px_30px_rgba(0,0,0,0.5)]"
+          />
+        </Link>
+      </div>
+
+      <div className="absolute inset-0 hidden md:block">
+        {HERO_MEMBERSHIP_CARDS.map((card, i) => {
+          const transforms = [
+            "translate3d(-11%,8%,0) rotateY(16deg) rotateZ(-7deg)",
+            "translate3d(25%,-3%,55px) rotateY(-10deg) rotateZ(5deg)",
+            "translate3d(4%,38%,95px) rotateY(7deg) rotateZ(-1deg)",
+          ];
+          return (
+            <Link
+              key={card.id}
+              to={card.href}
+              aria-label={card.alt}
+              className={cn(
+                "absolute w-[64%] transition-[filter] duration-200 hover:brightness-110 focus-visible:brightness-110",
+                i === 0 ? "left-[4%] top-[14%]" : i === 1 ? "right-[2%] top-[5%]" : "left-[20%] top-[40%]",
+              )}
+              style={{ transform: transforms[i], transformStyle: "preserve-3d" }}
+            >
+              <img
+                src={card.src}
+                alt={card.alt}
+                loading="eager"
+                decoding="async"
+                fetchPriority={i === 2 ? "high" : "auto"}
+                draggable={false}
+                className="block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.48)]"
+                style={{ animation: `vl-float ${4.2 + i * 0.65}s ease-in-out ${i * -0.7}s infinite` }}
+              />
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
+}
+
+function PremiumMembershipCard() {
+  const card = HERO_MEMBERSHIP_CARDS[0];
+  return (
+    <div className="relative min-h-[16rem] sm:min-h-[20rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
+      <div className="absolute inset-[10%_3%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--gold)_24%,transparent),transparent_62%)] blur-2xl" />
+      <Link to={card.href} aria-label={card.alt} className="absolute inset-0 grid place-items-center">
+        <img
+          src={card.src}
+          alt={card.alt}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          draggable={false}
+          className="block h-auto w-[96%] max-w-[48rem] select-none drop-shadow-[0_28px_38px_rgba(0,0,0,0.52)]"
+          style={{ animation: "vl-float 6s ease-in-out infinite" }}
+        />
+      </Link>
+    </div>
+  );
+}
+
+function HeroVisual({ page }: { page: PageKey }) {
+  if (page === "home") return <HomeMembershipCards />;
+  if (page === "premium") return <PremiumMembershipCard />;
+  return null;
 }
 
 function PlatformHero({ page, query = "" }: { page: PageKey; query?: string }) {
@@ -124,9 +178,10 @@ function PlatformHero({ page, query = "" }: { page: PageKey; query?: string }) {
   const firstTitle = SECTION_TITLES[page][0];
   const premium = page === "premium";
   const live = page === "live";
+  const hasHeroVisual = page === "home" || page === "premium";
   return (
     <section id={`01-${slugify(firstTitle)}`} aria-labelledby={`01-${slugify(firstTitle)}-h`} className={cn("grain hero-wash relative isolate overflow-hidden border-b border-hairline", premium && "bg-[radial-gradient(circle_at_80%_8%,color-mix(in_oklab,var(--gold)_24%,transparent),transparent_34%)]")} data-route-section="1">
-      <div className="shell tv-safe grid min-h-[clamp(32rem,74vh,52rem)] items-center gap-6 py-[clamp(3rem,8vw,8rem)] md:grid-cols-[minmax(0,0.95fr)_minmax(22rem,1.05fr)]">
+      <div className={cn("shell tv-safe grid min-h-[clamp(32rem,74vh,52rem)] items-center gap-6 py-[clamp(3rem,8vw,8rem)]", hasHeroVisual && "md:grid-cols-[minmax(0,0.95fr)_minmax(22rem,1.05fr)]")}>
         <div className="relative z-10 max-w-3xl">
           <div className="mb-4 flex flex-wrap items-center gap-2"><span className={cn("rounded-full border px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.2em]", premium ? "border-[var(--gold)] text-[var(--gold)]" : "border-[var(--green)] text-[var(--green)]")}>{firstTitle}</span>{live && <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--live)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white"><span className="size-1.5 rounded-full bg-white" /> On air</span>}</div>
           <h1 id={`01-${slugify(firstTitle)}-h`} className={cn("font-display text-[var(--step-6)] font-black leading-[0.9] tracking-[-0.055em]", premium && "text-gold-foil")}>{info.title}</h1>
@@ -138,14 +193,14 @@ function PlatformHero({ page, query = "" }: { page: PageKey; query?: string }) {
           )}
           <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-2 border-t border-hairline pt-5"><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Catalogue</dt><dd className="mt-1 font-display text-xl font-black">{podcasts.length} shows</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Episodes</dt><dd className="mt-1 font-display text-xl font-black">{episodes.length}+</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Languages</dt><dd className="mt-1 font-display text-xl font-black">6 ready</dd></div></dl>
         </div>
-        <HeroVisual />
+        <HeroVisual page={page} />
       </div>
     </section>
   );
 }
 
 function ExtremeViewportStyles() {
-  return <style>{`@media(max-width:319px){:root{--gutter:.5rem;--rail-gap:.45rem;--section-gap:1.75rem;--step-6:clamp(1.8rem,12vw,2.35rem)}.rail-scroll{gap:.45rem;scroll-padding-inline:.5rem}.rail-scroll>*{width:calc(100vw - 1rem)!important;max-width:none!important}.card-lift:hover{transform:none}}@media(min-width:1920px) and (pointer:coarse){body{font-size:1.2rem}button,a{scroll-margin:8vh 5vw}:focus-visible{outline-width:4px;outline-offset:6px}.rail-scroll{gap:clamp(1rem,1.2vw,1.75rem)}}@media(min-width:3840px){:root{--gutter:6rem;--section-gap:7rem;--step-6:8rem}.shell{max-width:3360px}}`}</style>;
+  return <style>{`@keyframes vl-mobile-card-flip{0%{opacity:0;transform:perspective(900px) rotateY(-88deg) scale(.94)}20%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}78%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}100%{opacity:0;transform:perspective(900px) rotateY(88deg) scale(.94)}}.vl-mobile-card-flip{animation:vl-mobile-card-flip 1.5s ease-in-out both;backface-visibility:hidden}@media(prefers-reduced-motion:reduce){.vl-mobile-card-flip{animation:none}}@media(max-width:319px){:root{--gutter:.5rem;--rail-gap:.45rem;--section-gap:1.75rem;--step-6:clamp(1.8rem,12vw,2.35rem)}.rail-scroll{gap:.45rem;scroll-padding-inline:.5rem}.rail-scroll>*{width:calc(100vw - 1rem)!important;max-width:none!important}.card-lift:hover{transform:none}}@media(min-width:1920px) and (pointer:coarse){body{font-size:1.2rem}button,a{scroll-margin:8vh 5vw}:focus-visible{outline-width:4px;outline-offset:6px}.rail-scroll{gap:clamp(1rem,1.2vw,1.75rem)}}@media(min-width:3840px){:root{--gutter:6rem;--section-gap:7rem;--step-6:8rem}.shell{max-width:3360px}}`}</style>;
 }
 
 function AccountIntro() {
