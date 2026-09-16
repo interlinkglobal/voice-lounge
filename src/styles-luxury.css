@@ -1,0 +1,280 @@
+/* High-end interaction layer. Loaded after the base design system. */
+
+:root {
+  --lux-glass-light: color-mix(in oklab, var(--surface) 78%, transparent);
+  --lux-glass-dark: color-mix(in oklab, var(--surface-2) 48%, transparent);
+  --lux-edge: color-mix(in oklab, white 16%, var(--hairline));
+  --lux-depth: 0 28px 70px -34px oklch(0 0 0 / 75%), inset 0 1px 0 oklch(1 0 0 / 14%), inset 0 -1px 0 oklch(0 0 0 / 28%);
+}
+
+.hyper-glass,
+.glass-panel,
+#main .card-lift,
+#main .bg-card {
+  background:
+    radial-gradient(120% 100% at 0% 0%, oklch(1 0 0 / 10%), transparent 36%),
+    radial-gradient(90% 90% at 100% 0%, color-mix(in oklab, var(--green) 8%, transparent), transparent 52%),
+    linear-gradient(145deg, var(--lux-glass-light), var(--lux-glass-dark)) !important;
+  border-color: var(--lux-edge) !important;
+  box-shadow: var(--lux-depth);
+  backdrop-filter: blur(28px) saturate(185%) contrast(104%);
+  -webkit-backdrop-filter: blur(28px) saturate(185%) contrast(104%);
+}
+
+#main .bg-surface-2,
+header.glass-panel {
+  background:
+    linear-gradient(135deg, color-mix(in oklab, var(--surface) 68%, transparent), color-mix(in oklab, var(--surface-2) 44%, transparent)) !important;
+  backdrop-filter: blur(24px) saturate(170%);
+  -webkit-backdrop-filter: blur(24px) saturate(170%);
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 10%), 0 14px 44px -30px oklch(0 0 0 / 70%);
+}
+
+.hyper-glass {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.hyper-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, oklch(1 0 0 / 12%), transparent 24% 74%, oklch(1 0 0 / 5%)),
+    radial-gradient(60% 25% at 50% 0%, oklch(1 0 0 / 11%), transparent 70%);
+}
+
+.media-shine {
+  position: relative;
+  isolation: isolate;
+}
+
+.media-shine::after {
+  content: "";
+  position: absolute;
+  inset: -30% -45%;
+  z-index: 6;
+  pointer-events: none;
+  transform: translateX(-135%) skewX(-16deg);
+  background: linear-gradient(100deg, transparent 35%, oklch(1 0 0 / 5%) 44%, oklch(1 0 0 / 34%) 50%, oklch(1 0 0 / 6%) 56%, transparent 65%);
+  mix-blend-mode: screen;
+  animation: vl-media-shine 4.8s cubic-bezier(.2,.75,.25,1) infinite;
+}
+
+.media-shine:hover::after,
+.media-shine:focus-within::after {
+  animation-duration: 1.7s;
+}
+
+#main img {
+  filter: saturate(1.04) contrast(1.025);
+}
+
+#main article,
+#main button,
+#main a,
+#main input,
+#main [role="menu"],
+footer a,
+header a,
+header button {
+  transition-property: transform, box-shadow, border-color, background-color, color, filter, opacity;
+  transition-duration: 180ms;
+  transition-timing-function: cubic-bezier(.16,1,.3,1);
+}
+
+@media (hover: hover) {
+  #main article:hover img,
+  #main .media-shine:hover img {
+    transform: scale(1.035);
+    filter: saturate(1.09) contrast(1.04) brightness(1.03);
+  }
+
+  #main button:hover,
+  #main a:hover,
+  header button:hover,
+  header a:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.vl-page-enter {
+  animation: vl-page-enter 430ms cubic-bezier(.16,1,.3,1) both;
+  transform-origin: 50% 0%;
+}
+
+.vl-section-enter,
+#main section {
+  animation: vl-section-enter 520ms cubic-bezier(.16,1,.3,1) both;
+}
+
+.vl-component-enter,
+#main article,
+#main section > header,
+#main section > .hyper-glass {
+  animation: vl-component-enter 420ms cubic-bezier(.16,1,.3,1) both;
+}
+
+@supports (animation-timeline: view()) {
+  #main section:not([data-route-section="1"]) {
+    animation-name: vl-section-enter;
+    animation-timeline: view();
+    animation-range: entry 8% cover 24%;
+  }
+
+  #main section:not([data-route-section="1"]) article,
+  #main section:not([data-route-section="1"]) > header,
+  #main section:not([data-route-section="1"]) .vl-component-enter {
+    animation-name: vl-component-enter;
+    animation-timeline: view();
+    animation-range: entry 10% cover 20%;
+  }
+}
+
+.shimmer {
+  background:
+    linear-gradient(145deg, color-mix(in oklab, var(--surface) 55%, transparent), color-mix(in oklab, var(--surface-2) 32%, transparent)) !important;
+  box-shadow: inset 0 1px 0 oklch(1 0 0 / 8%);
+}
+
+.shimmer::after {
+  background: linear-gradient(100deg, transparent 20%, oklch(1 0 0 / 5%) 37%, oklch(1 0 0 / 27%) 50%, oklch(1 0 0 / 7%) 62%, transparent 80%) !important;
+  animation-duration: 1.05s !important;
+}
+
+.premium-geometry {
+  border-radius: 2.25rem 0 2.25rem 0 !important;
+}
+
+[data-primary-route="premium"] .card-lift,
+[data-primary-route="premium"] .bg-card,
+[data-primary-route="premium"] .rounded-3xl,
+[data-primary-route="premium"] .rounded-2xl {
+  border-radius: 2rem 0 2rem 0 !important;
+}
+
+[data-primary-route="premium"] .shadow-gold,
+[data-primary-route="premium"] .card-lift {
+  box-shadow: 0 26px 80px -34px color-mix(in oklab, var(--gold) 42%, transparent), inset 0 1px 0 oklch(1 0 0 / 16%);
+}
+
+.vl-player-dialog {
+  box-shadow: 0 38px 120px -32px oklch(0 0 0 / 92%), 0 0 90px -44px color-mix(in oklab, var(--green) 48%, transparent), inset 0 1px 0 oklch(1 0 0 / 14%);
+}
+
+.premium-ceremony {
+  animation: premium-ceremony-exit 8s linear both;
+}
+
+.premium-ceremony-orb {
+  position: absolute;
+  width: min(70vw, 52rem);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  filter: blur(70px);
+  opacity: .28;
+  animation: premium-orbit 7.5s ease-in-out infinite alternate;
+}
+
+.premium-ceremony-orb-a {
+  left: -18vw;
+  top: -26vh;
+  background: color-mix(in oklab, var(--gold) 62%, transparent);
+}
+
+.premium-ceremony-orb-b {
+  right: -22vw;
+  bottom: -34vh;
+  background: color-mix(in oklab, var(--green) 46%, transparent);
+  animation-delay: -2.2s;
+}
+
+.premium-ceremony-kicker {
+  opacity: 0;
+  animation: premium-reveal .75s .15s cubic-bezier(.16,1,.3,1) both;
+}
+
+.premium-ceremony-title {
+  opacity: 0;
+  animation: premium-reveal .9s .7s cubic-bezier(.16,1,.3,1) both;
+}
+
+.premium-ceremony-card {
+  opacity: 0;
+  transform: perspective(1400px) rotateX(15deg) rotateY(-18deg) scale(.82) translateY(28px);
+  animation: premium-card-arrive 1.35s 1.55s cubic-bezier(.12,.9,.18,1.08) both;
+}
+
+.premium-ceremony-moments > * {
+  opacity: 0;
+  animation: premium-reveal .75s cubic-bezier(.16,1,.3,1) both;
+}
+
+.premium-ceremony-final {
+  opacity: 0;
+  animation: premium-reveal .7s 6.15s cubic-bezier(.16,1,.3,1) both;
+}
+
+@keyframes vl-page-enter {
+  from { opacity: 0; transform: translateY(10px) scale(.995); filter: blur(5px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@keyframes vl-section-enter {
+  from { opacity: 0; transform: translateY(24px); filter: blur(7px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@keyframes vl-component-enter {
+  from { opacity: 0; transform: translateY(12px) scale(.992); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes vl-media-shine {
+  0%, 58% { transform: translateX(-135%) skewX(-16deg); opacity: 0; }
+  64% { opacity: .9; }
+  82%, 100% { transform: translateX(135%) skewX(-16deg); opacity: 0; }
+}
+
+@keyframes premium-reveal {
+  from { opacity: 0; transform: translateY(18px) scale(.98); filter: blur(7px); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@keyframes premium-card-arrive {
+  0% { opacity: 0; transform: perspective(1400px) rotateX(15deg) rotateY(-18deg) scale(.82) translateY(28px); filter: blur(8px); }
+  65% { opacity: 1; transform: perspective(1400px) rotateX(-2deg) rotateY(3deg) scale(1.025) translateY(-5px); filter: blur(0); }
+  100% { opacity: 1; transform: perspective(1400px) rotateX(0) rotateY(0) scale(1) translateY(0); }
+}
+
+@keyframes premium-orbit {
+  from { transform: translate3d(-3%, -2%, 0) scale(.9); }
+  to { transform: translate3d(8%, 7%, 0) scale(1.08); }
+}
+
+@keyframes premium-ceremony-exit {
+  0%, 89% { opacity: 1; visibility: visible; }
+  96% { opacity: 0; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vl-page-enter,
+  .vl-section-enter,
+  .vl-component-enter,
+  #main section,
+  #main article,
+  .premium-ceremony,
+  .premium-ceremony * {
+    animation: none !important;
+  }
+  .premium-ceremony {
+    opacity: 1;
+  }
+  .media-shine::after {
+    display: none;
+  }
+}
