@@ -2,11 +2,13 @@ import { Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { usePlayer, trackFromEpisode } from "@/components/player/PlayerProvider";
+import { useYouTubeVideoForKey } from "@/components/youtube/YouTubeFeedProvider";
+import { useYouTubePlayer } from "@/components/youtube/YouTubePlayerProvider";
 import { episodes } from "@/lib/content/catalog";
 
 /**
- * The platform's primary action. Vibrant green surface, white label,
- * contrast-tuned in both themes.
+ * The platform's primary action. Audio remains in the persistent player;
+ * video episodes are mapped to the official channel and played in-site.
  */
 export function WatchButton({
   targetId,
@@ -22,7 +24,11 @@ export function WatchButton({
   fullWidth?: boolean;
 }) {
   const { play, current, playing, toggle } = usePlayer();
-  const isCurrent = current?.id === targetId;
+  const youtubeVideo = useYouTubeVideoForKey(targetId);
+  const youtubePlayer = useYouTubePlayer();
+  const episode = episodes.find((x) => x.id === targetId) ?? episodes.find((x) => x.podcastId === targetId) ?? episodes[0];
+  const playsOnYouTube = episode?.kind === "video" && Boolean(youtubeVideo);
+  const isCurrent = !playsOnYouTube && current?.id === targetId;
 
   const sizes: Record<string, string> = {
     xs: "h-7 gap-1 px-2 text-[0.68rem]",
@@ -36,16 +42,22 @@ export function WatchButton({
     e.preventDefault();
     e.stopPropagation();
     track("watch_click", { id: targetId });
+
+    if (playsOnYouTube && youtubeVideo) {
+      youtubePlayer.open(youtubeVideo);
+      return;
+    }
+
     if (isCurrent) {
       toggle();
       return;
     }
-    const ep = episodes.find((x) => x.id === targetId) ?? episodes.find((x) => x.podcastId === targetId) ?? episodes[0];
+
     const upNext = episodes
-      .filter((x) => x.podcastId === ep.podcastId && x.id !== ep.id)
+      .filter((x) => x.podcastId === episode.podcastId && x.id !== episode.id)
       .slice(0, 6)
       .map(trackFromEpisode);
-    play(trackFromEpisode(ep), upNext);
+    play(trackFromEpisode(episode), upNext);
   }
 
   return (
