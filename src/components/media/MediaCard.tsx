@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Bookmark, Clock, Crown, MoreHorizontal, Radio } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
@@ -92,6 +93,7 @@ export function MediaCard({
   showWatch?: boolean;
   className?: string;
 }) {
+  const [showMore, setShowMore] = useState(false);
   const onOpen = () => track("card_click", { id: item.id, kind: item.kind });
 
   /* ---- micro (smartwatch) ---- */
@@ -308,18 +310,39 @@ export function MediaCard({
         <p className="truncate text-[0.72rem] text-muted-foreground/80">
           {[item.subtitle, item.meta].filter(Boolean).join(" · ")}
         </p>
-        <div className="mt-auto flex items-center gap-2 pt-2.5">
+        <div className="relative mt-auto flex items-center gap-2 pt-2.5">
           {showWatch && <WatchButton targetId={item.id} size={isTv ? "tv" : "sm"} />}
           <SaveButton id={item.id} title={item.title} />
           {item.live && <Radio className="size-4 text-[var(--live)]" aria-hidden="true" />}
           <button
             type="button"
             aria-label={`More options for ${item.title}`}
-            onClick={(e) => e.preventDefault()}
+            aria-haspopup="menu"
+            aria-expanded={showMore}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowMore((open) => !open);
+            }}
             className="press ml-auto grid size-9 place-items-center rounded-full text-muted-foreground hover:bg-surface-2 hover:text-foreground"
           >
             <MoreHorizontal className="size-4" aria-hidden="true" />
           </button>
+          {showMore && (
+            <div role="menu" className="absolute bottom-12 right-0 z-30 min-w-40 rounded-xl border border-hairline bg-popover p-1.5 shadow-lift">
+              <Link
+                to={item.href}
+                role="menuitem"
+                onClick={() => {
+                  setShowMore(false);
+                  onOpen();
+                }}
+                className="press block rounded-lg px-3 py-2 text-sm font-medium hover:bg-surface-2"
+              >
+                Open details
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </article>
