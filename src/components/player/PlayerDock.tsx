@@ -16,6 +16,7 @@ import {
   SkipForward,
   Volume2,
   VolumeX,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clock, usePlayer } from "./PlayerProvider";
@@ -57,13 +58,25 @@ export function PlayerDock() {
   const p = usePlayer();
   const { isSaved, toggleSave, noteHistory } = useLibrary();
   const [showQueue, setShowQueue] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     if (p.current && p.duration) noteHistory(p.current.id, Math.round((p.time / p.duration) * 100));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [p.current?.id, Math.round(p.time / 15)]);
 
-  if (!p.current) return null;
+  useEffect(() => {
+    if (p.playing) setDismissed(false);
+  }, [p.current?.id, p.playing]);
+
+  const dismissPlayer = () => {
+    if (p.playing) p.toggle();
+    p.setExpanded(false);
+    setShowQueue(false);
+    setDismissed(true);
+  };
+
+  if (!p.current || dismissed) return null;
   const c = p.current;
 
   const PlayPause = ({ big }: { big?: boolean }) => (
@@ -96,14 +109,24 @@ export function PlayerDock() {
           <div className="shell flex min-h-full flex-col py-4" style={{ paddingTop: "max(1rem,env(safe-area-inset-top))" }}>
             <div className="flex items-center justify-between">
               <p className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-[var(--green)]">Now playing</p>
-              <button
-                type="button"
-                onClick={() => p.setExpanded(false)}
-                aria-label="Collapse player"
-                className="press grid size-10 place-items-center rounded-full border border-white/15 text-white"
-              >
-                <ChevronDown className="size-5" aria-hidden="true" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => p.setExpanded(false)}
+                  aria-label="Collapse player"
+                  className="press grid size-10 place-items-center rounded-full border border-white/15 text-white"
+                >
+                  <ChevronDown className="size-5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={dismissPlayer}
+                  aria-label="Dismiss player"
+                  className="press grid size-10 place-items-center rounded-full border border-white/15 text-white"
+                >
+                  <X className="size-5" aria-hidden="true" />
+                </button>
+              </div>
             </div>
 
             <div className="mt-6 grid flex-1 items-center gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
@@ -304,6 +327,15 @@ export function PlayerDock() {
               className="press grid size-10 place-items-center rounded-full border border-hairline"
             >
               {p.expanded ? <ChevronDown className="size-4" /> : <ChevronUp className="size-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={dismissPlayer}
+              aria-label="Dismiss player"
+              title="Remove player from screen"
+              className="press grid size-10 place-items-center rounded-full text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+            >
+              <X className="size-4" aria-hidden="true" />
             </button>
             <button
               type="button"
