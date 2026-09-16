@@ -26,19 +26,19 @@ export type { PageKey } from "@/lib/voice-lounge/routes";
 const HERO_MEMBERSHIP_CARDS = [
   {
     id: "casey-t-special-viewer",
-    src: "/card 2.png",
+    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789548231/card_2_wcrvmy.png",
     alt: "The Voice Lounge premium special viewer card for Casey T.",
     href: "/watch",
   },
   {
     id: "emihle-s-special-guest-host",
-    src: "/card 1.png",
+    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789549137/card_1_2_o49klz.png",
     alt: "The Voice Lounge premium special guest host card for Emihle S.",
     href: "/shows",
   },
   {
     id: "sihle-p-premium-member",
-    src: "/card 3.png",
+    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789548213/card_3_lj0ghk.png",
     alt: "The Voice Lounge premium member card for Sihle P.",
     href: "/premium",
   },
@@ -87,44 +87,41 @@ function HomeMembershipCards() {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    const timer = window.setInterval(() => setActive((index) => (index + 1) % HERO_MEMBERSHIP_CARDS.length), 1500);
+    // Warm the CDN cache for the next flips without bundling any card asset.
+    HERO_MEMBERSHIP_CARDS.forEach((card) => {
+      const image = new Image();
+      image.src = card.src;
+    });
+
+    const timer = window.setInterval(
+      () => setActive((index) => (index + 1) % HERO_MEMBERSHIP_CARDS.length),
+      2800,
+    );
     return () => window.clearInterval(timer);
   }, []);
 
-  const mobileCard = HERO_MEMBERSHIP_CARDS[active] ?? HERO_MEMBERSHIP_CARDS[0];
+  const activeCard = HERO_MEMBERSHIP_CARDS[active] ?? HERO_MEMBERSHIP_CARDS[0];
 
   return (
     <div className="relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
       <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
-
-      <div className="absolute inset-0 grid place-items-center md:hidden">
-        <Link key={mobileCard.id} to={mobileCard.href} aria-label={mobileCard.alt} className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[1.75rem] [transform-style:preserve-3d]">
-          <img src={mobileCard.src} alt={mobileCard.alt} loading="eager" decoding="async" fetchPriority="high" draggable={false} className="vl-mobile-card-flip block h-auto w-full select-none drop-shadow-[0_22px_30px_rgba(0,0,0,0.5)]" />
+      <div className="absolute inset-0 grid place-items-center">
+        <Link
+          key={activeCard.id}
+          to={activeCard.href}
+          aria-label={activeCard.alt}
+          className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[1.75rem] [transform-style:preserve-3d] md:max-w-[48rem] md:rounded-[2rem]"
+        >
+          <img
+            src={activeCard.src}
+            alt={activeCard.alt}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
+            draggable={false}
+            className="vl-hero-card-flip block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.5)]"
+          />
         </Link>
-      </div>
-
-      <div className="absolute inset-0 hidden md:block">
-        {HERO_MEMBERSHIP_CARDS.map((card, i) => {
-          const transforms = [
-            "translate3d(-11%,8%,0) rotateY(16deg) rotateZ(-7deg)",
-            "translate3d(25%,-3%,55px) rotateY(-10deg) rotateZ(5deg)",
-            "translate3d(4%,38%,95px) rotateY(7deg) rotateZ(-1deg)",
-          ];
-          return (
-            <Link
-              key={card.id}
-              to={card.href}
-              aria-label={card.alt}
-              className={cn(
-                "media-shine absolute w-[64%] overflow-hidden rounded-[2rem] transition-[filter] duration-200 hover:brightness-110 focus-visible:brightness-110",
-                i === 0 ? "left-[4%] top-[14%]" : i === 1 ? "right-[2%] top-[5%]" : "left-[20%] top-[40%]",
-              )}
-              style={{ transform: transforms[i], transformStyle: "preserve-3d" }}
-            >
-              <img src={card.src} alt={card.alt} loading="eager" decoding="async" fetchPriority={i === 2 ? "high" : "auto"} draggable={false} className="block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.48)]" style={{ animation: `vl-float ${4.2 + i * 0.65}s ease-in-out ${i * -0.7}s infinite` }} />
-            </Link>
-          );
-        })}
       </div>
     </div>
   );
@@ -175,7 +172,7 @@ function PlatformHero({ page, query = "" }: { page: PageKey; query?: string }) {
 }
 
 function ExtremeViewportStyles() {
-  return <style>{`@keyframes vl-mobile-card-flip{0%{opacity:0;transform:perspective(900px) rotateY(-88deg) scale(.94)}20%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}78%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}100%{opacity:0;transform:perspective(900px) rotateY(88deg) scale(.94)}}.vl-mobile-card-flip{animation:vl-mobile-card-flip 1.5s ease-in-out both;backface-visibility:hidden}@media(prefers-reduced-motion:reduce){.vl-mobile-card-flip{animation:none}}@media(max-width:319px){:root{--gutter:.5rem;--rail-gap:.45rem;--section-gap:1.75rem;--step-6:clamp(1.8rem,12vw,2.35rem)}.rail-scroll{gap:.45rem;scroll-padding-inline:.5rem}.rail-scroll>*{width:calc(100vw - 1rem)!important;max-width:none!important}.card-lift:hover{transform:none}}@media(min-width:1920px) and (pointer:coarse){body{font-size:1.2rem}button,a{scroll-margin:8vh 5vw}:focus-visible{outline-width:4px;outline-offset:6px}.rail-scroll{gap:clamp(1rem,1.2vw,1.75rem)}}@media(min-width:3840px){:root{--gutter:6rem;--section-gap:7rem;--step-6:8rem}.shell{max-width:3360px}}`}</style>;
+  return <style>{`@keyframes vl-hero-card-flip{0%{opacity:0;transform:perspective(900px) rotateY(-88deg) scale(.94)}20%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}78%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}100%{opacity:0;transform:perspective(900px) rotateY(88deg) scale(.94)}}.vl-hero-card-flip{animation:vl-hero-card-flip 2.8s ease-in-out both;backface-visibility:hidden;transform-style:preserve-3d}@media(prefers-reduced-motion:reduce){.vl-hero-card-flip{animation:none}}@media(max-width:319px){:root{--gutter:.5rem;--rail-gap:.45rem;--section-gap:1.75rem;--step-6:clamp(1.8rem,12vw,2.35rem)}.rail-scroll{gap:.45rem;scroll-padding-inline:.5rem}.rail-scroll>*{width:calc(100vw - 1rem)!important;max-width:none!important}.card-lift:hover{transform:none}}@media(min-width:1920px) and (pointer:coarse){body{font-size:1.2rem}button,a{scroll-margin:8vh 5vw}:focus-visible{outline-width:4px;outline-offset:6px}.rail-scroll{gap:clamp(1rem,1.2vw,1.75rem)}}@media(min-width:3840px){:root{--gutter:6rem;--section-gap:7rem;--step-6:8rem}.shell{max-width:3360px}}`}</style>;
 }
 
 function AccountIntro() {
