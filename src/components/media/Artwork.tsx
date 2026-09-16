@@ -1,31 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Artwork as ArtworkModel } from "@/lib/content/types";
-
-const PODCAST_STOCK_IMAGES = [
-  "https://img.freepik.com/free-photo/man-with-microphone-headphones-running-podcast-studio_23-2149434249.jpg",
-  "https://img.freepik.com/free-photo/nobody-podcast-production-studio-with-professional-microphone-headphones-streaming-interview-internet-radio-empty-desk-with-streaming-equipment-broadcast-live-show-social-media_482257-48491.jpg",
-  "https://img.freepik.com/free-photo/close-up-shot-focused-preview-image-professional-camera-with-podcast-host-african-american-guest-enjoying-conversation-blurry-background-professional-recording-equipment-home-studio_482257-74318.jpg",
-  "https://img.freepik.com/free-photo/portrait-online-radio-host-smiling-confident-camera-while-broadcasting-live-using-professional-equipment-recording-studio-african-american-podcaster-sitting-desk-with-boom-arm-microphone_482257-51216.jpg",
-  "https://img.freepik.com/free-photo/flat-lay-composition-with-microphone-podcasts-black-studio-headphones-yellow-background-with-coffee-learning-online-education-concept_501050-1073.jpg",
-  "https://img.freepik.com/free-photo/female-host-communicating-microphone-woman-radio-studio_1157-47587.jpg",
-  "https://img.freepik.com/free-photo/professional-microphone-sound-recording-macro-photography_169016-23351.jpg",
-] as const;
-
-function seedNum(s: string) {
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return (h >>> 0) / 4294967295;
-}
-
-function stockImageFor(seed: string) {
-  if (!/^(pod-|ep-|news-|live-)/.test(seed)) return undefined;
-  const index = Math.floor(seedNum(`${seed}-stock`) * PODCAST_STOCK_IMAGES.length) % PODCAST_STOCK_IMAGES.length;
-  return PODCAST_STOCK_IMAGES[index];
-}
+import { stockImageForSeed } from "@/lib/stock-images";
 
 const RATIO: Record<string, string> = {
   "16/9": "56.25%",
@@ -35,15 +11,14 @@ const RATIO: Record<string, string> = {
 };
 
 /**
- * Artwork renderer. Explicit image URLs win; seeded podcast, episode, news and
- * live artwork uses curated Freepik photography, with procedural art retained
- * as an automatic fallback if a remote asset is unavailable.
+ * Real-image renderer. Explicit art wins; every other surface receives a
+ * deterministic stock photograph. If a remote source breaks, rotate through
+ * another real stock image instead of falling back to procedural/demo art.
  */
 export function Artwork({
   artwork,
   className,
   priority,
-  label,
 }: {
   artwork: ArtworkModel;
   className?: string;
@@ -51,101 +26,28 @@ export function Artwork({
   label?: string;
 }) {
   const ratio = RATIO[artwork.ratio ?? "16/9"];
-  const externalSrc = artwork.src ?? stockImageFor(artwork.seed);
-  const [failedSrc, setFailedSrc] = useState<string | null>(null);
-  const showImage = Boolean(externalSrc && failedSrc !== externalSrc);
-  const art = useMemo(() => {
-    const a = seedNum(artwork.seed);
-    const b = seedNum(artwork.seed + "b");
-    const c = seedNum(artwork.seed + "c");
-    const family = Math.floor(a * 4);
-    const hue = family === 0 ? 150 + b * 26 : family === 1 ? 86 + b * 18 : family === 2 ? 168 + b * 30 : 40 + b * 26;
-    const hue2 = family === 3 ? 92 + c * 24 : 145 + c * 40;
-    return {
-      a,
-      b,
-      c,
-      bars: Array.from({ length: 22 }, (_, i) => 0.18 + Math.abs(Math.sin((i + 1) * (1.4 + a * 3))) * 0.8),
-      from: `oklch(${0.26 + a * 0.16} ${0.09 + b * 0.09} ${hue})`,
-      to: `oklch(${0.14 + c * 0.1} ${0.05 + a * 0.06} ${hue2})`,
-      accent: `oklch(${0.68 + b * 0.16} ${0.13 + c * 0.07} ${family === 3 ? 90 : 158})`,
-      angle: Math.round(a * 140) + 110,
-      rings: 2 + Math.floor(c * 3),
-    };
-  }, [artwork.seed]);
-
-  const initials = (label ?? artwork.alt)
-    .replace(/[^A-Za-z ]/g, "")
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase())
-    .join("");
+  const [recovery, setRecovery] = useState(0);
+  const src = recovery === 0 && artwork.src
+    ? artwork.src
+    : stockImageForSeed(artwork.seed, recovery + (artwork.src ? 0 : 1));
 
   return (
     <div
-      className={cn("relative w-full overflow-hidden bg-surface-2", className)}
+      className={cn("media-shine relative w-full overflow-hidden bg-black", className)}
       style={{ paddingTop: ratio }}
       role="img"
       aria-label={artwork.alt}
     >
-      {showImage && externalSrc ? (
-        <img
-          src={externalSrc}
-          alt={artwork.alt}
-          loading={priority ? "eager" : "lazy"}
-          decoding={priority ? "sync" : "async"}
-          fetchPriority={priority ? "high" : "auto"}
-          onError={() => setFailedSrc(externalSrc)}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-      ) : (
-        <div
-          className="absolute inset-0"
-          style={{ backgroundImage: `linear-gradient(${art.angle}deg, ${art.from}, ${art.to})` }}
-        >
-          <svg
-            className="absolute inset-0 h-full w-full"
-            viewBox="0 0 200 120"
-            preserveAspectRatio="xMidYMid slice"
-            aria-hidden="true"
-          >
-            {Array.from({ length: art.rings }).map((_, i) => (
-              <circle
-                key={i}
-                cx={30 + art.b * 140}
-                cy={20 + art.c * 80}
-                r={18 + i * (14 + art.a * 16)}
-                fill="none"
-                stroke={art.accent}
-                strokeOpacity={0.16 - i * 0.03}
-                strokeWidth={0.9}
-              />
-            ))}
-            <g transform="translate(0,120) scale(1,-1)" opacity={0.42}>
-              {art.bars.map((h, i) => (
-                <rect
-                  key={i}
-                  x={i * 9.2 + 2}
-                  y={0}
-                  width={4.4}
-                  height={h * 62}
-                  rx={2.2}
-                  fill={art.accent}
-                  opacity={0.25 + (i % 5) * 0.12}
-                />
-              ))}
-            </g>
-          </svg>
-          <span
-            aria-hidden="true"
-            className="absolute left-3 top-3 font-display text-[clamp(0.9rem,3.2cqw,1.6rem)] font-bold tracking-tight text-white/85 mix-blend-plus-lighter"
-          >
-            {initials}
-          </span>
-          <span className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/10" />
-        </div>
-      )}
+      <img
+        src={src}
+        alt={artwork.alt}
+        loading={priority ? "eager" : "lazy"}
+        decoding={priority ? "sync" : "async"}
+        fetchPriority={priority ? "high" : "auto"}
+        onError={() => setRecovery((value) => Math.min(value + 1, 18))}
+        className="absolute inset-0 h-full w-full object-cover transition-[transform,filter] duration-500 ease-[var(--ease-out-quick)]"
+      />
+      <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-white/[0.035]" aria-hidden="true" />
     </div>
   );
 }
