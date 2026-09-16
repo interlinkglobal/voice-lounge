@@ -17,6 +17,19 @@ const FORMATS = ["Audio", "Video", "Hybrid"];
 const MOODS = ["Quick hit", "Deep dive", "Laugh", "Learn", "Debate", "Unwind"];
 const DISCOVERY_TAGS = ["New voices", "Staff picks", "Originals", "Independent", "Local stories", "Long-form"];
 
+const CREATOR_SPOTLIGHT_IMAGES = [
+  "https://img.magnific.com/free-photo/businesswoman-executive-professional-success-concept_53876-137644.jpg?semt=ais_hybrid&w=740&q=80",
+  "https://img.magnific.com/free-photo/happy-businesswoman-with-hand-chin_1262-20885.jpg?semt=ais_hybrid&w=740&q=80",
+  "https://img.magnific.com/free-photo/african-american-business-woman-by-window_1303-10869.jpg?semt=ais_hybrid&w=740&q=80",
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTtfZGqz21EqcOescpkFw2DCAHiHQb5FMmKa9ng7USTxhZU2lR4Pt7Ym1E&s=10",
+  "https://img.magnific.com/free-photo/front-view-formal-male-journalist_23-2149029389.jpg",
+  "https://img.freepik.com/free-photo/portrait-online-radio-host-smiling-confident-camera-while-broadcasting-live-using-professional-equipment-recording-studio-african-american-podcaster-sitting-desk-with-boom-arm-microphone_482257-51216.jpg",
+  "https://img.freepik.com/free-photo/female-host-communicating-microphone-woman-radio-studio_1157-47587.jpg",
+  "https://img.freepik.com/free-photo/man-with-microphone-headphones-running-podcast-studio_23-2149434249.jpg",
+  "https://img.magnific.com/free-photo/portrait-corporate-woman-working-with-laptop-smiling-looking-assertive-white-background_1258-123334.jpg",
+  "https://img.magnific.com/free-photo/portrait-happy-manager-holding-leather-case_1262-5329.jpg",
+] as const;
+
 export function pageCards(page: PageKey, title: string, index: number, query = ""): MediaCardModel[] {
   const t = title.toLowerCase();
 
@@ -40,6 +53,20 @@ export function pageCards(page: PageKey, title: string, index: number, query = "
     ];
     const hit = aliases.find(([needle]) => t.includes(needle));
     return (hit ? q.newsBySection(hit[1], 10) : q.latestNews(12)).map((item) => newsCard(item));
+  }
+
+  if (t.includes("creator spotlight")) {
+    return creators.slice(0, CREATOR_SPOTLIGHT_IMAGES.length).map((item, i) => {
+      const card = creatorCard(item);
+      return {
+        ...card,
+        artwork: {
+          ...card.artwork,
+          src: CREATOR_SPOTLIGHT_IMAGES[i],
+          ratio: "1/1",
+        },
+      };
+    });
   }
 
   if (page === "creators" || t.includes("creator") || t.includes("host") || t.includes("voices") || t.includes("contributors")) {
