@@ -4,6 +4,7 @@ import { ArrowRight, Crown, Headphones, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
 import { useLibrary } from "@/components/system/library";
+import { PremiumCeremony } from "@/components/premium/PremiumCeremony";
 import { demoProfile, episodes, podcasts } from "@/lib/content/catalog";
 import { pageCards, chipsFor } from "@/lib/voice-lounge/page-data";
 import { PAGE_INFO, SECTION_TITLES, routeName, type PageKey } from "@/lib/voice-lounge/routes";
@@ -97,16 +98,8 @@ function HomeMembershipCards() {
       <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
 
       <div className="absolute inset-0 grid place-items-center md:hidden">
-        <Link key={mobileCard.id} to={mobileCard.href} aria-label={mobileCard.alt} className="block w-[94%] max-w-[32rem] [transform-style:preserve-3d]">
-          <img
-            src={mobileCard.src}
-            alt={mobileCard.alt}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            draggable={false}
-            className="vl-mobile-card-flip block h-auto w-full select-none drop-shadow-[0_22px_30px_rgba(0,0,0,0.5)]"
-          />
+        <Link key={mobileCard.id} to={mobileCard.href} aria-label={mobileCard.alt} className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[1.75rem] [transform-style:preserve-3d]">
+          <img src={mobileCard.src} alt={mobileCard.alt} loading="eager" decoding="async" fetchPriority="high" draggable={false} className="vl-mobile-card-flip block h-auto w-full select-none drop-shadow-[0_22px_30px_rgba(0,0,0,0.5)]" />
         </Link>
       </div>
 
@@ -123,21 +116,12 @@ function HomeMembershipCards() {
               to={card.href}
               aria-label={card.alt}
               className={cn(
-                "absolute w-[64%] transition-[filter] duration-200 hover:brightness-110 focus-visible:brightness-110",
+                "media-shine absolute w-[64%] overflow-hidden rounded-[2rem] transition-[filter] duration-200 hover:brightness-110 focus-visible:brightness-110",
                 i === 0 ? "left-[4%] top-[14%]" : i === 1 ? "right-[2%] top-[5%]" : "left-[20%] top-[40%]",
               )}
               style={{ transform: transforms[i], transformStyle: "preserve-3d" }}
             >
-              <img
-                src={card.src}
-                alt={card.alt}
-                loading="eager"
-                decoding="async"
-                fetchPriority={i === 2 ? "high" : "auto"}
-                draggable={false}
-                className="block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.48)]"
-                style={{ animation: `vl-float ${4.2 + i * 0.65}s ease-in-out ${i * -0.7}s infinite` }}
-              />
+              <img src={card.src} alt={card.alt} loading="eager" decoding="async" fetchPriority={i === 2 ? "high" : "auto"} draggable={false} className="block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.48)]" style={{ animation: `vl-float ${4.2 + i * 0.65}s ease-in-out ${i * -0.7}s infinite` }} />
             </Link>
           );
         })}
@@ -151,17 +135,8 @@ function PremiumMembershipCard() {
   return (
     <div className="relative min-h-[16rem] sm:min-h-[20rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
       <div className="absolute inset-[10%_3%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--gold)_24%,transparent),transparent_62%)] blur-2xl" />
-      <Link to={card.href} aria-label={card.alt} className="absolute inset-0 grid place-items-center">
-        <img
-          src={card.src}
-          alt={card.alt}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          draggable={false}
-          className="block h-auto w-[96%] max-w-[48rem] select-none drop-shadow-[0_28px_38px_rgba(0,0,0,0.52)]"
-          style={{ animation: "vl-float 6s ease-in-out infinite" }}
-        />
+      <Link to={card.href} aria-label={card.alt} className="media-shine premium-geometry absolute inset-0 grid place-items-center overflow-hidden">
+        <img src={card.src} alt={card.alt} loading="eager" decoding="async" fetchPriority="high" draggable={false} className="block h-auto w-[96%] max-w-[48rem] select-none drop-shadow-[0_28px_38px_rgba(0,0,0,0.52)]" style={{ animation: "vl-float 6s ease-in-out infinite" }} />
       </Link>
     </div>
   );
@@ -180,16 +155,16 @@ function PlatformHero({ page, query = "" }: { page: PageKey; query?: string }) {
   const live = page === "live";
   const hasHeroVisual = page === "home" || page === "premium";
   return (
-    <section id={`01-${slugify(firstTitle)}`} aria-labelledby={`01-${slugify(firstTitle)}-h`} className={cn("grain hero-wash relative isolate overflow-hidden border-b border-hairline", premium && "bg-[radial-gradient(circle_at_80%_8%,color-mix(in_oklab,var(--gold)_24%,transparent),transparent_34%)]")} data-route-section="1">
+    <section id={`01-${slugify(firstTitle)}`} aria-labelledby={`01-${slugify(firstTitle)}-h`} className={cn("vl-section-enter grain hero-wash relative isolate overflow-hidden border-b border-hairline", premium && "bg-[radial-gradient(circle_at_80%_8%,color-mix(in_oklab,var(--gold)_24%,transparent),transparent_34%)]")} data-route-section="1">
       <div className={cn("shell tv-safe grid min-h-[clamp(32rem,74vh,52rem)] items-center gap-6 py-[clamp(3rem,8vw,8rem)]", hasHeroVisual && "md:grid-cols-[minmax(0,0.95fr)_minmax(22rem,1.05fr)]")}>
-        <div className="relative z-10 max-w-3xl">
-          <div className="mb-4 flex flex-wrap items-center gap-2"><span className={cn("rounded-full border px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.2em]", premium ? "border-[var(--gold)] text-[var(--gold)]" : "border-[var(--green)] text-[var(--green)]")}>{firstTitle}</span>{live && <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--live)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white"><span className="size-1.5 rounded-full bg-white" /> On air</span>}</div>
+        <div className="vl-component-enter relative z-10 max-w-3xl">
+          <div className="mb-4 flex flex-wrap items-center gap-2"><span className={cn("hyper-glass rounded-full px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.2em]", premium ? "text-[var(--gold)]" : "text-[var(--green)]")}>{firstTitle}</span>{live && <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--live)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white"><span className="size-1.5 rounded-full bg-white" /> On air</span>}</div>
           <h1 id={`01-${slugify(firstTitle)}-h`} className={cn("font-display text-[var(--step-6)] font-black leading-[0.9] tracking-[-0.055em]", premium && "text-gold-foil")}>{info.title}</h1>
           <p className="mt-5 max-w-2xl text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed text-muted-foreground">{info.lede}</p>
           {page === "search" ? (
-            <form action="/search" role="search" className="mt-7 flex max-w-2xl flex-col gap-2 sm:flex-row"><label htmlFor="hero-search" className="sr-only">Search everything</label><div className="flex min-h-14 flex-1 items-center gap-3 rounded-full border border-hairline bg-[var(--glass)] px-5 backdrop-blur"><Search className="size-5 text-muted-foreground" aria-hidden="true" /><input id="hero-search" name="q" defaultValue={query} placeholder="Try “Amapiano”, “business” or a creator name" className="w-full bg-transparent text-base outline-none" /></div><button type="submit" className="press min-h-14 rounded-full bg-[var(--green-action)] px-7 font-bold text-white">Search</button></form>
+            <form action="/search" role="search" className="mt-7 flex max-w-2xl flex-col gap-2 sm:flex-row"><label htmlFor="hero-search" className="sr-only">Search everything</label><div className="hyper-glass flex min-h-14 flex-1 items-center gap-3 rounded-full px-5"><Search className="size-5 text-muted-foreground" aria-hidden="true" /><input id="hero-search" name="q" defaultValue={query} placeholder="Try “Amapiano”, “business” or a creator name" className="w-full bg-transparent text-base outline-none" /></div><button type="submit" className="press min-h-14 rounded-full bg-[var(--green-action)] px-7 font-bold text-white">Search</button></form>
           ) : (
-            <div className="mt-7 flex flex-wrap gap-2.5"><Link to={info.primary.to} preload="intent" className={cn("press inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-bold", premium ? "bg-[var(--gold)] text-black shadow-gold" : "bg-[var(--green-action)] text-white shadow-glow")}>{premium ? <Crown className="size-4" /> : <Headphones className="size-4" />}{info.primary.label}</Link><Link to={info.secondary.to} preload="intent" className="press inline-flex min-h-12 items-center gap-2 rounded-full border border-hairline bg-[var(--glass)] px-6 font-semibold backdrop-blur">{info.secondary.label}<ArrowRight className="size-4" aria-hidden="true" /></Link></div>
+            <div className="mt-7 flex flex-wrap gap-2.5"><Link to={info.primary.to} preload="intent" className={cn("press inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-bold", premium ? "bg-[var(--gold)] text-black shadow-gold" : "bg-[var(--green-action)] text-white shadow-glow")}>{premium ? <Crown className="size-4" /> : <Headphones className="size-4" />}{info.primary.label}</Link><Link to={info.secondary.to} preload="intent" className="press hyper-glass inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-semibold">{info.secondary.label}<ArrowRight className="size-4" aria-hidden="true" /></Link></div>
           )}
           <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-2 border-t border-hairline pt-5"><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Catalogue</dt><dd className="mt-1 font-display text-xl font-black">{podcasts.length} shows</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Episodes</dt><dd className="mt-1 font-display text-xl font-black">{episodes.length}+</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Languages</dt><dd className="mt-1 font-display text-xl font-black">6 ready</dd></div></dl>
         </div>
@@ -205,12 +180,20 @@ function ExtremeViewportStyles() {
 
 function AccountIntro() {
   const { saved } = useLibrary();
-  return <div className="shell mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><span className="rounded-full border border-hairline bg-surface-2 px-3 py-1.5">{demoProfile.handle}</span><span className="rounded-full border border-hairline bg-surface-2 px-3 py-1.5">{saved.length} saved</span><span className="rounded-full border border-hairline bg-surface-2 px-3 py-1.5">Member since 2024</span></div>;
+  return <div className="shell mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground vl-component-enter"><span className="hyper-glass rounded-full px-3 py-1.5">{demoProfile.handle}</span><span className="hyper-glass rounded-full px-3 py-1.5">{saved.length} saved</span><span className="hyper-glass rounded-full px-3 py-1.5">Member since 2024</span></div>;
 }
 
 export function PlatformPage({ page, query = "" }: { page: PageKey; query?: string }) {
   const sections = SECTION_TITLES[page].slice(1).map((title, offset) => makeSection(page, title, offset + 1, query));
-  return <div className={cn("pb-[var(--section-gap)]", page === "premium" && "selection:bg-[color-mix(in_oklab,var(--gold)_35%,transparent)]")} data-primary-route={page} data-section-count="20"><ExtremeViewportStyles /><PlatformHero page={page} query={query} />{page === "account" && <AccountIntro />}{sections.map((spec, index) => <Section key={spec.id} spec={spec} index={index + 1} />)}</div>;
+  return (
+    <div className={cn("pb-[var(--section-gap)]", page === "premium" && "selection:bg-[color-mix(in_oklab,var(--gold)_35%,transparent)]")} data-primary-route={page} data-section-count="20">
+      <ExtremeViewportStyles />
+      {page === "premium" && <PremiumCeremony />}
+      <PlatformHero page={page} query={query} />
+      {page === "account" && <AccountIntro />}
+      {sections.map((spec, index) => <Section key={spec.id} spec={spec} index={index + 1} />)}
+    </div>
+  );
 }
 
 export function routeHead(page: PageKey) {
