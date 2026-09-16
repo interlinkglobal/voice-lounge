@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { Bookmark, Clock3, MapPin, Radio, Share2, UserPlus } from "lucide-react";
 import { Artwork } from "@/components/media/Artwork";
 import { WatchButton } from "@/components/media/WatchButton";
@@ -187,9 +188,29 @@ function CreatorAction({ id, name }: { id: string; name: string }) {
 export function DetailPage({ kind, slug }: { kind: DetailKind; slug: string }) {
   const model = resolveDetail(kind, slug);
   const { isSaved, toggleSave } = useLibrary();
+  const [shareState, setShareState] = useState<"idle" | "shared" | "copied">("idle");
   if (!model) return <NotFoundDetail />;
   const saved = isSaved(model.id);
   const portrait = kind === "podcast" || kind === "creator";
+
+  const shareCurrent = async () => {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ title: model.title, url: window.location.href });
+        setShareState("shared");
+        return;
+      } catch {
+        // Fall through to a copy action when native share is cancelled or unavailable.
+      }
+    }
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      await navigator.clipboard.writeText(window.location.href);
+      setShareState("copied");
+      return;
+    }
+    window.prompt("Copy this link", window.location.href);
+    setShareState("copied");
+  };
 
   return (
     <>
@@ -207,7 +228,7 @@ export function DetailPage({ kind, slug }: { kind: DetailKind; slug: string }) {
               {model.watchId && <WatchButton targetId={model.watchId} size="lg" label={kind === "podcast" ? "Start watching" : "Watch"} />}
               {model.creatorId && kind === "creator" && <CreatorAction id={model.creatorId} name={model.title} />}
               <button type="button" aria-pressed={saved} onClick={() => toggleSave(model.id, model.title)} className="press inline-flex h-12 items-center gap-2 rounded-full border border-hairline bg-surface/70 px-5 text-sm font-semibold backdrop-blur"><Bookmark className={`size-4 ${saved ? "fill-[var(--gold)] text-[var(--gold)]" : ""}`} aria-hidden="true" />{saved ? "Saved" : "Save"}</button>
-              <button type="button" onClick={() => { if (typeof navigator !== "undefined" && navigator.share) void navigator.share({ title: model.title, url: window.location.href }); }} className="press inline-flex h-12 items-center gap-2 rounded-full border border-hairline px-5 text-sm font-semibold"><Share2 className="size-4" aria-hidden="true" /> Share</button>
+              <button type="button" onClick={() => void shareCurrent()} className="press inline-flex h-12 items-center gap-2 rounded-full border border-hairline px-5 text-sm font-semibold"><Share2 className="size-4" aria-hidden="true" />{shareState === "shared" ? "Shared" : shareState === "copied" ? "Link copied" : "Share"}</button>
             </div>
             {model.live && <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--live)] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-white"><Radio className="size-3.5" aria-hidden="true" /> On air now</div>}
           </div>
