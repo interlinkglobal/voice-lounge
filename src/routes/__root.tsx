@@ -4,12 +4,14 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
+import luxuryCss from "../styles-luxury.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider, themeBootstrapScript } from "@/components/system/theme";
 import { LibraryProvider } from "@/components/system/library";
@@ -20,12 +22,13 @@ import { Footer } from "@/components/layout/Footer";
 import { CookieBar } from "@/components/layout/CookieBar";
 import { Toaster } from "@/components/ui/sonner";
 import { YouTubeFeedProvider } from "@/components/youtube/YouTubeFeedProvider";
+import { YouTubePlayerProvider } from "@/components/youtube/YouTubePlayerProvider";
 import { getYouTubeFeed } from "@/lib/youtube.functions";
 
 function NotFoundComponent() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
-      <div className="max-w-md text-center">
+      <div className="hyper-glass max-w-md rounded-[2rem] p-8 text-center">
         <p className="font-display text-[var(--step-6)] font-black leading-none text-[var(--green)]">404</p>
         <h1 className="mt-3 font-display text-2xl font-bold">That page has left the studio</h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -33,7 +36,7 @@ function NotFoundComponent() {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Link to="/" className="press rounded-full bg-[var(--green-action)] px-5 py-2.5 text-sm font-semibold text-white">Go home</Link>
-          <Link to="/search" className="press rounded-full border border-hairline px-5 py-2.5 text-sm font-semibold">Search the catalogue</Link>
+          <Link to="/search" className="press hyper-glass rounded-full px-5 py-2.5 text-sm font-semibold">Search the catalogue</Link>
         </div>
       </div>
     </div>
@@ -49,7 +52,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
-      <div className="max-w-md text-center">
+      <div className="hyper-glass max-w-md rounded-[2rem] p-8 text-center">
         <h1 className="font-display text-2xl font-bold">This page didn't load</h1>
         <p className="mt-2 text-sm text-muted-foreground">Something failed on our side. Retry, or head back to the front page.</p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -62,7 +65,7 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           >
             Try again
           </button>
-          <a href="/" className="press rounded-full border border-hairline px-5 py-2.5 text-sm font-semibold">Go home</a>
+          <a href="/" className="press hyper-glass rounded-full px-5 py-2.5 text-sm font-semibold">Go home</a>
         </div>
       </div>
     </div>
@@ -88,6 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "stylesheet", href: luxuryCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -134,24 +138,29 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const youtubeFeed = Route.useLoaderData();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
       <YouTubeFeedProvider feed={youtubeFeed}>
-        <ThemeProvider>
-          <LibraryProvider>
-            <PlayerProvider>
-              <Header />
-              <main id="main" className="min-h-[60vh] pb-8">
-                <Outlet />
-              </main>
-              <Footer />
-              <PlayerDock />
-              <CookieBar />
-              <Toaster />
-            </PlayerProvider>
-          </LibraryProvider>
-        </ThemeProvider>
+        <YouTubePlayerProvider feed={youtubeFeed}>
+          <ThemeProvider>
+            <LibraryProvider>
+              <PlayerProvider>
+                <Header />
+                <main id="main" className="min-h-[60vh] pb-8">
+                  <div key={pathname} className="vl-page-enter">
+                    <Outlet />
+                  </div>
+                </main>
+                <Footer />
+                <PlayerDock />
+                <CookieBar />
+                <Toaster />
+              </PlayerProvider>
+            </LibraryProvider>
+          </ThemeProvider>
+        </YouTubePlayerProvider>
       </YouTubeFeedProvider>
     </QueryClientProvider>
   );
