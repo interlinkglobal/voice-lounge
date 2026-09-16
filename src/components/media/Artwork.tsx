@@ -1,6 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
 import type { Artwork as ArtworkModel } from "@/lib/content/types";
+
+const PODCAST_STOCK_IMAGES = [
+  "https://img.freepik.com/free-photo/man-with-microphone-headphones-running-podcast-studio_23-2149434249.jpg",
+  "https://img.freepik.com/free-photo/nobody-podcast-production-studio-with-professional-microphone-headphones-streaming-interview-internet-radio-empty-desk-with-streaming-equipment-broadcast-live-show-social-media_482257-48491.jpg",
+  "https://img.freepik.com/free-photo/close-up-shot-focused-preview-image-professional-camera-with-podcast-host-african-american-guest-enjoying-conversation-blurry-background-professional-recording-equipment-home-studio_482257-74318.jpg",
+  "https://img.freepik.com/free-photo/portrait-online-radio-host-smiling-confident-camera-while-broadcasting-live-using-professional-equipment-recording-studio-african-american-podcaster-sitting-desk-with-boom-arm-microphone_482257-51216.jpg",
+  "https://img.freepik.com/free-photo/flat-lay-composition-with-microphone-podcasts-black-studio-headphones-yellow-background-with-coffee-learning-online-education-concept_501050-1073.jpg",
+  "https://img.freepik.com/free-photo/female-host-communicating-microphone-woman-radio-studio_1157-47587.jpg",
+  "https://img.freepik.com/free-photo/professional-microphone-sound-recording-macro-photography_169016-23351.jpg",
+] as const;
 
 function seedNum(s: string) {
   let h = 2166136261;
@@ -11,6 +21,12 @@ function seedNum(s: string) {
   return (h >>> 0) / 4294967295;
 }
 
+function stockImageFor(seed: string) {
+  if (!/^(pod-|ep-|news-|live-)/.test(seed)) return undefined;
+  const index = Math.floor(seedNum(`${seed}-stock`) * PODCAST_STOCK_IMAGES.length) % PODCAST_STOCK_IMAGES.length;
+  return PODCAST_STOCK_IMAGES[index];
+}
+
 const RATIO: Record<string, string> = {
   "16/9": "56.25%",
   "1/1": "100%",
@@ -19,8 +35,9 @@ const RATIO: Record<string, string> = {
 };
 
 /**
- * Procedural cover art. Renders instantly, ships no bytes, reserves its own
- * space (no CLS) and is replaced automatically when `src` is supplied.
+ * Artwork renderer. Explicit image URLs win; seeded podcast, episode, news and
+ * live artwork uses curated Freepik photography, with procedural art retained
+ * as an automatic fallback if a remote asset is unavailable.
  */
 export function Artwork({
   artwork,
@@ -34,6 +51,9 @@ export function Artwork({
   label?: string;
 }) {
   const ratio = RATIO[artwork.ratio ?? "16/9"];
+  const externalSrc = artwork.src ?? stockImageFor(artwork.seed);
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  const showImage = Boolean(externalSrc && failedSrc !== externalSrc);
   const art = useMemo(() => {
     const a = seedNum(artwork.seed);
     const b = seedNum(artwork.seed + "b");
@@ -69,13 +89,14 @@ export function Artwork({
       role="img"
       aria-label={artwork.alt}
     >
-      {artwork.src ? (
+      {showImage && externalSrc ? (
         <img
-          src={artwork.src}
+          src={externalSrc}
           alt={artwork.alt}
           loading={priority ? "eager" : "lazy"}
           decoding={priority ? "sync" : "async"}
           fetchPriority={priority ? "high" : "auto"}
+          onError={() => setFailedSrc(externalSrc)}
           className="absolute inset-0 h-full w-full object-cover"
         />
       ) : (
