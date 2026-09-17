@@ -25,6 +25,8 @@ import { YouTubeFeedProvider } from "@/components/youtube/YouTubeFeedProvider";
 import { YouTubePlayerProvider } from "@/components/youtube/YouTubePlayerProvider";
 import { getYouTubeFeed } from "@/lib/youtube.functions";
 
+const FAVICON_IMAGE = "https://img.magnific.com/free-photo/businesswoman-executive-professional-success-concept_53876-137644.jpg?semt=ais_hybrid&w=740&q=80";
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-[70vh] items-center justify-center px-4">
@@ -98,7 +100,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter+Tight:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: FAVICON_IMAGE, type: "image/jpeg" },
     ],
     scripts: [
       {
