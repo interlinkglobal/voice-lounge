@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bookmark, Clock, Crown, MoreHorizontal, Radio } from "lucide-react";
+import { Bookmark, Clock, Crown, MoreHorizontal, Radio, Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { Artwork } from "./Artwork";
@@ -99,19 +99,29 @@ export function MediaCard({
   const youtubeVideo = useYouTubeVideoForKey(item.id);
   const onOpen = () => track("card_click", { id: item.id, kind: item.kind });
 
-  // Once the official channel is connected, every video surface uses the real
-  // YouTube upload data and the same visual language as /youtube. The seeded
-  // card remains the fallback while environment variables are absent or the
-  // feed is temporarily unavailable.
-  if (item.kind === "video" && youtubeVideo) {
+  // Video surfaces never fall back to seeded media. They either render a
+  // real upload from the configured Voice Lounge YouTube feed or a neutral
+  // connection state until the feed is available.
+  if (item.kind === "video") {
+    if (youtubeVideo) {
+      return (
+        <YouTubeVideoCard
+          video={youtubeVideo}
+          priority={priority}
+          compact={variant === "compact" || variant === "micro"}
+          featured={variant === "featured"}
+          className={cn(variant === "featured" ? "w-full" : WIDTH[variant], className)}
+        />
+      );
+    }
     return (
-      <YouTubeVideoCard
-        video={youtubeVideo}
-        priority={priority}
-        compact={variant === "compact" || variant === "micro"}
-        featured={variant === "featured"}
-        className={cn(variant === "featured" ? "w-full" : WIDTH[variant], className)}
-      />
+      <article className={cn("hyper-glass grid min-h-32 place-items-center rounded-2xl border border-hairline p-5 text-center", WIDTH[variant], className)}>
+        <div>
+          <Youtube className="mx-auto size-6 text-[var(--green)]" aria-hidden="true" />
+          <p className="mt-2 text-sm font-semibold">YouTube video unavailable</p>
+          <p className="mt-1 text-xs text-muted-foreground">This video surface only renders official channel uploads.</p>
+        </div>
+      </article>
     );
   }
 

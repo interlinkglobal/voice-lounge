@@ -27,8 +27,8 @@ export function WatchButton({
   const youtubeVideo = useYouTubeVideoForKey(targetId);
   const youtubePlayer = useYouTubePlayer();
   const episode = episodes.find((x) => x.id === targetId) ?? episodes.find((x) => x.podcastId === targetId) ?? episodes[0];
-  const playsOnYouTube = episode?.kind === "video" && Boolean(youtubeVideo);
-  const isCurrent = !playsOnYouTube && current?.id === targetId;
+  const isVideoEpisode = episode?.kind === "video";
+  const isCurrent = !isVideoEpisode && current?.id === targetId;
 
   const sizes: Record<string, string> = {
     xs: "h-7 gap-1 px-2 text-[0.68rem]",
@@ -43,8 +43,8 @@ export function WatchButton({
     e.stopPropagation();
     track("watch_click", { id: targetId });
 
-    if (playsOnYouTube && youtubeVideo) {
-      youtubePlayer.open(youtubeVideo);
+    if (isVideoEpisode) {
+      if (youtubeVideo) youtubePlayer.open(youtubeVideo);
       return;
     }
 
@@ -54,7 +54,7 @@ export function WatchButton({
     }
 
     const upNext = episodes
-      .filter((x) => x.podcastId === episode.podcastId && x.id !== episode.id)
+      .filter((x) => x.kind === "audio" && x.podcastId === episode.podcastId && x.id !== episode.id)
       .slice(0, 6)
       .map(trackFromEpisode);
     play(trackFromEpisode(episode), upNext);

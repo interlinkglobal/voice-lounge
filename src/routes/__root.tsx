@@ -153,10 +153,10 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <PwaLifecycle />
       <YouTubeFeedProvider feed={youtubeFeed}>
-        <YouTubePlayerProvider feed={youtubeFeed}>
-          <ThemeProvider>
-            <LibraryProvider>
-              <PlayerProvider>
+        <ThemeProvider>
+          <LibraryProvider>
+            <PlayerProvider>
+              <YouTubePlayerProvider feed={youtubeFeed}>
                 <Header />
                 <main id="main" className="min-h-[60vh] pb-8">
                   <div key={pathname} className="vl-page-enter">
@@ -167,10 +167,10 @@ function RootComponent() {
                 <PlayerDock />
                 <CookieBar />
                 <Toaster />
-              </PlayerProvider>
-            </LibraryProvider>
-          </ThemeProvider>
-        </YouTubePlayerProvider>
+              </YouTubePlayerProvider>
+            </PlayerProvider>
+          </LibraryProvider>
+        </ThemeProvider>
       </YouTubeFeedProvider>
     </QueryClientProvider>
   );

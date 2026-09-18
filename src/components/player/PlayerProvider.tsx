@@ -51,6 +51,7 @@ interface PlayerCtx {
   play: (t: PlayerTrack, queue?: PlayerTrack[]) => void;
   playById: (episodeId: string) => void;
   toggle: () => void;
+  pause: () => void;
   seek: (s: number) => void;
   skip: (delta: number) => void;
   next: () => void;
@@ -96,13 +97,18 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       };
       if (typeof s.volume === "number") setVolumeState(s.volume);
       if (typeof s.rate === "number") setRateState(s.rate);
-      const ep = episodes.find((e) => e.id === s.trackId);
+      const ep = episodes.find((e) => e.id === s.trackId && e.kind === "audio");
       if (ep) {
         setCurrent(trackFromEpisode(ep));
         setTime(s.time ?? 0);
       }
       if (s.queueIds?.length) {
-        setQueue(s.queueIds.map((id) => episodes.find((e) => e.id === id)).filter(Boolean).map((e) => trackFromEpisode(e!)));
+        setQueue(
+          s.queueIds
+            .map((id) => episodes.find((e) => e.id === id && e.kind === "audio"))
+            .filter(Boolean)
+            .map((e) => trackFromEpisode(e!)),
+        );
       }
     } catch {
       /* ignore */
@@ -130,14 +136,21 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   }, [volume, muted, rate, current]);
 
   const play = useCallback((t: PlayerTrack, nextQueue?: PlayerTrack[]) => {
+    if (t.kind === "video") {
+      mediaRef.current?.pause();
+      setPlaying(false);
+      setLoading(false);
+      setError("Video playback is handled by the official Voice Lounge YouTube player.");
+      return;
+    }
     setError(null);
     setLoading(true);
     milestones.current = new Set();
     setCurrent(t);
     setTime(0);
-    if (nextQueue) setQueue(nextQueue.filter((x) => x.id !== t.id));
+    if (nextQueue) setQueue(nextQueue.filter((x) => x.id !== t.id && x.kind === "audio"));
     setPlaying(true);
-    track(t.kind === "video" ? "video_play" : "play", { id: t.id, title: t.title });
+    track("play", { id: t.id, title: t.title });
   }, []);
 
   const playById = useCallback(
@@ -171,6 +184,12 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     });
   }, [current]);
 
+  const pause = useCallback(() => {
+    mediaRef.current?.pause();
+    setPlaying(false);
+    setLoading(false);
+  }, []);
+
   const seek = useCallback((s: number) => {
     const el = mediaRef.current;
     if (el) el.currentTime = s;
@@ -201,9 +220,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       return;
     }
     if (!current) return;
-    const idx = episodes.findIndex((e) => e.id === current.id);
-    const p = episodes[(idx - 1 + episodes.length) % episodes.length];
-    play(trackFromEpisode(p));
+    const audioEpisodes = episodes.filter((e) => e.kind === "audio");
+    const idx = audioEpisodes.findIndex((e) => e.id === current.id);
+    const p = audioEpisodes[(idx - 1 + audioEpisodes.length) % audioEpisodes.length];
+    if (p) play(trackFromEpisode(p));
   }, [current, play]);
 
   const onTimeUpdate = useCallback(() => {
@@ -238,6 +258,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       play,
       playById,
       toggle,
+      pause,
       seek,
       skip,
       next,
@@ -246,7 +267,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       toggleMute: () => setMuted((m) => !m),
       setRate: (r) => setRateState(r),
       setExpanded,
-      enqueue: (t) => setQueue((qq) => (qq.some((x) => x.id === t.id) ? qq : [...qq, t])),
+      enqueue: (t) => {
+        if (t.kind === "video") return;
+        setQueue((qq) => (qq.some((x) => x.id === t.id) ? qq : [...qq, t]));
+      },
       attachVideo: (el) => {
         mediaRef.current = el;
       },
@@ -267,6 +291,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       play,
       playById,
       toggle,
+      pause,
       seek,
       skip,
       next,

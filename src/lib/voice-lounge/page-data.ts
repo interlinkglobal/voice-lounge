@@ -59,6 +59,7 @@ export function pageCards(page: PageKey, title: string, index: number, query = "
 
   if (t.includes("creator spotlight")) return creatorCardsWithPortraits(0);
   if (page === "watch" && t.includes("creator diaries")) return creatorCardsWithPortraits(3);
+  if (page === "watch") return q.videoEpisodes(10).map((item) => episodeCard(item));
 
   if (page === "creators" || t.includes("creator") || t.includes("host") || t.includes("voices") || t.includes("contributors")) {
     return creators.slice(index % 7, (index % 7) + 10).map((item) => creatorCard(item));

@@ -5,6 +5,7 @@ import { Artwork } from "@/components/media/Artwork";
 import { WatchButton } from "@/components/media/WatchButton";
 import { Section } from "@/components/sections/SectionRenderer";
 import { useLibrary } from "@/components/system/library";
+import { useYouTubeVideoForKey } from "@/components/youtube/YouTubeFeedProvider";
 import {
   creatorCard,
   episodeCard,
@@ -187,11 +188,16 @@ function CreatorAction({ id, name }: { id: string; name: string }) {
 
 export function DetailPage({ kind, slug }: { kind: DetailKind; slug: string }) {
   const model = resolveDetail(kind, slug);
+  const youtubeVideo = useYouTubeVideoForKey(model?.id ?? slug);
   const { isSaved, toggleSave } = useLibrary();
   const [shareState, setShareState] = useState<"idle" | "shared" | "copied">("idle");
   if (!model) return <NotFoundDetail />;
   const saved = isSaved(model.id);
   const portrait = kind === "podcast" || kind === "creator";
+  const heroArtwork =
+    kind === "episode" && model.eyebrow === "Video episode" && youtubeVideo
+      ? { ...model.artwork, src: youtubeVideo.thumbnail, alt: youtubeVideo.title, ratio: "16/9" as const }
+      : model.artwork;
 
   const shareCurrent = async () => {
     if (typeof navigator !== "undefined" && navigator.share) {
@@ -232,7 +238,7 @@ export function DetailPage({ kind, slug }: { kind: DetailKind; slug: string }) {
             </div>
             {model.live && <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--live)] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-white"><Radio className="size-3.5" aria-hidden="true" /> On air now</div>}
           </div>
-          <div className={`mx-auto w-full ${portrait ? "max-w-sm" : "max-w-xl"}`}><div className="card-lift overflow-hidden rounded-[2rem] border border-hairline bg-card shadow-lift"><Artwork artwork={model.artwork} label={model.title} priority /></div></div>
+          <div className={`mx-auto w-full ${portrait ? "max-w-sm" : "max-w-xl"}`}><div className="card-lift overflow-hidden rounded-[2rem] border border-hairline bg-card shadow-lift"><Artwork artwork={heroArtwork} label={model.title} priority /></div></div>
         </div>
       </section>
 
