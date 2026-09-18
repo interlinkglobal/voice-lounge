@@ -31,12 +31,6 @@ const HERO_MEMBERSHIP_CARDS = [
     href: "/watch",
   },
   {
-    id: "emihle-s-special-guest-host",
-    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789549137/card_1_2_o49klz.png",
-    alt: "The Voice Lounge premium special guest host card for Emihle S.",
-    href: "/shows",
-  },
-  {
     id: "sihle-p-premium-member",
     src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789548213/card_3_lj0ghk.png",
     alt: "The Voice Lounge premium member card for Sihle P.",
