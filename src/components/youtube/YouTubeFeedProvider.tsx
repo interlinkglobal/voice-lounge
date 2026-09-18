@@ -21,6 +21,7 @@ export function useYouTubeVideoForKey(key: string): YouTubeFeedVideo | null {
   const feed = useYouTubeFeed();
   return useMemo(() => {
     if (!feed || feed.status !== "ready" || feed.videos.length === 0) return null;
-    return feed.videos[hash(key) % feed.videos.length] ?? null;
+    const exact = feed.videos.find((video) => video.id === key);
+    return exact ?? feed.videos[hash(key) % feed.videos.length] ?? null;
   }, [feed, key]);
 }
