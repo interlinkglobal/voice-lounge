@@ -4,6 +4,7 @@ import { Crown, Menu, Monitor, Moon, Search, Sun, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 import { useTheme, type ThemeChoice } from "@/components/system/theme";
+import { InstallPwaButton } from "@/components/system/InstallPwaButton";
 
 export const PRIMARY_NAV = [
   { to: "/", label: "Home" },
@@ -174,6 +175,7 @@ export function Header() {
             <div className="hidden md:block">
               <ThemeToggle />
             </div>
+            <InstallPwaButton className="hidden 2xl:inline-flex" />
             <Link
               to="/premium"
               preload="intent"
@@ -278,10 +280,13 @@ export function Header() {
                 )}
               </ul>
             </nav>
+            <div className="mt-5">
+              <InstallPwaButton fullWidth />
+            </div>
             <Link
               to="/premium"
               onClick={() => setOpen(false)}
-              className="press mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-5 py-3 font-semibold text-[oklch(0.16_0.02_90)]"
+              className="press mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-5 py-3 font-semibold text-[oklch(0.16_0.02_90)]"
             >
               <Crown className="size-4" aria-hidden="true" /> Explore Premium
             </Link>
