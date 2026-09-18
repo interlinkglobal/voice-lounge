@@ -1,10 +1,11 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Crown, Menu, Monitor, Moon, Search, Sun, User, X } from "lucide-react";
+import { Crown, LogIn, LogOut, Menu, Monitor, Moon, Search, Sun, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
 import { useTheme, type ThemeChoice } from "@/components/system/theme";
 import { InstallPwaButton } from "@/components/system/InstallPwaButton";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export const PRIMARY_NAV = [
   { to: "/", label: "Home" },
@@ -32,11 +33,7 @@ function ThemeToggle() {
     { v: "system", icon: Monitor, label: "System" },
   ];
   return (
-    <div
-      role="radiogroup"
-      aria-label="Colour theme"
-      className="flex items-center gap-0.5 rounded-full border border-hairline bg-surface-2 p-0.5"
-    >
+    <div role="radiogroup" aria-label="Colour theme" className="flex items-center gap-0.5 rounded-full border border-hairline bg-surface-2 p-0.5">
       {options.map(({ v, icon: Icon, label }) => (
         <button
           key={v}
@@ -56,7 +53,39 @@ function ThemeToggle() {
   );
 }
 
+function AccountControl() {
+  const user = useAuth();
+
+  if (!user) {
+    return (
+      <a
+        href="/auth/google?returnTo=%2Faccount"
+        aria-label="Sign in with Google"
+        className="press hidden min-h-10 items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 text-sm font-semibold sm:inline-flex"
+      >
+        <LogIn className="size-4" aria-hidden="true" />
+        <span className="hidden 2xl:inline">Sign in</span>
+      </a>
+    );
+  }
+
+  return (
+    <Link
+      to="/account"
+      aria-label={`Account for ${user.name}`}
+      className="press hidden size-10 place-items-center overflow-hidden rounded-full border border-[color-mix(in_oklab,var(--green)_45%,transparent)] bg-surface-2 sm:grid"
+    >
+      {user.picture ? (
+        <img src={user.picture} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
+      ) : (
+        <User className="size-4" aria-hidden="true" />
+      )}
+    </Link>
+  );
+}
+
 export function Header() {
+  const user = useAuth();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [term, setTerm] = useState("");
@@ -79,7 +108,7 @@ export function Header() {
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setOpen(false);
-    navigate({ to: "/search", search: { q: term } });
+    navigate({ to: "/search", search: { q: term, type: undefined } });
   }
 
   return (
@@ -99,12 +128,8 @@ export function Header() {
       >
         <div className="shell grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 py-2.5 2xl:py-4">
           <Link to="/" aria-label="The Voice Lounge home" className="press shrink-0">
-            <span className="hidden sm:block">
-              <Logo />
-            </span>
-            <span className="sm:hidden">
-              <Logo compact />
-            </span>
+            <span className="hidden sm:block"><Logo /></span>
+            <span className="sm:hidden"><Logo compact /></span>
           </Link>
 
           <nav aria-label="Primary" className="hidden min-w-0 justify-center xl:flex">
@@ -124,23 +149,13 @@ export function Header() {
                 </li>
               ))}
               <li className="group relative">
-                <button
-                  type="button"
-                  className="rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground 2xl:text-base"
-                  aria-haspopup="true"
-                >
+                <button type="button" className="rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground 2xl:text-base" aria-haspopup="true">
                   More
                 </button>
                 <ul className="invisible absolute left-0 top-full z-10 w-56 rounded-2xl border border-hairline bg-popover p-2 opacity-0 shadow-lift transition-[opacity,transform] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                   {SECONDARY_NAV.map((n) => (
                     <li key={n.to}>
-                      <Link
-                        to={n.to}
-                        preload="intent"
-                        className="block rounded-xl px-3 py-2 text-sm hover:bg-surface-2"
-                      >
-                        {n.label}
-                      </Link>
+                      <Link to={n.to} preload="intent" className="block rounded-xl px-3 py-2 text-sm hover:bg-surface-2">{n.label}</Link>
                     </li>
                   ))}
                 </ul>
@@ -151,30 +166,22 @@ export function Header() {
 
           <div className="flex shrink-0 items-center gap-1.5">
             <form onSubmit={submit} role="search" className="hidden items-center lg:flex">
-              <label htmlFor="global-search" className="sr-only">
-                Search The Voice Lounge
-              </label>
+              <label htmlFor="global-search" className="sr-only">Search The Voice Lounge</label>
               <div className="flex items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 py-1.5">
                 <Search className="size-4 text-muted-foreground" aria-hidden="true" />
                 <input
                   id="global-search"
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
-                  placeholder="Shows, episodes, people"
+                  placeholder="Titles, descriptions, people"
                   className="w-40 bg-transparent text-sm outline-none placeholder:text-muted-foreground xl:w-52"
                 />
               </div>
             </form>
-            <Link
-              to="/search"
-              aria-label="Search"
-              className="press grid size-10 place-items-center rounded-full text-muted-foreground hover:text-foreground lg:hidden"
-            >
+            <Link to="/search" aria-label="Search" className="press grid size-10 place-items-center rounded-full text-muted-foreground hover:text-foreground lg:hidden">
               <Search className="size-5" aria-hidden="true" />
             </Link>
-            <div className="hidden md:block">
-              <ThemeToggle />
-            </div>
+            <div className="hidden md:block"><ThemeToggle /></div>
             <InstallPwaButton className="hidden 2xl:inline-flex" />
             <Link
               to="/premium"
@@ -184,13 +191,7 @@ export function Header() {
               <Crown className="size-4" aria-hidden="true" />
               Premium
             </Link>
-            <Link
-              to="/account"
-              aria-label="Your account"
-              className="press hidden size-10 place-items-center rounded-full border border-hairline bg-surface-2 sm:grid"
-            >
-              <User className="size-4" aria-hidden="true" />
-            </Link>
+            <AccountControl />
             <button
               type="button"
               onClick={() => setOpen(true)}
@@ -206,11 +207,7 @@ export function Header() {
 
       {open && (
         <div className="fixed inset-0 z-[var(--z-overlay)] xl:hidden">
-          <button
-            aria-label="Close menu"
-            className="absolute inset-0 bg-black/65 backdrop-blur-sm"
-            onClick={() => setOpen(false)}
-          />
+          <button aria-label="Close menu" className="absolute inset-0 bg-black/65 backdrop-blur-sm" onClick={() => setOpen(false)} />
           <div
             role="dialog"
             aria-modal="true"
@@ -220,30 +217,25 @@ export function Header() {
           >
             <div className="flex items-center justify-between">
               <Logo />
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close menu"
-                className="press grid size-10 place-items-center rounded-full border border-hairline"
-              >
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close menu" className="press grid size-10 place-items-center rounded-full border border-hairline">
                 <X className="size-5" aria-hidden="true" />
               </button>
             </div>
+
             <form onSubmit={submit} role="search" className="mt-4">
-              <label htmlFor="menu-search" className="sr-only">
-                Search
-              </label>
+              <label htmlFor="menu-search" className="sr-only">Search</label>
               <div className="flex items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 py-2.5">
                 <Search className="size-4 text-muted-foreground" aria-hidden="true" />
                 <input
                   id="menu-search"
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
-                  placeholder="Search everything"
+                  placeholder="Search titles and descriptions"
                   className="w-full bg-transparent text-sm outline-none"
                 />
               </div>
             </form>
+
             <nav aria-label="Mobile" className="mt-5">
               <p className="px-1 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">Listen</p>
               <ul className="mt-2 grid gap-0.5">
@@ -261,28 +253,46 @@ export function Header() {
                   </li>
                 ))}
               </ul>
-              <p className="mt-5 px-1 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                Explore
-              </p>
+
+              <p className="mt-5 px-1 text-[0.68rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">Explore</p>
               <ul className="mt-2 grid gap-0.5">
-                {[...SECONDARY_NAV, { to: "/search", label: "Search" }, { to: "/account", label: "Account" }].map(
-                  (n) => (
-                    <li key={n.to}>
-                      <Link
-                        to={n.to}
-                        onClick={() => setOpen(false)}
-                        className="block rounded-xl px-3 py-3 text-[0.95rem] font-medium"
-                      >
-                        {n.label}
-                      </Link>
-                    </li>
-                  ),
-                )}
+                {[...SECONDARY_NAV, { to: "/search", label: "Search" }, { to: "/account", label: "Account" }].map((n) => (
+                  <li key={n.to}>
+                    <Link to={n.to} onClick={() => setOpen(false)} className="block rounded-xl px-3 py-3 text-[0.95rem] font-medium">
+                      {n.label}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </nav>
-            <div className="mt-5">
-              <InstallPwaButton fullWidth />
+
+            <div className="mt-5 rounded-2xl border border-hairline bg-surface-2 p-4">
+              {user ? (
+                <div className="flex items-center gap-3">
+                  {user.picture ? (
+                    <img src={user.picture} alt="" referrerPolicy="no-referrer" className="size-11 rounded-full object-cover" />
+                  ) : (
+                    <div className="grid size-11 place-items-center rounded-full border border-hairline"><User className="size-5" /></div>
+                  )}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold">{user.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                  <form action="/auth/logout" method="post">
+                    <button type="submit" aria-label="Sign out" className="press grid size-9 place-items-center rounded-full border border-hairline">
+                      <LogOut className="size-4" aria-hidden="true" />
+                    </button>
+                  </form>
+                </div>
+              ) : (
+                <a href="/auth/google?returnTo=%2Faccount" onClick={() => setOpen(false)} className="press flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--green-action)] px-4 font-semibold text-white">
+                  <LogIn className="size-4" aria-hidden="true" />
+                  Continue with Google
+                </a>
+              )}
             </div>
+
+            <div className="mt-3"><InstallPwaButton fullWidth /></div>
             <Link
               to="/premium"
               onClick={() => setOpen(false)}
@@ -290,9 +300,7 @@ export function Header() {
             >
               <Crown className="size-4" aria-hidden="true" /> Explore Premium
             </Link>
-            <div className="mt-5 flex justify-center pb-6">
-              <ThemeToggle />
-            </div>
+            <div className="mt-5 flex justify-center pb-6"><ThemeToggle /></div>
           </div>
         </div>
       )}
