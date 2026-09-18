@@ -24,8 +24,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { YouTubeFeedProvider } from "@/components/youtube/YouTubeFeedProvider";
 import { YouTubePlayerProvider } from "@/components/youtube/YouTubePlayerProvider";
 import { getYouTubeFeed } from "@/lib/youtube.functions";
-
-const FAVICON_IMAGE = "https://img.magnific.com/free-photo/businesswoman-executive-professional-success-concept_53876-137644.jpg?semt=ais_hybrid&w=740&q=80";
+import { PwaLifecycle } from "@/components/system/PwaLifecycle";
 
 function NotFoundComponent() {
   return (
@@ -86,6 +85,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "Stream South African podcasts, watch video episodes, follow creators and read entertainment news on The Voice Lounge.",
       },
       { name: "theme-color", content: "#050706" },
+      { name: "application-name", content: "The Voice Lounge" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-title", content: "Voice Lounge" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { property: "og:site_name", content: "The Voice Lounge" },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "en_ZA" },
@@ -100,7 +104,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter+Tight:wght@400;500;600;700&display=swap",
       },
-      { rel: "icon", href: FAVICON_IMAGE, type: "image/jpeg" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "icon", href: "/icon-32x32.png", type: "image/png", sizes: "32x32" },
+      { rel: "icon", href: "/icon-16x16.png", type: "image/png", sizes: "16x16" },
+      { rel: "apple-touch-icon", href: "/icon-180x180.png", sizes: "180x180" },
     ],
     scripts: [
       {
@@ -144,6 +151,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <PwaLifecycle />
       <YouTubeFeedProvider feed={youtubeFeed}>
         <YouTubePlayerProvider feed={youtubeFeed}>
           <ThemeProvider>
