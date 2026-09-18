@@ -4,7 +4,6 @@ import { ArrowRight, Crown, Headphones, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
 import { useLibrary } from "@/components/system/library";
-import { PremiumCeremony } from "@/components/premium/PremiumCeremony";
 import { demoProfile, episodes, podcasts } from "@/lib/content/catalog";
 import { pageCards, chipsFor } from "@/lib/voice-lounge/page-data";
 import { PAGE_INFO, SECTION_TITLES, routeName, type PageKey } from "@/lib/voice-lounge/routes";
@@ -179,7 +178,6 @@ export function PlatformPage({ page, query = "" }: { page: PageKey; query?: stri
   return (
     <div className={cn("pb-[var(--section-gap)]", page === "premium" && "selection:bg-[color-mix(in_oklab,var(--gold)_35%,transparent)]")} data-primary-route={page} data-section-count="20">
       <ExtremeViewportStyles />
-      {page === "premium" && <PremiumCeremony />}
       <PlatformHero page={page} query={query} />
       {page === "account" && <AccountIntro />}
       {sections.map((spec, index) => <Section key={spec.id} spec={spec} index={index + 1} />)}
