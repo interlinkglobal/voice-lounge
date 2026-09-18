@@ -278,3 +278,64 @@ header button {
     display: none;
   }
 }
+
+
+/* Editable Voice Lounge membership card: perimeter and metallic glints. */
+.member-card-perimeter {
+  padding: 2px;
+  background:
+    linear-gradient(
+      112deg,
+      #8d681c 0%,
+      #e6ba55 18%,
+      #fff0a9 27%,
+      #a7771e 37%,
+      #e6ba55 56%,
+      #fff3bb 67%,
+      #8d681c 79%,
+      #e6ba55 100%
+    );
+  background-size: 260% 100%;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 4px color-mix(in oklab, var(--member-metal) 52%, transparent));
+  animation: member-card-border-shine 4.8s linear infinite;
+}
+
+.member-card-metal-line {
+  filter: drop-shadow(0 0 3px color-mix(in oklab, var(--member-metal) 72%, transparent));
+  animation: member-card-metal-pulse 4.6s ease-in-out infinite;
+}
+
+.member-card-accent-line {
+  filter: drop-shadow(0 0 4px color-mix(in oklab, var(--member-accent) 76%, transparent));
+}
+
+.member-card-pill {
+  box-shadow:
+    0 0 12px color-mix(in oklab, var(--member-metal) 25%, transparent),
+    inset 0 0 14px color-mix(in oklab, var(--member-metal) 8%, transparent);
+}
+
+@keyframes member-card-border-shine {
+  0% { background-position: 150% 50%; }
+  100% { background-position: -110% 50%; }
+}
+
+@keyframes member-card-metal-pulse {
+  0%, 72%, 100% { filter: drop-shadow(0 0 2px color-mix(in oklab, var(--member-metal) 44%, transparent)); }
+  82% { filter: drop-shadow(0 0 7px color-mix(in oklab, var(--member-metal) 92%, transparent)) brightness(1.18); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-card-perimeter,
+  .member-card-metal-line {
+    animation: none !important;
+  }
+}
