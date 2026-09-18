@@ -4,6 +4,7 @@ import { ArrowRight, Crown, Headphones, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
 import { useLibrary } from "@/components/system/library";
+import { EditableMembershipCard } from "@/components/premium/EditableMembershipCard";
 import { demoProfile, episodes, podcasts } from "@/lib/content/catalog";
 import { pageCards, chipsFor } from "@/lib/voice-lounge/page-data";
 import { PAGE_INFO, SECTION_TITLES, routeName, type PageKey } from "@/lib/voice-lounge/routes";
@@ -25,15 +26,22 @@ export type { PageKey } from "@/lib/voice-lounge/routes";
 const HERO_MEMBERSHIP_CARDS = [
   {
     id: "casey-t-special-viewer",
+    kind: "image",
     src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789548231/card_2_wcrvmy.png",
     alt: "The Voice Lounge premium special viewer card for Casey T.",
     href: "/watch",
   },
   {
-    id: "sihle-p-premium-member",
-    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789548213/card_3_lj0ghk.png",
-    alt: "The Voice Lounge premium member card for Sihle P.",
+    id: "sihle-p-editable-premium-member",
+    kind: "component",
+    alt: "Editable Voice Lounge premium member card for Sihle P.",
     href: "/premium",
+    change: {
+      name: "Sihle P.",
+      color: "#18e97a",
+      date: "18 SEP 2026",
+      plan: "PREMIUM MEMBER",
+    },
   },
 ] as const;
 
@@ -82,6 +90,7 @@ function HomeMembershipCards() {
   useEffect(() => {
     // Warm the CDN cache for the next flips without bundling any card asset.
     HERO_MEMBERSHIP_CARDS.forEach((card) => {
+      if (card.kind !== "image") return;
       const image = new Image();
       image.src = card.src;
     });
@@ -105,15 +114,22 @@ function HomeMembershipCards() {
           aria-label={activeCard.alt}
           className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[1.75rem] [transform-style:preserve-3d] md:max-w-[48rem] md:rounded-[2rem]"
         >
-          <img
-            src={activeCard.src}
-            alt={activeCard.alt}
-            loading="eager"
-            decoding="async"
-            fetchPriority="high"
-            draggable={false}
-            className="vl-hero-card-flip block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.5)]"
-          />
+          {activeCard.kind === "image" ? (
+            <img
+              src={activeCard.src}
+              alt={activeCard.alt}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              draggable={false}
+              className="vl-hero-card-flip block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.5)]"
+            />
+          ) : (
+            <EditableMembershipCard
+              change={activeCard.change}
+              className="vl-hero-card-flip block w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.5)]"
+            />
+          )}
         </Link>
       </div>
     </div>
