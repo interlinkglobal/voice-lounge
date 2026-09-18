@@ -46,7 +46,7 @@ function SoundMark() {
 
 function SouthAfricaSeal() {
   return (
-    <div className="relative aspect-square w-[18.4%] rounded-full border-[0.45vw] border-[var(--member-metal)] bg-[radial-gradient(circle_at_45%_40%,#2b2419,#080909_68%)] shadow-[0_0_18px_color-mix(in_oklab,var(--member-metal)_35%,transparent),inset_0_0_0_2px_#151515]">
+    <div className="relative aspect-square w-full rounded-full border-[0.32cqw] border-[var(--member-metal)] bg-[radial-gradient(circle_at_45%_38%,#3a2f1a_0%,#17130d_34%,#080909_72%)] shadow-[0_0_24px_color-mix(in_oklab,var(--member-metal)_42%,transparent),inset_0_0_0_1px_#161616,inset_0_0_20px_rgba(230,186,85,.08)]">
       <div className="absolute inset-[9%] rounded-full border border-[color-mix(in_oklab,var(--member-metal)_72%,transparent)]" />
       <span className="absolute left-1/2 top-[11%] -translate-x-1/2 whitespace-nowrap text-[clamp(.3rem,.7vw,.64rem)] font-semibold uppercase tracking-[0.22em] text-[var(--member-metal)]">
         South Africa
@@ -92,7 +92,7 @@ export function EditableMembershipCard({
   return (
     <article
       className={cn(
-        "relative aspect-[1672/941] w-full overflow-hidden rounded-[5.1%] border border-[color-mix(in_oklab,var(--member-metal)_80%,#fff)] bg-[#050908] text-[#f7f2e8] shadow-[0_26px_45px_rgba(0,0,0,.5),0_0_0_1px_rgba(230,186,85,.35),inset_0_0_34px_rgba(0,0,0,.75)]",
+        "relative aspect-[192/100] w-full overflow-hidden rounded-[4.8%] border border-[var(--member-metal)] bg-[#050908] text-[#f7f2e8] shadow-[0_26px_45px_rgba(0,0,0,.5),0_0_0_1px_rgba(230,186,85,.4),inset_0_0_0_2px_color-mix(in_oklab,var(--member-metal)_78%,#fff_8%),inset_0_0_34px_rgba(0,0,0,.75)]",
         className,
       )}
       style={{ ...style, containerType: "inline-size" }}
@@ -155,7 +155,7 @@ export function EditableMembershipCard({
         ))}
       </div>
 
-      <div className="absolute bottom-[12.3%] right-[8.2%] z-10">
+      <div className="absolute bottom-[6.8%] right-[6.3%] z-20 aspect-square w-[18.8%]">
         <SouthAfricaSeal />
       </div>
 
@@ -177,8 +177,9 @@ export function EditableMembershipCard({
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-[0.65%] rounded-[4.7%] border border-white/10" />
-      <div className="pointer-events-none absolute inset-x-[5%] top-0 h-[0.25%] bg-[linear-gradient(90deg,transparent,var(--member-accent),var(--member-metal),transparent)] opacity-80" />
+      <div className="pointer-events-none absolute inset-[0.55%] z-30 rounded-[4.45%] border border-white/10" />
+      <div className="pointer-events-none absolute inset-0 z-40 rounded-[inherit] shadow-[inset_0_0_0_2px_var(--member-metal)]" />
+      <div className="pointer-events-none absolute inset-x-[4.5%] top-[0.35%] z-40 h-[0.22%] bg-[linear-gradient(90deg,transparent,var(--member-accent),var(--member-metal),transparent)] opacity-85" />
     </article>
   );
 }
