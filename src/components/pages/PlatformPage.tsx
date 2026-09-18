@@ -4,6 +4,8 @@ import { ArrowRight, Crown, Headphones, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
 import { useLibrary } from "@/components/system/library";
+import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
+import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
 import { demoProfile, episodes, podcasts } from "@/lib/content/catalog";
 import { pageCards, chipsFor } from "@/lib/voice-lounge/page-data";
 import { PAGE_INFO, SECTION_TITLES, routeName, type PageKey } from "@/lib/voice-lounge/routes";
@@ -41,7 +43,7 @@ function slugify(value: string) {
   return value.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 62);
 }
 
-function makeSection(page: PageKey, title: string, index: number, query = ""): SectionSpec {
+function makeSection(page: PageKey, title: string, index: number, query = "", youtubeVideos: YouTubeFeedVideo[] = []): SectionSpec {
   const layout = layoutFor(page, title, index);
   const t = title.toLowerCase();
   const spec: SectionSpec = {
@@ -62,9 +64,9 @@ function makeSection(page: PageKey, title: string, index: number, query = ""): S
   else if (layout === "quote") spec.quote = { text: "Premium should not feel like more interface. It should feel like less friction.", who: "Voice Lounge Product Desk", role: "Experience principle" };
   else if (layout === "panel" || layout === "split") {
     spec.body = editorialBody(page, title);
-    if (layout === "split") spec.items = pageCards(page, title, index, query).slice(0, 4);
+    if (layout === "split") spec.items = pageCards(page, title, index, query, youtubeVideos).slice(0, 4);
   } else if (layout !== "cta") {
-    spec.items = pageCards(page, title, index, query);
+    spec.items = pageCards(page, title, index, query, youtubeVideos);
     spec.variant = variantFor(page, title);
     if (layout === "grid") spec.columns = 4;
   }
@@ -140,6 +142,9 @@ function HeroVisual({ page }: { page: PageKey }) {
 
 function PlatformHero({ page, query = "" }: { page: PageKey; query?: string }) {
   const info = PAGE_INFO[page];
+  const youtubeFeed = useYouTubeFeed();
+  const youtubeLed = page === "discover" || page === "shows" || page === "episodes" || page === "watch";
+  const youtubeReady = youtubeFeed?.status === "ready";
   const firstTitle = SECTION_TITLES[page][0];
   const premium = page === "premium";
   const live = page === "live";
@@ -156,7 +161,15 @@ function PlatformHero({ page, query = "" }: { page: PageKey; query?: string }) {
           ) : (
             <div className="mt-7 flex flex-wrap gap-2.5"><Link to={info.primary.to} preload="intent" className={cn("press inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-bold", premium ? "bg-[var(--gold)] text-black shadow-gold" : "bg-[var(--green-action)] text-white shadow-glow")}>{premium ? <Crown className="size-4" /> : <Headphones className="size-4" />}{info.primary.label}</Link><Link to={info.secondary.to} preload="intent" className="press hyper-glass inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-semibold">{info.secondary.label}<ArrowRight className="size-4" aria-hidden="true" /></Link></div>
           )}
-          <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-2 border-t border-hairline pt-5"><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Catalogue</dt><dd className="mt-1 font-display text-xl font-black">{podcasts.length} shows</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Episodes</dt><dd className="mt-1 font-display text-xl font-black">{episodes.length}+</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Languages</dt><dd className="mt-1 font-display text-xl font-black">6 ready</dd></div></dl>
+          {youtubeLed && youtubeReady ? (
+            <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-2 border-t border-hairline pt-5">
+              <div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Channel videos</dt><dd className="mt-1 font-display text-xl font-black">{youtubeFeed.totalResults}</dd></div>
+              <div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Source</dt><dd className="mt-1 font-display text-xl font-black">YouTube</dd></div>
+              <div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Playback</dt><dd className="mt-1 font-display text-xl font-black">In-site</dd></div>
+            </dl>
+          ) : (
+            <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-2 border-t border-hairline pt-5"><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Catalogue</dt><dd className="mt-1 font-display text-xl font-black">{podcasts.length} shows</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Episodes</dt><dd className="mt-1 font-display text-xl font-black">{episodes.length}+</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Languages</dt><dd className="mt-1 font-display text-xl font-black">6 ready</dd></div></dl>
+          )}
         </div>
         <HeroVisual page={page} />
       </div>
@@ -174,7 +187,9 @@ function AccountIntro() {
 }
 
 export function PlatformPage({ page, query = "" }: { page: PageKey; query?: string }) {
-  const sections = SECTION_TITLES[page].slice(1).map((title, offset) => makeSection(page, title, offset + 1, query));
+  const youtubeFeed = useYouTubeFeed();
+  const youtubeVideos = youtubeFeed?.status === "ready" ? youtubeFeed.videos : [];
+  const sections = SECTION_TITLES[page].slice(1).map((title, offset) => makeSection(page, title, offset + 1, query, youtubeVideos));
   return (
     <div className={cn("pb-[var(--section-gap)]", page === "premium" && "selection:bg-[color-mix(in_oklab,var(--gold)_35%,transparent)]")} data-primary-route={page} data-section-count="20">
       <ExtremeViewportStyles />
