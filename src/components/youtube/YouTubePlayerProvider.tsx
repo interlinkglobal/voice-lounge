@@ -1,6 +1,7 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useRouterState } from "@tanstack/react-router";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, ExternalLink, Play, X, Youtube } from "lucide-react";
+import { ChevronLeft, ChevronRight, ExternalLink, Maximize2, Play, X, Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { usePlayer } from "@/components/player/PlayerProvider";
@@ -25,6 +26,8 @@ export function YouTubePlayerProvider({
 }) {
   const videos = feed.status === "ready" ? feed.videos : [];
   const { pause: pauseLegacyPlayback } = usePlayer();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const iframeRef = useRef<HTMLIFrameElement>(null);
   const [currentId, setCurrentId] = useState<string | null>(null);
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: "start", containScroll: "trimSnaps" });
   const currentIndex = currentId ? videos.findIndex((video) => video.id === currentId) : -1;
@@ -37,6 +40,21 @@ export function YouTubePlayerProvider({
   }, [pauseLegacyPlayback]);
 
   const close = useCallback(() => setCurrentId(null), []);
+
+  const enterFullscreen = useCallback(async () => {
+    const frame = iframeRef.current;
+    if (!frame) return;
+    try {
+      if (frame.requestFullscreen) {
+        await frame.requestFullscreen();
+        return;
+      }
+      const webkitFrame = frame as HTMLIFrameElement & { webkitRequestFullscreen?: () => Promise<void> | void };
+      await webkitFrame.webkitRequestFullscreen?.();
+    } catch (error) {
+      console.warn("[youtube-player] fullscreen request failed", error);
+    }
+  }, []);
 
   const next = useCallback(() => {
     if (!videos.length) return;
@@ -59,6 +77,10 @@ export function YouTubePlayerProvider({
     track("video_play", { id: video.id, source: "youtube_prev" });
     emblaApi?.scrollTo(Math.max(0, index - 1));
   }, [currentIndex, emblaApi, pauseLegacyPlayback, videos]);
+
+  useEffect(() => {
+    setCurrentId(null);
+  }, [pathname]);
 
   useEffect(() => {
     if (!current) return;
@@ -106,6 +128,7 @@ export function YouTubePlayerProvider({
             <div className="relative shrink-0 border-b border-white/10 bg-black">
               <div className="aspect-video w-full">
                 <iframe
+                  ref={iframeRef}
                   key={current.id}
                   src={`${current.embedUrl}?autoplay=1&rel=0&playsinline=1&modestbranding=1`}
                   title={current.title}
@@ -115,14 +138,24 @@ export function YouTubePlayerProvider({
                   allowFullScreen
                 />
               </div>
-              <button
-                type="button"
-                onClick={close}
-                aria-label="Close video player"
-                className="press absolute right-3 top-3 z-10 grid size-11 place-items-center rounded-full border border-white/20 bg-black/70 text-white backdrop-blur-xl hover:bg-black/90"
-              >
-                <X className="size-5" aria-hidden="true" />
-              </button>
+              <div className="absolute right-3 top-3 z-10 flex gap-2">
+                <button
+                  type="button"
+                  onClick={enterFullscreen}
+                  aria-label="View video fullscreen"
+                  className="press grid size-11 place-items-center rounded-full border border-white/20 bg-black/70 text-white backdrop-blur-xl hover:bg-black/90"
+                >
+                  <Maximize2 className="size-5" aria-hidden="true" />
+                </button>
+                <button
+                  type="button"
+                  onClick={close}
+                  aria-label="Close video player"
+                  className="press grid size-11 place-items-center rounded-full border border-white/20 bg-black/70 text-white backdrop-blur-xl hover:bg-black/90"
+                >
+                  <X className="size-5" aria-hidden="true" />
+                </button>
+              </div>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto">
