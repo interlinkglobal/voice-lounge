@@ -40,8 +40,8 @@ const COLUMNS: Array<{ heading: string; links: Array<{ label: string; to: string
   {
     heading: "Legal",
     links: [
-      { label: "Privacy (POPIA)", to: "/about" },
-      { label: "Terms of use", to: "/about" },
+      { label: "Privacy (POPIA)", to: "/privacy-policy" },
+      { label: "Terms of service", to: "/terms-of-service" },
       { label: "Cookie settings", to: "/account" },
       { label: "Accessibility", to: "/about" },
       { label: "Data controls", to: "/account" },
