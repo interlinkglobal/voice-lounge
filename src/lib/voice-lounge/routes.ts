@@ -21,7 +21,7 @@ export const PAGE_INFO: Record<PageKey, {
   primary: { to: string; label: string };
   secondary: { to: string; label: string };
 }> = {
-  home: { title: "South Africa, on demand.", lede: "The front page of the voices shaping the culture.", primary: { to: "/watch", label: "Watch now" }, secondary: { to: "/discover", label: "Explore" } },
+  home: { title: "South Africa, on demand.", lede: "Sign in to The Voice Lounge for a customized experience", primary: { to: "/login", label: "Sign In" }, secondary: { to: "/youtube", label: "Watch Now" } },
   discover: { title: "Find your next obsession.", lede: "Recommendations across language, format, mood and province — built for curious listeners.", primary: { to: "/podcasts", label: "Browse podcasts" }, secondary: { to: "/categories", label: "Browse categories" } },
   podcasts: { title: "The South African podcast directory.", lede: "Originals, independents and breakout voices in one living catalogue.", primary: { to: "/episodes", label: "Start listening" }, secondary: { to: "/creators", label: "Meet creators" } },
   shows: { title: "Shows worth making time for.", lede: "Interview rooms, documentary series, panels and original formats from across the country.", primary: { to: "/watch", label: "Watch shows" }, secondary: { to: "/podcasts", label: "Browse podcasts" } },
@@ -40,7 +40,7 @@ export const PAGE_INFO: Record<PageKey, {
 
 export const SECTION_TITLES: Record<PageKey, readonly [string, ...string[]]> = {
   home: [
-    "Cinematic Hero",
+    "The Voice Lounge",
     "Trending Now",
     "Editor's Picks",
     "New This Week",
