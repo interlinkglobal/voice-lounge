@@ -103,6 +103,7 @@ export function EditableMembershipCard({
   const theme = CARD_THEMES[resolved.theme];
   const accent = change?.color ?? theme.accent;
   const memberIdIsEmail = resolved.memberId.includes("@");
+  const isVisitor = resolved.memberIdLabel === "VIEW NUMBER";
   const style = {
     "--member-accent": accent,
     "--member-metal": theme.metal,
@@ -124,7 +125,7 @@ export function EditableMembershipCard({
     >
       <div className="relative h-full w-full overflow-hidden rounded-[4.55%] bg-[#050908] shadow-[inset_0_0_34px_rgba(0,0,0,.76)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_13%_17%,color-mix(in_oklab,var(--member-accent)_34%,transparent),transparent_25%),radial-gradient(circle_at_58%_46%,color-mix(in_oklab,var(--member-accent)_14%,transparent),transparent_34%),linear-gradient(120deg,var(--member-bg-start)_0%,var(--member-bg-mid)_38%,var(--member-bg-end)_100%)]" />
-        <div className="absolute inset-0 opacity-[0.15] [background-image:radial-gradient(circle_at_center,white_0.55px,transparent_0.65px)] [background-size:3px_3px]" />
+        <div className="member-card-dots absolute inset-0 opacity-[0.15] [background-image:radial-gradient(circle_at_center,white_0.55px,transparent_0.65px)] [background-size:3px_3px]" />
 
         <div className="member-card-metal-line absolute -right-[3%] -top-[24%] h-[70%] w-[50%] rotate-[7deg] rounded-[0_0_0_78%] border-b-[0.34cqw] border-l-[0.34cqw] border-[var(--member-metal)] bg-[#090b0a]/94" />
         <div className="member-card-accent-line absolute -right-[2%] top-[33%] h-[28%] w-[55%] -rotate-[8deg] rounded-[70%_0_0_70%] border-t-[0.3cqw] border-[var(--member-accent)] bg-[linear-gradient(180deg,color-mix(in_oklab,var(--member-accent)_14%,transparent),transparent)]" />
@@ -139,7 +140,7 @@ export function EditableMembershipCard({
             height={256}
             loading="eager"
             decoding="async"
-            className="w-[15.8%] shrink-0 object-contain drop-shadow-[0_0_14px_color-mix(in_oklab,var(--member-metal)_58%,transparent)]"
+            className="member-card-emblem w-[15.8%] shrink-0 object-contain drop-shadow-[0_0_14px_color-mix(in_oklab,var(--member-metal)_58%,transparent)]"
             draggable={false}
           />
           <div className="min-w-0">
@@ -173,7 +174,12 @@ export function EditableMembershipCard({
         <div className="absolute left-[5.35%] top-[37.3%] z-10 w-[49%]">
           <div className="member-card-metal-line mb-[3.1%] h-px w-[9%] bg-[var(--member-metal)]" />
           <p className="text-[clamp(.42rem,1.18cqw,.96rem)] font-medium tracking-[0.3em] text-[var(--member-metal)]">{resolved.role}</p>
-          <p className="mt-[1.3%] font-display text-[clamp(1.55rem,5.7cqw,4.5rem)] font-black leading-[0.88] tracking-[-0.057em] text-[#fff7dc] drop-shadow-[0_3px_14px_rgba(0,0,0,.48)]">
+          <p
+            className={cn(
+              "mt-[1.3%] font-display text-[clamp(1.55rem,5.7cqw,4.5rem)] font-black leading-[0.88] tracking-[-0.057em] drop-shadow-[0_3px_14px_rgba(0,0,0,.48)]",
+              isVisitor ? "text-[#fff7dc]" : "member-card-name-gold",
+            )}
+          >
             {resolved.name}
           </p>
           <p className="mt-[2.7%] text-[clamp(.42rem,1.16cqw,.95rem)] tracking-[0.28em] text-white/88">{resolved.country}</p>
@@ -183,7 +189,7 @@ export function EditableMembershipCard({
           </div>
         </div>
 
-        <div className="absolute bottom-[19%] right-[5.7%] flex h-[38%] w-[45%] items-end justify-between gap-[1.25%] overflow-hidden opacity-95" aria-hidden="true">
+        <div className="member-card-wave absolute bottom-[19%] right-[5.7%] flex h-[38%] w-[45%] items-end justify-between gap-[1.25%] overflow-hidden opacity-95" aria-hidden="true">
           {WAVE_BARS.map((height, index) => (
             <span
               key={index}
@@ -201,7 +207,7 @@ export function EditableMembershipCard({
             height={512}
             loading="eager"
             decoding="async"
-            className="h-full w-full object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,.58)]"
+            className="member-card-emblem h-full w-full object-contain drop-shadow-[0_8px_20px_rgba(0,0,0,.58)]"
             draggable={false}
           />
         </div>

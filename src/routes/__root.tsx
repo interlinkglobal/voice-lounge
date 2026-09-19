@@ -27,6 +27,7 @@ import { getYouTubeFeed } from "@/lib/youtube.functions";
 import { PwaLifecycle } from "@/components/system/PwaLifecycle";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { getCurrentUser } from "@/lib/auth/auth.functions";
+import { CMS_BASE } from "@/lib/cms/routes";
 
 function NotFoundComponent() {
   return (
@@ -154,6 +155,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { youtubeFeed, user } = Route.useLoaderData();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const cmsMode = pathname === CMS_BASE || pathname.startsWith(`${CMS_BASE}/`);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -164,16 +166,25 @@ function RootComponent() {
           <LibraryProvider>
             <PlayerProvider>
               <YouTubePlayerProvider feed={youtubeFeed}>
-                <Header />
-                <main id="main" className="min-h-[60vh] pb-8">
-                  <div key={pathname} className="vl-page-enter">
+                {cmsMode ? (
+                  <div key={pathname}>
                     <Outlet />
+                    <Toaster />
                   </div>
-                </main>
-                <Footer />
-                <PlayerDock />
-                <CookieBar />
-                <Toaster />
+                ) : (
+                  <>
+                    <Header />
+                    <main id="main" className="min-h-[60vh] pb-8">
+                      <div key={pathname} className="vl-page-enter">
+                        <Outlet />
+                      </div>
+                    </main>
+                    <Footer />
+                    <PlayerDock />
+                    <CookieBar />
+                    <Toaster />
+                  </>
+                )}
               </YouTubePlayerProvider>
             </PlayerProvider>
           </LibraryProvider>

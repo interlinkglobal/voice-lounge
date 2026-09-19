@@ -93,6 +93,9 @@ export function YouTubeVideoCard({
 
 export function YouTubeFeedGrid({ feed, standalone = false }: { feed: YouTubeFeedResult; standalone?: boolean }) {
   const channelName = feed.channelTitle || "The Voice Lounge";
+  const orderedVideos = [...feed.videos].sort(
+    (a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt),
+  );
 
   return (
     <section id="youtube-feed" aria-labelledby="youtube-feed-heading" className={cn("vl-section-enter", standalone ? "shell py-[clamp(3rem,7vw,7rem)]" : "shell mt-[var(--section-gap)]")}>
@@ -114,7 +117,7 @@ export function YouTubeFeedGrid({ feed, standalone = false }: { feed: YouTubeFee
           <div className="min-w-0">
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[var(--green)]">YouTube collection</p>
             <h2 id="youtube-feed-heading" className="truncate font-display text-[var(--step-3)] font-extrabold">{channelName}</h2>
-            {feed.status === "ready" && <p className="mt-1 text-sm text-muted-foreground">Showing {feed.videos.length} latest upload{feed.videos.length === 1 ? "" : "s"}{feed.totalResults > feed.videos.length ? ` from ${feed.totalResults} on the channel` : ""}.</p>}
+            {feed.status === "ready" && <p className="mt-1 text-sm text-muted-foreground">Showing {orderedVideos.length} latest upload{orderedVideos.length === 1 ? "" : "s"}{feed.totalResults > orderedVideos.length ? ` from ${feed.totalResults} on the channel` : ""}.</p>}
           </div>
         </div>
         <a href={feed.channelUrl} target="_blank" rel="noreferrer" className="press hyper-glass inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold">Open channel <ExternalLink className="size-4" aria-hidden="true" /></a>
@@ -125,7 +128,7 @@ export function YouTubeFeedGrid({ feed, standalone = false }: { feed: YouTubeFee
       ) : feed.videos.length === 0 ? (
         <div className="hyper-glass rounded-3xl p-8 text-center vl-component-enter"><h3 className="font-display text-xl font-bold">No public uploads were returned.</h3><p className="mt-2 text-sm text-muted-foreground">The channel connection is valid, but there are no public videos to display yet.</p></div>
       ) : (
-        <div className="grid gap-[var(--rail-gap)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{feed.videos.map((video, index) => <YouTubeVideoCard key={video.id} video={video} priority={index < 4} className="w-full" />)}</div>
+        <div className="grid gap-[var(--rail-gap)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{orderedVideos.map((video, index) => <YouTubeVideoCard key={video.id} video={video} priority={index < 4} className="w-full" />)}</div>
       )}
     </section>
   );
