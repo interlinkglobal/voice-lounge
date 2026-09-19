@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, LockKeyhole, Mail, ShieldCheck, Sparkles } from "lucide-react";
+import { CheckCircle2, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { Logo } from "@/components/layout/Logo";
 import { useAuth } from "@/components/auth/AuthProvider";
 
@@ -23,13 +23,13 @@ export const Route = createFileRoute("/login")({
   }),
   head: () => ({
     meta: [
-      { title: "Sign in | The Voice Lounge" },
+      { title: "Sign In to Voice Lounge Demo | The Voice Lounge" },
       {
         name: "description",
         content:
           "Sign in to The Voice Lounge with email or Google to keep your membership, profile and saved experiences connected.",
       },
-      { property: "og:title", content: "Sign in | The Voice Lounge" },
+      { property: "og:title", content: "Sign In to Voice Lounge Demo | The Voice Lounge" },
       { property: "og:type", content: "website" },
     ],
   }),
@@ -95,7 +95,7 @@ function LoginPage() {
           </div>
 
           <h1 className="mt-5 max-w-3xl font-display text-[clamp(3rem,8vw,6.5rem)] font-black leading-[0.88] tracking-[-0.065em]">
-            Sign in to <span className="text-gold-foil">The Voice Lounge.</span>
+            Sign In to <span className="text-gold-foil">Voice Lounge Demo.</span>
           </h1>
 
           <p className="mt-6 max-w-2xl text-[clamp(1rem,1.45vw,1.28rem)] leading-relaxed text-muted-foreground">
@@ -122,10 +122,10 @@ function LoginPage() {
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">Member sign in</p>
             <h2 className="mt-2 font-display text-[clamp(1.8rem,4vw,2.6rem)] font-black tracking-[-0.045em]">
-              Welcome back
+              Sign In to Voice Lounge Demo
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Use your email and password, or continue with Google.
+              Continue with Google or use your email and password.
             </p>
           </div>
 
@@ -137,6 +137,29 @@ function LoginPage() {
               {message}
             </div>
           )}
+
+          <a
+            href={googleHref}
+            className="press flex min-h-12 items-center justify-center gap-3 rounded-full border border-hairline bg-white px-5 font-semibold text-black hover:bg-white/95"
+          >
+            <span
+              aria-hidden="true"
+              className="grid size-6 place-items-center rounded-full border border-black/10 font-display text-sm font-black"
+            >
+              G
+            </span>
+            Sign in with Google
+          </a>
+
+          <p className="mt-4 text-sm leading-6 text-muted-foreground">
+            Sign in with Google to save playlists, keep your membership card and profile synced across devices, and return to your saved shows and videos.
+          </p>
+
+          <div className="my-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+            <span className="h-px flex-1 bg-hairline" />
+            or use email
+            <span className="h-px flex-1 bg-hairline" />
+          </div>
 
           <form action="/auth/email" method="post" className="mt-6 grid gap-4">
             <input type="hidden" name="returnTo" value={returnTo} />
@@ -191,34 +214,6 @@ function LoginPage() {
               Create a free account
             </button>
           </form>
-
-          <div className="my-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
-            <span className="h-px flex-1 bg-hairline" />
-            or
-            <span className="h-px flex-1 bg-hairline" />
-          </div>
-
-          <a
-            href={googleHref}
-            className="press flex min-h-12 items-center justify-center gap-3 rounded-full border border-hairline bg-white px-5 font-semibold text-black hover:bg-white/95"
-          >
-            <span
-              aria-hidden="true"
-              className="grid size-6 place-items-center rounded-full border border-black/10 font-display text-sm font-black"
-            >
-              G
-            </span>
-            Sign in with Google
-          </a>
-
-          <div className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--green)_25%,transparent)] bg-[color-mix(in_oklab,var(--green)_6%,transparent)] p-4">
-            <div className="flex gap-3">
-              <Sparkles className="mt-0.5 size-4 shrink-0 text-[var(--green)]" aria-hidden="true" />
-              <p className="text-sm leading-6 text-muted-foreground">
-                <strong className="text-foreground">Why Google?</strong> It is the fastest way to verify your account and keep your name and profile image consistent across devices. Google handles the authentication securely; The Voice Lounge never receives your Google password.
-              </p>
-            </div>
-          </div>
 
           <p className="mt-6 text-center text-xs leading-5 text-muted-foreground">
             By continuing, you agree to our{" "}
