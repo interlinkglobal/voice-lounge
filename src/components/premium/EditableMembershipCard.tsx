@@ -19,6 +19,11 @@ export interface EditableMembershipCardProps {
   className?: string;
 }
 
+export const MEMBERSHIP_CARD_ASSETS = {
+  logo: "https://res.cloudinary.com/dlokees9a/image/upload/v1789822950/voice-lounge-card-logo_n3gfxc.png",
+  badge: "https://res.cloudinary.com/dlokees9a/image/upload/v1789822950/sa-card-badge_xmly6k.png",
+} as const;
+
 const DEFAULT_CHANGE: MembershipCardChanges = {
   name: "Sihle P.",
   color: "#18e97a",
@@ -64,7 +69,7 @@ export function EditableMembershipCard({
 
         <div className="absolute left-[5.2%] top-[6.4%] z-10 flex w-[64%] items-center gap-[3.1%]">
           <img
-            src="/voice-lounge-card-logo.png"
+            src={MEMBERSHIP_CARD_ASSETS.logo}
             alt=""
             width={256}
             height={256}
@@ -124,7 +129,7 @@ export function EditableMembershipCard({
 
         <div className="absolute right-[5.2%] top-[46.4%] z-20 aspect-square w-[22.5%]">
           <img
-            src="/sa-card-badge.png"
+            src={MEMBERSHIP_CARD_ASSETS.badge}
             alt="South Africa — Louder Together gold badge"
             width={512}
             height={512}
