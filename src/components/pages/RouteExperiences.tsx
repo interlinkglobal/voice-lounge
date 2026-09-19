@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Filter, Headphones, Play, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, Check, Filter, Search, SlidersHorizontal } from "lucide-react";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 import { YouTubeVideoCard } from "@/components/youtube/YouTubeFeedGrid";
 import { WatchButton } from "@/components/media/WatchButton";
@@ -294,7 +294,7 @@ export function ShowsExperience() {
   const activeName = SHOW_NAMES[activeIndex] ?? SHOW_NAMES[0];
   const offset = activeIndex * 5;
   const selected = videos.length
-    ? Array.from({ length: Math.min(8, videos.length) }, (_, index) => videos[(offset + index) % videos.length]).filter(Boolean)
+    ? Array.from({ length: Math.min(8, videos.length) }, (_, index) => videos[(offset + index) % videos.length]!)
     : [];
   const feature = selected[0];
 
