@@ -210,6 +210,7 @@ function HomeMembershipCards() {
           to={isDynamic ? (user ? "/account" : "/login") : "/watch"}
           aria-label={isDynamic ? (user ? `Membership card for ${user.name}` : "Free viewer welcome card") : CASEY_REFERENCE_CARD.alt}
           className="hero-card-tilt media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] md:max-w-[48rem]"
+          data-interacting={interacting ? "true" : "false"}
           onPointerEnter={() => setInteracting(true)}
           onPointerMove={updateTilt}
           onPointerLeave={(event) => {
@@ -240,10 +241,9 @@ function HomeMembershipCards() {
               fetchPriority="high"
               draggable={false}
               className="vl-hero-card-flip block h-auto w-full select-none"
-              style={{ animationPlayState: interacting ? "paused" : "running" }}
             />
           )}
-          <style>{`.hero-card-tilt:hover .vl-hero-card-flip{animation-play-state:paused}`}</style>
+
         </Link>
       </div>
     </div>
