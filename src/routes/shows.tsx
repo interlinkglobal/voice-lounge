@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlatformPage, routeHead } from "@/components/pages/PlatformPage";
+import { ShowsExperience } from "@/components/pages/RouteExperiences";
+import { routeHead } from "@/components/pages/PlatformPage";
 
 export const Route = createFileRoute("/shows")({
   head: () => routeHead("shows"),
@@ -7,5 +8,5 @@ export const Route = createFileRoute("/shows")({
 });
 
 function Page() {
-  return <PlatformPage page="shows" />;
+  return <ShowsExperience />;
 }
