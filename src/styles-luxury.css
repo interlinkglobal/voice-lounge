@@ -423,3 +423,8 @@ header button {
     transform: none !important;
   }
 }
+
+
+.hero-card-tilt[data-interacting="true"] .vl-hero-card-flip {
+  animation-play-state: paused !important;
+}
