@@ -9,7 +9,7 @@ export interface AuthUser {
   email: string;
   name: string;
   picture?: string;
-  provider: "google";
+  provider: "google" | "email";
   plan: MembershipPlan;
   nextBillingAt?: string;
   cardMessage?: string;
@@ -71,6 +71,7 @@ export function mapSupabaseUser(user: SupabaseUserPayload | null | undefined): A
   const picture = metadata.avatar_url || metadata.picture || undefined;
   const name = metadata.full_name?.trim() || metadata.name?.trim() || user.email.split("@")[0] || "Voice Lounge member";
   const appMetadata = user.app_metadata ?? {};
+  const provider = appMetadata.provider === "email" ? "email" : "google";
   const plan = normalizeMembershipPlan(appMetadata.membership_plan ?? appMetadata.plan);
   const nextBillingAt = appMetadata.next_billing_at?.trim() || undefined;
   const cardMessage = appMetadata.card_message?.trim() || undefined;
@@ -80,7 +81,7 @@ export function mapSupabaseUser(user: SupabaseUserPayload | null | undefined): A
     email: user.email,
     name,
     ...(picture ? { picture } : {}),
-    provider: "google",
+    provider,
     plan,
     ...(nextBillingAt ? { nextBillingAt } : {}),
     ...(cardMessage ? { cardMessage } : {}),

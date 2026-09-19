@@ -58,14 +58,14 @@ function AccountControl() {
 
   if (!user) {
     return (
-      <a
-        href="/auth/google?returnTo=%2Faccount"
-        aria-label="Sign in with Google"
+      <Link
+        to="/login"
+        aria-label="Sign in to The Voice Lounge"
         className="press hidden min-h-10 items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 text-sm font-semibold sm:inline-flex"
       >
         <LogIn className="size-4" aria-hidden="true" />
         <span className="hidden 2xl:inline">Sign in</span>
-      </a>
+      </Link>
     );
   }
 
@@ -285,10 +285,10 @@ export function Header() {
                   </form>
                 </div>
               ) : (
-                <a href="/auth/google?returnTo=%2Faccount" onClick={() => setOpen(false)} className="press flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--green-action)] px-4 font-semibold text-white">
+                <Link to="/login" onClick={() => setOpen(false)} className="press flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--green-action)] px-4 font-semibold text-white">
                   <LogIn className="size-4" aria-hidden="true" />
-                  Continue with Google
-                </a>
+                  Sign in
+                </Link>
               )}
             </div>
 

@@ -29,6 +29,10 @@ import { cn } from "@/lib/utils";
 export type { PageKey } from "@/lib/voice-lounge/routes";
 
 const VISITOR_NUMBER_KEY = "tvl-view-number";
+const CASEY_REFERENCE_CARD = {
+  src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789548231/card_2_wcrvmy.png",
+  alt: "The Voice Lounge premium special viewer reference card for Casey T.",
+} as const;
 
 function randomVisitorNumber() {
   const minimum = 100000;
@@ -141,7 +145,7 @@ function MembershipCardVisual({ premium = false }: { premium?: boolean }) {
       />
       <div className="absolute inset-0 grid place-items-center">
         <Link
-          to={user ? "/account" : "/account"}
+          to={user ? "/account" : "/login"}
           aria-label={user ? `Membership card for ${user.name}` : "Free viewer welcome card"}
           className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] [transform-style:preserve-3d] md:max-w-[48rem]"
         >
@@ -156,7 +160,57 @@ function MembershipCardVisual({ premium = false }: { premium?: boolean }) {
 }
 
 function HomeMembershipCards() {
-  return <MembershipCardVisual />;
+  const user = useAuth();
+  const visitorNumber = useVisitorNumber();
+  const card = createMembershipCardViewModel(user, visitorNumber);
+  const [active, setActive] = useState<"dynamic" | "casey">("dynamic");
+
+  useEffect(() => {
+    [MEMBERSHIP_CARD_ASSETS.logo, MEMBERSHIP_CARD_ASSETS.badge, CASEY_REFERENCE_CARD.src].forEach((src) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+    });
+
+    const timer = window.setInterval(
+      () => setActive((current) => (current === "dynamic" ? "casey" : "dynamic")),
+      2800,
+    );
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const isDynamic = active === "dynamic";
+
+  return (
+    <div className="relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
+      <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
+      <div className="absolute inset-0 grid place-items-center">
+        <Link
+          key={active}
+          to={isDynamic ? (user ? "/account" : "/login") : "/watch"}
+          aria-label={isDynamic ? (user ? `Membership card for ${user.name}` : "Free viewer welcome card") : CASEY_REFERENCE_CARD.alt}
+          className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] [transform-style:preserve-3d] md:max-w-[48rem]"
+        >
+          {isDynamic ? (
+            <EditableMembershipCard
+              model={card}
+              className="vl-hero-card-flip block w-full select-none"
+            />
+          ) : (
+            <img
+              src={CASEY_REFERENCE_CARD.src}
+              alt={CASEY_REFERENCE_CARD.alt}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
+              draggable={false}
+              className="vl-hero-card-flip block h-auto w-full select-none"
+            />
+          )}
+        </Link>
+      </div>
+    </div>
+  );
 }
 
 function PremiumMembershipCard() {
@@ -229,7 +283,7 @@ function PlatformHero({
 }
 
 function ExtremeViewportStyles() {
-  return <style>{`@keyframes vl-hero-card-enter{0%{opacity:0;transform:perspective(900px) rotateY(-76deg) scale(.96)}100%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}}.vl-hero-card-enter{animation:vl-hero-card-enter .72s cubic-bezier(.16,1,.3,1) both;backface-visibility:hidden;transform-style:preserve-3d}@media(prefers-reduced-motion:reduce){.vl-hero-card-enter{animation:none}}@media(max-width:319px){:root{--gutter:.5rem;--rail-gap:.45rem;--section-gap:1.75rem;--step-6:clamp(1.8rem,12vw,2.35rem)}.rail-scroll{gap:.45rem;scroll-padding-inline:.5rem}.rail-scroll>*{width:calc(100vw - 1rem)!important;max-width:none!important}.card-lift:hover{transform:none}}@media(min-width:1920px) and (pointer:coarse){body{font-size:1.2rem}button,a{scroll-margin:8vh 5vw}:focus-visible{outline-width:4px;outline-offset:6px}.rail-scroll{gap:clamp(1rem,1.2vw,1.75rem)}}@media(min-width:3840px){:root{--gutter:6rem;--section-gap:7rem;--step-6:8rem}.shell{max-width:3360px}}`}</style>;
+  return <style>{`@keyframes vl-hero-card-enter{0%{opacity:0;transform:perspective(900px) rotateY(-76deg) scale(.96)}100%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}}@keyframes vl-hero-card-flip{0%{opacity:0;transform:perspective(900px) rotateY(-88deg) scale(.94)}20%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}78%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}100%{opacity:0;transform:perspective(900px) rotateY(88deg) scale(.94)}}.vl-hero-card-enter{animation:vl-hero-card-enter .72s cubic-bezier(.16,1,.3,1) both;backface-visibility:hidden;transform-style:preserve-3d}.vl-hero-card-flip{animation:vl-hero-card-flip 2.8s ease-in-out both;backface-visibility:hidden;transform-style:preserve-3d}@media(prefers-reduced-motion:reduce){.vl-hero-card-enter,.vl-hero-card-flip{animation:none}}@media(max-width:319px){:root{--gutter:.5rem;--rail-gap:.45rem;--section-gap:1.75rem;--step-6:clamp(1.8rem,12vw,2.35rem)}.rail-scroll{gap:.45rem;scroll-padding-inline:.5rem}.rail-scroll>*{width:calc(100vw - 1rem)!important;max-width:none!important}.card-lift:hover{transform:none}}@media(min-width:1920px) and (pointer:coarse){body{font-size:1.2rem}button,a{scroll-margin:8vh 5vw}:focus-visible{outline-width:4px;outline-offset:6px}.rail-scroll{gap:clamp(1rem,1.2vw,1.75rem)}}@media(min-width:3840px){:root{--gutter:6rem;--section-gap:7rem;--step-6:8rem}.shell{max-width:3360px}}`}</style>;
 }
 
 function AccountIntro() {
@@ -240,9 +294,9 @@ function AccountIntro() {
     return (
       <div className="shell mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground vl-component-enter">
         <span className="hyper-glass rounded-full px-3 py-1.5">Signed out</span>
-        <a href="/auth/google?returnTo=%2Faccount" className="press rounded-full bg-[var(--green-action)] px-3.5 py-1.5 font-semibold text-white">
-          Continue with Google
-        </a>
+        <Link to="/login" search={{ returnTo: "/account" }} className="press rounded-full bg-[var(--green-action)] px-3.5 py-1.5 font-semibold text-white">
+          Sign in
+        </Link>
         <span className="hyper-glass rounded-full px-3 py-1.5">{saved.length} saved locally</span>
       </div>
     );
@@ -252,7 +306,7 @@ function AccountIntro() {
     <div className="shell mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground vl-component-enter">
       <span className="hyper-glass rounded-full px-3 py-1.5">{user.name}</span>
       <span className="hyper-glass rounded-full px-3 py-1.5">{user.email}</span>
-      <span className="hyper-glass rounded-full px-3 py-1.5">Google connected</span>
+      <span className="hyper-glass rounded-full px-3 py-1.5">{user.provider === "google" ? "Google connected" : "Email connected"}</span>
       <span className="hyper-glass rounded-full px-3 py-1.5">{saved.length} saved</span>
     </div>
   );
