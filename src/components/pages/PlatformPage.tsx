@@ -4,7 +4,7 @@ import { ArrowRight, Crown, Headphones, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
 import { useLibrary } from "@/components/system/library";
-import { EditableMembershipCard } from "@/components/premium/EditableMembershipCard";
+import { EditableMembershipCard, MEMBERSHIP_CARD_ASSETS } from "@/components/premium/EditableMembershipCard";
 import { SearchFilterBar } from "@/components/search/SearchFilterBar";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -100,10 +100,14 @@ function HomeMembershipCards() {
 
   useEffect(() => {
     // Warm the CDN cache for the next flips without bundling any card asset.
-    HERO_MEMBERSHIP_CARDS.forEach((card) => {
-      if (card.kind !== "image") return;
+    [
+      ...HERO_MEMBERSHIP_CARDS.flatMap((card) => card.kind === "image" ? [card.src] : []),
+      MEMBERSHIP_CARD_ASSETS.logo,
+      MEMBERSHIP_CARD_ASSETS.badge,
+    ].forEach((src) => {
       const image = new Image();
-      image.src = card.src;
+      image.decoding = "async";
+      image.src = src;
     });
 
     const timer = window.setInterval(
