@@ -9,6 +9,7 @@ import { SearchFilterBar } from "@/components/search/SearchFilterBar";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { demoProfile, episodes, podcasts } from "@/lib/content/catalog";
+import { createMembershipCardViewModel } from "@/lib/membership/card";
 import { pageCards, chipsFor, type SearchFilter } from "@/lib/voice-lounge/page-data";
 import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
 import { PAGE_INFO, SECTION_TITLES, routeName, type PageKey } from "@/lib/voice-lounge/routes";
@@ -27,27 +28,41 @@ import { cn } from "@/lib/utils";
 
 export type { PageKey } from "@/lib/voice-lounge/routes";
 
-const HERO_MEMBERSHIP_CARDS = [
-  {
-    id: "casey-t-special-viewer",
-    kind: "image",
-    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789548231/card_2_wcrvmy.png",
-    alt: "The Voice Lounge premium special viewer card for Casey T.",
-    href: "/watch",
-  },
-  {
-    id: "sihle-p-editable-premium-member",
-    kind: "component",
-    alt: "Editable Voice Lounge premium member card for Sihle P.",
-    href: "/premium",
-    change: {
-      name: "Sihle P.",
-      color: "#18e97a",
-      date: "18 SEP 2026",
-      plan: "PREMIUM MEMBER",
-    },
-  },
-] as const;
+const VISITOR_NUMBER_KEY = "tvl-view-number";
+
+function randomVisitorNumber() {
+  const minimum = 100000;
+  const range = 900000;
+
+  if (typeof crypto !== "undefined" && "getRandomValues" in crypto) {
+    const value = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
+    return String(minimum + (value % range));
+  }
+
+  return String(minimum + Math.floor(Math.random() * range));
+}
+
+function useVisitorNumber() {
+  const [visitorNumber, setVisitorNumber] = useState("000000");
+
+  useEffect(() => {
+    try {
+      const existing = window.sessionStorage.getItem(VISITOR_NUMBER_KEY);
+      if (existing) {
+        setVisitorNumber(existing);
+        return;
+      }
+
+      const generated = randomVisitorNumber();
+      window.sessionStorage.setItem(VISITOR_NUMBER_KEY, generated);
+      setVisitorNumber(generated);
+    } catch {
+      setVisitorNumber(randomVisitorNumber());
+    }
+  }, []);
+
+  return visitorNumber;
+}
 
 function slugify(value: string) {
   return value.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 62);
@@ -95,72 +110,57 @@ function makeSection(
   return spec;
 }
 
-function HomeMembershipCards() {
-  const [active, setActive] = useState(0);
+function MembershipCardVisual({ premium = false }: { premium?: boolean }) {
+  const user = useAuth();
+  const visitorNumber = useVisitorNumber();
+  const card = createMembershipCardViewModel(user, visitorNumber);
 
   useEffect(() => {
-    // Warm the CDN cache for the next flips without bundling any card asset.
-    [
-      ...HERO_MEMBERSHIP_CARDS.flatMap((card) => card.kind === "image" ? [card.src] : []),
-      MEMBERSHIP_CARD_ASSETS.logo,
-      MEMBERSHIP_CARD_ASSETS.badge,
-    ].forEach((src) => {
+    [MEMBERSHIP_CARD_ASSETS.logo, MEMBERSHIP_CARD_ASSETS.badge].forEach((src) => {
       const image = new Image();
       image.decoding = "async";
       image.src = src;
     });
-
-    const timer = window.setInterval(
-      () => setActive((index) => (index + 1) % HERO_MEMBERSHIP_CARDS.length),
-      2800,
-    );
-    return () => window.clearInterval(timer);
   }, []);
 
-  const activeCard = HERO_MEMBERSHIP_CARDS[active] ?? HERO_MEMBERSHIP_CARDS[0];
-
   return (
-    <div className="relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
-      <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
+    <div
+      className={cn(
+        "relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]",
+        premium && "sm:min-h-[20rem]",
+      )}
+      style={{ perspective: "1200px" }}
+    >
+      <div
+        className={cn(
+          "absolute inset-[8%_2%_0_8%] rounded-[3rem] blur-2xl",
+          premium
+            ? "bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--gold)_20%,transparent),transparent_62%)]"
+            : "bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)]",
+        )}
+      />
       <div className="absolute inset-0 grid place-items-center">
         <Link
-          key={activeCard.id}
-          to={activeCard.href}
-          aria-label={activeCard.alt}
+          to={user ? "/account" : "/account"}
+          aria-label={user ? `Membership card for ${user.name}` : "Free viewer welcome card"}
           className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] [transform-style:preserve-3d] md:max-w-[48rem]"
         >
-          {activeCard.kind === "image" ? (
-            <img
-              src={activeCard.src}
-              alt={activeCard.alt}
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-              draggable={false}
-              className="vl-hero-card-flip block h-auto w-full select-none"
-            />
-          ) : (
-            <EditableMembershipCard
-              change={activeCard.change}
-              className="vl-hero-card-flip block w-full select-none"
-            />
-          )}
+          <EditableMembershipCard
+            model={card}
+            className="vl-hero-card-enter block w-full select-none"
+          />
         </Link>
       </div>
     </div>
   );
 }
 
+function HomeMembershipCards() {
+  return <MembershipCardVisual />;
+}
+
 function PremiumMembershipCard() {
-  const card = HERO_MEMBERSHIP_CARDS[0];
-  return (
-    <div className="relative min-h-[16rem] sm:min-h-[20rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
-      <div className="absolute inset-[10%_3%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--gold)_24%,transparent),transparent_62%)] blur-2xl" />
-      <Link to={card.href} aria-label={card.alt} className="media-shine premium-geometry absolute inset-0 grid place-items-center overflow-hidden">
-        <img src={card.src} alt={card.alt} loading="eager" decoding="async" fetchPriority="high" draggable={false} className="block h-auto w-[96%] max-w-[48rem] select-none drop-shadow-[0_28px_38px_rgba(0,0,0,0.52)]" style={{ animation: "vl-float 6s ease-in-out infinite" }} />
-      </Link>
-    </div>
-  );
+  return <MembershipCardVisual premium />;
 }
 
 function HeroVisual({ page }: { page: PageKey }) {
@@ -229,7 +229,7 @@ function PlatformHero({
 }
 
 function ExtremeViewportStyles() {
-  return <style>{`@keyframes vl-hero-card-flip{0%{opacity:0;transform:perspective(900px) rotateY(-88deg) scale(.94)}20%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}78%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}100%{opacity:0;transform:perspective(900px) rotateY(88deg) scale(.94)}}.vl-hero-card-flip{animation:vl-hero-card-flip 2.8s ease-in-out both;backface-visibility:hidden;transform-style:preserve-3d}@media(prefers-reduced-motion:reduce){.vl-hero-card-flip{animation:none}}@media(max-width:319px){:root{--gutter:.5rem;--rail-gap:.45rem;--section-gap:1.75rem;--step-6:clamp(1.8rem,12vw,2.35rem)}.rail-scroll{gap:.45rem;scroll-padding-inline:.5rem}.rail-scroll>*{width:calc(100vw - 1rem)!important;max-width:none!important}.card-lift:hover{transform:none}}@media(min-width:1920px) and (pointer:coarse){body{font-size:1.2rem}button,a{scroll-margin:8vh 5vw}:focus-visible{outline-width:4px;outline-offset:6px}.rail-scroll{gap:clamp(1rem,1.2vw,1.75rem)}}@media(min-width:3840px){:root{--gutter:6rem;--section-gap:7rem;--step-6:8rem}.shell{max-width:3360px}}`}</style>;
+  return <style>{`@keyframes vl-hero-card-enter{0%{opacity:0;transform:perspective(900px) rotateY(-76deg) scale(.96)}100%{opacity:1;transform:perspective(900px) rotateY(0deg) scale(1)}}.vl-hero-card-enter{animation:vl-hero-card-enter .72s cubic-bezier(.16,1,.3,1) both;backface-visibility:hidden;transform-style:preserve-3d}@media(prefers-reduced-motion:reduce){.vl-hero-card-enter{animation:none}}@media(max-width:319px){:root{--gutter:.5rem;--rail-gap:.45rem;--section-gap:1.75rem;--step-6:clamp(1.8rem,12vw,2.35rem)}.rail-scroll{gap:.45rem;scroll-padding-inline:.5rem}.rail-scroll>*{width:calc(100vw - 1rem)!important;max-width:none!important}.card-lift:hover{transform:none}}@media(min-width:1920px) and (pointer:coarse){body{font-size:1.2rem}button,a{scroll-margin:8vh 5vw}:focus-visible{outline-width:4px;outline-offset:6px}.rail-scroll{gap:clamp(1rem,1.2vw,1.75rem)}}@media(min-width:3840px){:root{--gutter:6rem;--section-gap:7rem;--step-6:8rem}.shell{max-width:3360px}}`}</style>;
 }
 
 function AccountIntro() {
