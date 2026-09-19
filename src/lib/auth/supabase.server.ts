@@ -105,6 +105,48 @@ export async function exchangeSupabaseCode(code: string, verifier: string): Prom
   return payload;
 }
 
+export async function signInWithEmailPassword(email: string, password: string): Promise<SupabaseSessionPayload> {
+  const response = await fetch(`${SUPABASE_AUTH_URL}/token?grant_type=password`, {
+    method: "POST",
+    headers: {
+      ...authHeaders(),
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const payload = (await response.json().catch(() => ({}))) as SupabaseSessionPayload;
+  if (!response.ok || !payload.access_token || !payload.refresh_token) {
+    throw new Error(payload.error_description || payload.msg || payload.error || "Email sign-in failed.");
+  }
+
+  return payload;
+}
+
+export async function signUpWithEmailPassword(email: string, password: string): Promise<SupabaseSessionPayload> {
+  const response = await fetch(`${SUPABASE_AUTH_URL}/signup`, {
+    method: "POST",
+    headers: {
+      ...authHeaders(),
+      "content-type": "application/json",
+    },
+    body: JSON.stringify({
+      email,
+      password,
+      data: {
+        membership_plan: "free",
+      },
+    }),
+  });
+
+  const payload = (await response.json().catch(() => ({}))) as SupabaseSessionPayload;
+  if (!response.ok) {
+    throw new Error(payload.error_description || payload.msg || payload.error || "Email sign-up failed.");
+  }
+
+  return payload;
+}
+
 export async function refreshSupabaseSession(refreshToken: string): Promise<SupabaseSessionPayload> {
   const response = await fetch(`${SUPABASE_AUTH_URL}/token?grant_type=refresh_token`, {
     method: "POST",
