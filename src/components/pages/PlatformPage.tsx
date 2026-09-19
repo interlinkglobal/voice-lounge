@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { ArrowRight, Crown, Headphones, Search } from "lucide-react";
+import { ArrowRight, Crown, Headphones, LogIn, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
 import { useLibrary } from "@/components/system/library";
@@ -164,6 +164,7 @@ function HomeMembershipCards() {
   const visitorNumber = useVisitorNumber();
   const card = createMembershipCardViewModel(user, visitorNumber);
   const [active, setActive] = useState<"dynamic" | "casey">("dynamic");
+  const [interacting, setInteracting] = useState(false);
 
   useEffect(() => {
     [MEMBERSHIP_CARD_ASSETS.logo, MEMBERSHIP_CARD_ASSETS.badge, CASEY_REFERENCE_CARD.src].forEach((src) => {
@@ -171,15 +172,34 @@ function HomeMembershipCards() {
       image.decoding = "async";
       image.src = src;
     });
+  }, []);
 
+  useEffect(() => {
+    if (interacting) return;
     const timer = window.setInterval(
       () => setActive((current) => (current === "dynamic" ? "casey" : "dynamic")),
       2800,
     );
     return () => window.clearInterval(timer);
-  }, []);
+  }, [interacting]);
 
   const isDynamic = active === "dynamic";
+
+  function updateTilt(event: React.PointerEvent<HTMLAnchorElement>) {
+    if (event.pointerType === "touch") return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width;
+    const py = (event.clientY - rect.top) / rect.height;
+    const tiltY = (px - 0.5) * 7;
+    const tiltX = (0.5 - py) * 5;
+    event.currentTarget.style.setProperty("--tilt-x", `${tiltX.toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--tilt-y", `${tiltY.toFixed(2)}deg`);
+  }
+
+  function resetTilt(target: HTMLAnchorElement) {
+    target.style.setProperty("--tilt-x", "0deg");
+    target.style.setProperty("--tilt-y", "0deg");
+  }
 
   return (
     <div className="relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
@@ -189,7 +209,22 @@ function HomeMembershipCards() {
           key={active}
           to={isDynamic ? (user ? "/account" : "/login") : "/watch"}
           aria-label={isDynamic ? (user ? `Membership card for ${user.name}` : "Free viewer welcome card") : CASEY_REFERENCE_CARD.alt}
-          className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] [transform-style:preserve-3d] md:max-w-[48rem]"
+          className="hero-card-tilt media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] md:max-w-[48rem]"
+          onPointerEnter={() => setInteracting(true)}
+          onPointerMove={updateTilt}
+          onPointerLeave={(event) => {
+            resetTilt(event.currentTarget);
+            setInteracting(false);
+          }}
+          onPointerDown={() => setInteracting(true)}
+          onPointerUp={(event) => {
+            resetTilt(event.currentTarget);
+            setInteracting(false);
+          }}
+          onPointerCancel={(event) => {
+            resetTilt(event.currentTarget);
+            setInteracting(false);
+          }}
         >
           {isDynamic ? (
             <EditableMembershipCard
@@ -205,8 +240,10 @@ function HomeMembershipCards() {
               fetchPriority="high"
               draggable={false}
               className="vl-hero-card-flip block h-auto w-full select-none"
+              style={{ animationPlayState: interacting ? "paused" : "running" }}
             />
           )}
+          <style>{`.hero-card-tilt:hover .vl-hero-card-flip{animation-play-state:paused}`}</style>
         </Link>
       </div>
     </div>
@@ -237,6 +274,7 @@ function PlatformHero({
   const youtubeLed = page === "discover" || page === "shows" || page === "episodes" || page === "watch";
   const youtubeReady = youtubeFeed?.status === "ready";
   const firstTitle = SECTION_TITLES[page][0];
+  const heroBadge = page === "home" ? "The Voice Lounge" : firstTitle;
   const premium = page === "premium";
   const live = page === "live";
   const hasHeroVisual = page === "home" || page === "premium";
@@ -244,9 +282,11 @@ function PlatformHero({
     <section id={`01-${slugify(firstTitle)}`} aria-labelledby={`01-${slugify(firstTitle)}-h`} className={cn("vl-section-enter grain hero-wash relative isolate overflow-hidden border-b border-hairline", premium && "bg-[radial-gradient(circle_at_80%_8%,color-mix(in_oklab,var(--gold)_24%,transparent),transparent_34%)]")} data-route-section="1">
       <div className={cn("shell tv-safe grid min-h-[clamp(32rem,74vh,52rem)] items-center gap-6 py-[clamp(3rem,8vw,8rem)]", hasHeroVisual && "md:grid-cols-[minmax(0,0.95fr)_minmax(22rem,1.05fr)]")}>
         <div className="vl-component-enter relative z-10 max-w-3xl">
-          <div className="mb-4 flex flex-wrap items-center gap-2"><span className={cn("hyper-glass rounded-full px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.2em]", premium ? "text-[var(--gold)]" : "text-[var(--green)]")}>{firstTitle}</span>{live && <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--live)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white"><span className="size-1.5 rounded-full bg-white" /> On air</span>}</div>
+          <div className="mb-4 flex flex-wrap items-center gap-2"><span className={cn("hyper-glass rounded-full px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.2em]", premium ? "text-[var(--gold)]" : "text-[var(--green)]")}>{heroBadge}</span>{live && <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--live)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white"><span className="size-1.5 rounded-full bg-white" /> On air</span>}</div>
           <h1 id={`01-${slugify(firstTitle)}-h`} className={cn("font-display text-[var(--step-6)] font-black leading-[0.9] tracking-[-0.055em]", premium && "text-gold-foil")}>{info.title}</h1>
-          <p className="mt-5 max-w-2xl text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed text-muted-foreground">{info.lede}</p>
+          <p className={cn("mt-5 max-w-2xl text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed", page === "home" ? "text-white" : "text-muted-foreground")}>
+            {page === "home" ? "Sign in to The Voice Lounge for a customized experience" : info.lede}
+          </p>
           {page === "search" ? (
             <form action="/search" role="search" className="mt-7 flex max-w-2xl flex-col gap-2 sm:flex-row">
               <label htmlFor="hero-search" className="sr-only">Search everything</label>
@@ -263,6 +303,17 @@ function PlatformHero({
               </div>
               <button type="submit" className="press min-h-14 rounded-full bg-[var(--green-action)] px-7 font-bold text-white">Search</button>
             </form>
+          ) : page === "home" ? (
+            <div className="mt-7 flex flex-wrap gap-2.5">
+              <Link to="/login" preload="intent" className="press inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--green-action)] px-6 font-bold text-white shadow-glow">
+                <LogIn className="size-4" aria-hidden="true" />
+                Sign In
+              </Link>
+              <Link to="/youtube" preload="intent" className="press hyper-glass inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-semibold">
+                <Headphones className="size-4" aria-hidden="true" />
+                Watch Now
+              </Link>
+            </div>
           ) : (
             <div className="mt-7 flex flex-wrap gap-2.5"><Link to={info.primary.to} preload="intent" className={cn("press inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-bold", premium ? "bg-[var(--gold)] text-black shadow-gold" : "bg-[var(--green-action)] text-white shadow-glow")}>{premium ? <Crown className="size-4" /> : <Headphones className="size-4" />}{info.primary.label}</Link><Link to={info.secondary.to} preload="intent" className="press hyper-glass inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-semibold">{info.secondary.label}<ArrowRight className="size-4" aria-hidden="true" /></Link></div>
           )}
