@@ -174,6 +174,9 @@ export function YouTubePlayerProvider({
                   <button type="button" onClick={next} className="press inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--green-action)] px-4 text-sm font-semibold text-white shadow-glow">
                     Next <ChevronRight className="size-4" aria-hidden="true" />
                   </button>
+                  <button type="button" onClick={enterFullscreen} className="press inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 text-sm font-semibold">
+                    Fullscreen <Maximize2 className="size-4" aria-hidden="true" />
+                  </button>
                   <a href={current.watchUrl} target="_blank" rel="noreferrer" className="press inline-flex min-h-11 items-center gap-2 rounded-full border border-white/15 bg-white/[0.06] px-4 text-sm font-semibold">
                     YouTube <ExternalLink className="size-4" aria-hidden="true" />
                   </a>
