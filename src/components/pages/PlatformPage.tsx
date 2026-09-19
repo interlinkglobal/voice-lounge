@@ -123,7 +123,7 @@ function HomeMembershipCards() {
           key={activeCard.id}
           to={activeCard.href}
           aria-label={activeCard.alt}
-          className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[1.75rem] [transform-style:preserve-3d] md:max-w-[48rem] md:rounded-[2rem]"
+          className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] shadow-[0_16px_28px_-12px_rgba(0,0,0,.58),0_5px_14px_-9px_rgba(0,0,0,.48)] [transform-style:preserve-3d] md:max-w-[48rem]"
         >
           {activeCard.kind === "image" ? (
             <img
@@ -133,12 +133,12 @@ function HomeMembershipCards() {
               decoding="async"
               fetchPriority="high"
               draggable={false}
-              className="vl-hero-card-flip block h-auto w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.5)]"
+              className="vl-hero-card-flip block h-auto w-full select-none"
             />
           ) : (
             <EditableMembershipCard
               change={activeCard.change}
-              className="vl-hero-card-flip block w-full select-none drop-shadow-[0_24px_34px_rgba(0,0,0,0.5)]"
+              className="vl-hero-card-flip block w-full select-none"
             />
           )}
         </Link>
