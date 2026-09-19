@@ -123,7 +123,7 @@ function HomeMembershipCards() {
           key={activeCard.id}
           to={activeCard.href}
           aria-label={activeCard.alt}
-          className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] shadow-[0_16px_28px_-12px_rgba(0,0,0,.58),0_5px_14px_-9px_rgba(0,0,0,.48)] [transform-style:preserve-3d] md:max-w-[48rem]"
+          className="media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] [transform-style:preserve-3d] md:max-w-[48rem]"
         >
           {activeCard.kind === "image" ? (
             <img
