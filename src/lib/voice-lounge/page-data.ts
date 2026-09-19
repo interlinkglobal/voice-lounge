@@ -136,7 +136,9 @@ function youtubeCardsForSection(videos: YouTubeFeedVideo[], title: string, index
     if (long.length >= 3) pool = long;
   }
 
-  if (t.includes("most watched") || t.includes("trending") || t.includes("top 10") || t.includes("charts") || t.includes("most played")) {
+  if (t.includes("trending now")) {
+    pool.sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
+  } else if (t.includes("most watched") || t.includes("trending") || t.includes("top 10") || t.includes("charts") || t.includes("most played")) {
     pool.sort((a, b) => (b.viewCount ?? -1) - (a.viewCount ?? -1));
   } else if (t.includes("latest") || t.includes("recent") || t.includes("new this") || t.includes("new ")) {
     pool.sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
