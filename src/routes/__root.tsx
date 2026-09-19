@@ -25,6 +25,8 @@ import { YouTubeFeedProvider } from "@/components/youtube/YouTubeFeedProvider";
 import { YouTubePlayerProvider } from "@/components/youtube/YouTubePlayerProvider";
 import { getYouTubeFeed } from "@/lib/youtube.functions";
 import { PwaLifecycle } from "@/components/system/PwaLifecycle";
+import { AuthProvider } from "@/components/auth/AuthProvider";
+import { getCurrentUser } from "@/lib/auth/auth.functions";
 
 function NotFoundComponent() {
   return (
@@ -74,7 +76,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  loader: () => getYouTubeFeed(),
+  headers: () => ({ "Cache-Control": "private, no-store" }),
+  loader: async () => {
+    const [youtubeFeed, user] = await Promise.all([getYouTubeFeed(), getCurrentUser()]);
+    return { youtubeFeed, user };
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -146,14 +152,15 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const youtubeFeed = Route.useLoaderData();
+  const { youtubeFeed, user } = Route.useLoaderData();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   return (
     <QueryClientProvider client={queryClient}>
       <PwaLifecycle />
-      <YouTubeFeedProvider feed={youtubeFeed}>
-        <ThemeProvider>
+      <AuthProvider user={user}>
+        <YouTubeFeedProvider feed={youtubeFeed}>
+          <ThemeProvider>
           <LibraryProvider>
             <PlayerProvider>
               <YouTubePlayerProvider feed={youtubeFeed}>
@@ -170,8 +177,9 @@ function RootComponent() {
               </YouTubePlayerProvider>
             </PlayerProvider>
           </LibraryProvider>
-        </ThemeProvider>
-      </YouTubeFeedProvider>
+          </ThemeProvider>
+        </YouTubeFeedProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

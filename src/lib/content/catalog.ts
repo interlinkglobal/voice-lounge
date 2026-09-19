@@ -247,12 +247,6 @@ const HOSTED_MEDIA = [
   "https://cdn.pixabay.com/audio/2021/08/09/audio_88447e769f.mp3",
   "https://cdn.pixabay.com/audio/2022/01/18/audio_d0c6ff1bab.mp3",
 ];
-const HOSTED_VIDEO = [
-  "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-  "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-  "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-];
-
 const BASE_DATE = Date.UTC(2026, 8, 15);
 
 export const episodes: Episode[] = Array.from({ length: 180 }, (_, i) => {
@@ -274,7 +268,8 @@ export const episodes: Episode[] = Array.from({ length: 180 }, (_, i) => {
     plays: between(`pl${i}`, 1200, 940000),
     language: podcast.language,
     artwork: { seed: `ep-${i}-${title}`, alt: `${title} — ${podcast.title}`, ratio: "16/9" },
-    mediaUrl: kind === "video" ? HOSTED_VIDEO[i % HOSTED_VIDEO.length] : HOSTED_MEDIA[i % HOSTED_MEDIA.length],
+    // Video playback is resolved exclusively through the official YouTube feed.
+    mediaUrl: kind === "video" ? "" : HOSTED_MEDIA[i % HOSTED_MEDIA.length],
     transcriptAvailable: hash(`tr${i}`) > 0.3,
     isPremium: hash(`epprem${i}`) > 0.88,
   };

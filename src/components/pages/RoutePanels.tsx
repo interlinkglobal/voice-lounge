@@ -1,11 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Check, Globe2, Headphones, ShieldCheck, Zap } from "lucide-react";
+import { Check, Globe2, Headphones, LogIn, LogOut, ShieldCheck, Zap } from "lucide-react";
 import type { CardVariant } from "@/components/media/MediaCard";
 import type { SectionSpec } from "@/components/sections/types";
 import { demoProfile, episodes, liveEvents, plans, podcasts, creators } from "@/lib/content/catalog";
 import type { PageKey } from "@/lib/voice-lounge/routes";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 export function blurbFor(page: PageKey, title: string) {
   const t = title.toLowerCase();
@@ -122,6 +123,56 @@ export function actionFor(page: PageKey, title: string) {
   return undefined;
 }
 
+
+function AccountSecurityPanel() {
+  const user = useAuth();
+
+  if (!user) {
+    return (
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="font-display text-lg font-bold">Sign in to The Voice Lounge</p>
+          <p className="mt-1 max-w-xl text-sm text-muted-foreground">
+            Google sign-in creates a secure server-side session. Your Google password is never handled by The Voice Lounge.
+          </p>
+        </div>
+        <a
+          href="/auth/google?returnTo=%2Faccount"
+          className="press inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--green-action)] px-5 font-semibold text-white"
+        >
+          <LogIn className="size-4" aria-hidden="true" />
+          Continue with Google
+        </a>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex min-w-0 items-center gap-3">
+        {user.picture ? (
+          <img src={user.picture} alt="" referrerPolicy="no-referrer" className="size-12 rounded-full object-cover" />
+        ) : (
+          <div className="grid size-12 place-items-center rounded-full border border-hairline bg-surface-2">
+            <ShieldCheck className="size-5 text-[var(--green)]" aria-hidden="true" />
+          </div>
+        )}
+        <div className="min-w-0">
+          <p className="truncate font-display text-lg font-bold">{user.name}</p>
+          <p className="truncate text-sm text-muted-foreground">{user.email}</p>
+          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--green)]">Google account connected</p>
+        </div>
+      </div>
+      <form action="/auth/logout" method="post">
+        <button type="submit" className="press inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-hairline bg-surface-2 px-5 font-semibold">
+          <LogOut className="size-4" aria-hidden="true" />
+          Sign out
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function PreferencePanel({ title }: { title: string }) {
   const [enabled, setEnabled] = useState(true);
   return (
@@ -189,6 +240,7 @@ export function editorialBody(page: PageKey, title: string) {
   if (page === "premium" && t.includes("membership tier")) return <PremiumPlans />;
   if (page === "premium" && t.includes("comparison")) return <PremiumComparison />;
   if (page === "premium" && t.includes("checkout")) return <div className="grid gap-6"><div className="grid gap-3 md:grid-cols-3">{faqFor("premium").map((item) => <article key={item.q} className="rounded-2xl border border-hairline bg-surface-2 p-4"><h3 className="font-display font-bold">{item.q}</h3><p className="mt-2 text-sm text-muted-foreground">{item.a}</p></article>)}</div><MockCheckout /></div>;
+  if (page === "account" && t.includes("account security")) return <AccountSecurityPanel />;
   if (page === "account") return <PreferencePanel title={title} />;
   if (page === "community" && (t.includes("poll") || t.includes("challenge"))) return <CommunityPanel title={title} />;
   if (page === "live" && t.includes("set reminder")) return <PreferencePanel title="Live reminders" />;
