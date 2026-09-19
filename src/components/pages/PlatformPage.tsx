@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type PointerEvent as ReactPointerEvent } from "react";
 import { ArrowRight, Crown, Headphones, LogIn, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
@@ -185,7 +185,7 @@ function HomeMembershipCards() {
 
   const isDynamic = active === "dynamic";
 
-  function updateTilt(event: React.PointerEvent<HTMLAnchorElement>) {
+  function updateTilt(event: ReactPointerEvent<HTMLAnchorElement>) {
     if (event.pointerType === "touch") return;
     const rect = event.currentTarget.getBoundingClientRect();
     const px = (event.clientX - rect.left) / rect.width;
