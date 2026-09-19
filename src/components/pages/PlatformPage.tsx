@@ -186,7 +186,6 @@ function HomeMembershipCards() {
   const isDynamic = active === "dynamic";
 
   function updateTilt(event: ReactPointerEvent<HTMLAnchorElement>) {
-    if (event.pointerType === "touch") return;
     const rect = event.currentTarget.getBoundingClientRect();
     const px = (event.clientX - rect.left) / rect.width;
     const py = (event.clientY - rect.top) / rect.height;
@@ -217,7 +216,10 @@ function HomeMembershipCards() {
             resetTilt(event.currentTarget);
             setInteracting(false);
           }}
-          onPointerDown={() => setInteracting(true)}
+          onPointerDown={(event) => {
+            setInteracting(true);
+            updateTilt(event);
+          }}
           onPointerUp={(event) => {
             resetTilt(event.currentTarget);
             setInteracting(false);
