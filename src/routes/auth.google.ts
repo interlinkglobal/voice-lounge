@@ -7,7 +7,15 @@ export const Route = createFileRoute("/auth/google")({
     handlers: {
       GET: async ({ request }) => {
         const config = getGoogleAuthConfig(request);
-        if (!config || !isAuthSessionConfigured()) {
+        const sessionConfigured = isAuthSessionConfigured();
+        if (!config || !sessionConfigured) {
+          console.error("[google-auth] configuration incomplete", {
+            googleClientIdPresent: Boolean(process.env.GOOGLE_CLIENT_ID?.trim()),
+            googleClientSecretPresent: Boolean(process.env.GOOGLE_CLIENT_SECRET?.trim()),
+            googleRedirectUriPresent: Boolean(process.env.GOOGLE_REDIRECT_URI?.trim()),
+            sessionSecretLength: process.env.SESSION_SECRET?.trim().length ?? 0,
+            sessionConfigured,
+          });
           return new Response("Google sign-in is not configured for this deployment.", {
             status: 503,
             headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" },
