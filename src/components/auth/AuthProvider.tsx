@@ -1,5 +1,5 @@
 import { createContext, useContext, type ReactNode } from "react";
-import type { AuthUser } from "@/lib/auth/session";
+import type { AuthUser } from "@/lib/auth/supabase";
 
 const AuthContext = createContext<AuthUser | null>(null);
 

@@ -1,5 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { isAuthSessionConfigured, useVoiceLoungeSession } from "@/lib/auth/session";
+import {
+  AUTH_COOKIES,
+  clearCookie,
+  parseCookieHeader,
+  revokeSupabaseSession,
+} from "@/lib/auth/supabase.server";
 
 function isSameOrigin(request: Request) {
   const expected = new URL(request.url).origin;
@@ -8,6 +13,7 @@ function isSameOrigin(request: Request) {
 
   const referer = request.headers.get("referer");
   if (!referer) return false;
+
   try {
     return new URL(referer).origin === expected;
   } catch {
@@ -20,11 +26,21 @@ export const Route = createFileRoute("/auth/logout")({
     handlers: {
       POST: async ({ request }) => {
         if (!isSameOrigin(request)) return new Response("Forbidden", { status: 403 });
-        if (isAuthSessionConfigured()) {
-          const session = await useVoiceLoungeSession();
-          await session.clear();
-        }
-        return Response.redirect(new URL("/", request.url), 303);
+
+        const cookies = parseCookieHeader(request.headers.get("cookie"));
+        const accessToken = cookies.get(AUTH_COOKIES.access);
+        if (accessToken) await revokeSupabaseSession(accessToken);
+
+        const headers = new Headers({
+          Location: new URL("/", request.url).toString(),
+          "Cache-Control": "private, no-store",
+        });
+        headers.append("Set-Cookie", clearCookie(AUTH_COOKIES.access));
+        headers.append("Set-Cookie", clearCookie(AUTH_COOKIES.refresh));
+        headers.append("Set-Cookie", clearCookie(AUTH_COOKIES.verifier));
+        headers.append("Set-Cookie", clearCookie(AUTH_COOKIES.returnTo));
+
+        return new Response(null, { status: 303, headers });
       },
     },
   },
