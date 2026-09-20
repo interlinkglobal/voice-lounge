@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { Bookmark, Clock3, MapPin, Radio, Share2, UserPlus } from "lucide-react";
+import { Bookmark, Clock3, ExternalLink, MapPin, Radio, Share2, UserPlus } from "lucide-react";
 import { Artwork } from "@/components/media/Artwork";
 import { WatchButton } from "@/components/media/WatchButton";
 import { Section } from "@/components/sections/SectionRenderer";
@@ -43,6 +43,8 @@ interface DetailModel {
   body?: string[];
   creatorId?: string;
   live?: boolean;
+  sourceLabel?: string;
+  sourceUrl?: string;
 }
 
 function resolveDetail(kind: DetailKind, slug: string): DetailModel | null {
@@ -115,6 +117,8 @@ function resolveDetail(kind: DetailKind, slug: string): DetailModel | null {
       relatedTitle: "More from the newsroom",
       related: news.filter((item) => item.id !== article.id).slice(0, 8).map((item) => newsCard(item)),
       body: article.body,
+      sourceLabel: article.sourceLabel,
+      sourceUrl: article.sourceUrl,
     };
   }
 
@@ -239,6 +243,11 @@ export function DetailPage({ kind, slug }: { kind: DetailKind; slug: string }) {
               {model.creatorId && kind === "creator" && <CreatorAction id={model.creatorId} name={model.title} />}
               <button type="button" aria-pressed={saved} onClick={() => toggleSave(model.id, model.title)} className="press inline-flex h-12 items-center gap-2 rounded-full border border-hairline bg-surface/70 px-5 text-sm font-semibold backdrop-blur"><Bookmark className={`size-4 ${saved ? "fill-[var(--gold)] text-[var(--gold)]" : ""}`} aria-hidden="true" />{saved ? "Saved" : "Save"}</button>
               <button type="button" onClick={() => void shareCurrent()} className="press inline-flex h-12 items-center gap-2 rounded-full border border-hairline px-5 text-sm font-semibold"><Share2 className="size-4" aria-hidden="true" />{shareState === "shared" ? "Shared" : shareState === "copied" ? "Link copied" : "Share"}</button>
+              {model.sourceUrl && (
+                <a href={model.sourceUrl} target="_blank" rel="noreferrer" className="press inline-flex h-12 items-center gap-2 rounded-full border border-hairline px-5 text-sm font-semibold">
+                  {model.sourceLabel ?? "Original source"} <ExternalLink className="size-4" aria-hidden="true" />
+                </a>
+              )}
             </div>
             {model.live && <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--live)] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-white"><Radio className="size-3.5" aria-hidden="true" /> On air now</div>}
           </div>
@@ -246,7 +255,7 @@ export function DetailPage({ kind, slug }: { kind: DetailKind; slug: string }) {
         </div>
       </section>
 
-      {model.body && <article className="shell py-[clamp(2.5rem,6vw,6rem)]"><div className="mx-auto max-w-3xl"><p className="mb-8 text-xs font-bold uppercase tracking-[0.2em] text-[var(--gold)]">Voice Lounge newsroom</p>{model.body.map((paragraph, index) => <p key={index} className="mb-6 text-[clamp(1rem,1.2vw,1.2rem)] leading-8 text-foreground/90">{paragraph}</p>)}<p className="mt-10 rounded-2xl border border-hairline bg-surface-2 p-5 text-sm text-muted-foreground">Public-source summary aligned to the Voice Lounge research baseline dated 20 September 2026. Source publication names and dates are preserved above; uncertain details are intentionally omitted.</p></div></article>}
+      {model.body && <article className="shell py-[clamp(2.5rem,6vw,6rem)]"><div className="mx-auto max-w-3xl"><p className="mb-8 text-xs font-bold uppercase tracking-[0.2em] text-[var(--gold)]">Voice Lounge newsroom</p>{model.body.map((paragraph, index) => <p key={index} className="mb-6 text-[clamp(1rem,1.2vw,1.2rem)] leading-8 text-foreground/90">{paragraph}</p>)}<p className="mt-10 rounded-2xl border border-hairline bg-surface-2 p-5 text-sm text-muted-foreground">This archive entry is a concise public-source summary. Where an original publication is available, use the source link above for the complete reporting; uncertain or unsupported details are intentionally omitted.</p></div></article>}
 
       <Section index={0} spec={{ id: `${kind}-related`, eyebrow: "Keep exploring", title: model.relatedTitle, blurb: "The next useful thing should always be one tap away.", layout: "rail", items: model.related, variant: kind === "news" ? "news" : kind === "creator" ? "portrait" : kind === "live" ? "live" : "landscape", priority: true }} />
       {model.related.length === 0 && <section className="shell my-[var(--section-gap)] rounded-3xl border border-hairline bg-card p-8 text-center"><h2 className="font-display text-2xl font-bold">More is being recorded.</h2><p className="mt-2 text-sm text-muted-foreground">Browse the wider catalogue while this page fills out.</p><Link to="/discover" className="press mt-5 inline-flex rounded-full bg-[var(--green-action)] px-5 py-2.5 text-sm font-semibold text-white">Discover something new</Link></section>}
