@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Crown, LogIn, LogOut, Menu, Monitor, Moon, Search, Sun, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,7 +20,7 @@ export const PRIMARY_NAV = [
 export const SECONDARY_NAV = [
   { to: "/discover", label: "Discover" },
   { to: "/episodes", label: "Episodes" },
-  { to: "/categories", label: "Categories" },
+  { to: "/guests", label: "Guests" },
   { to: "/creators", label: "Creators" },
   { to: "/community", label: "Community" },
   { to: "/about", label: "About" },
@@ -91,6 +91,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [term, setTerm] = useState("");
   const navigate = useNavigate();
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -114,12 +115,14 @@ export function Header() {
 
   return (
     <>
-      <a
-        href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-[var(--green-action)] focus:px-4 focus:py-2 focus:text-white"
-      >
-        Skip to content
-      </a>
+      {pathname !== "/youtube" && (
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[100] focus:rounded-full focus:bg-[var(--green-action)] focus:px-4 focus:py-2 focus:text-white"
+        >
+          Skip to content
+        </a>
+      )}
       <header
         className={cn(
           "sticky top-0 z-[var(--z-header)] transition-[background-color,box-shadow,border-color] duration-200",
