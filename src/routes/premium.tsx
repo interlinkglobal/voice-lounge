@@ -145,12 +145,18 @@ function Page() {
   }
 
   return (
-    <div className="relative min-h-[80vh]">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none select-none opacity-35 blur-[2px]"
-      >
-        <PlatformPage page="premium" />
+    <div className="relative min-h-[80vh] overflow-hidden bg-[radial-gradient(circle_at_50%_20%,color-mix(in_oklab,var(--gold)_14%,transparent),transparent_34%),linear-gradient(to_bottom,var(--background),color-mix(in_oklab,var(--background)_86%,black))]">
+      <div aria-hidden="true" className="shell min-h-[80vh] py-16 opacity-30">
+        <div className="mx-auto max-w-5xl">
+          <div className="h-5 w-32 rounded-full bg-[color-mix(in_oklab,var(--gold)_28%,var(--surface-2))]" />
+          <div className="mt-8 h-14 max-w-2xl rounded-2xl bg-surface-2" />
+          <div className="mt-4 h-5 max-w-xl rounded-full bg-surface-2" />
+          <div className="mt-12 grid gap-4 md:grid-cols-3">
+            {Array.from({ length: 6 }, (_, index) => (
+              <div key={index} className="h-44 rounded-3xl border border-hairline bg-card/60" />
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className="fixed inset-0 z-[1000] grid place-items-center overflow-y-auto bg-black/72 px-4 py-8 backdrop-blur-md">
