@@ -1,3 +1,4 @@
+import { useRouterState } from "@tanstack/react-router";
 import {
   createContext,
   useCallback,
@@ -48,6 +49,8 @@ export function YouTubePlayerProvider({
   children: ReactNode;
 }) {
   const videos = feed.status === "ready" ? feed.videos : [];
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const previousPathname = useRef(pathname);
   const { pause: pauseLegacyPlayback } = usePlayer();
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [currentId, setCurrentId] = useState<string | null>(null);
@@ -131,6 +134,17 @@ export function YouTubePlayerProvider({
   }, [currentIndex, emblaApi, pauseLegacyPlayback, surface, videos]);
 
   const overlayOpen = surface === "modal" || (surface === "dock" && dockExpanded);
+
+  useEffect(() => {
+    if (previousPathname.current !== pathname) {
+      if (surface === "modal") {
+        setCurrentId(null);
+        setSurface(null);
+        setDockExpanded(false);
+      }
+      previousPathname.current = pathname;
+    }
+  }, [pathname, surface]);
 
   useEffect(() => {
     if (!current || !overlayOpen) return;
