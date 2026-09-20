@@ -218,9 +218,10 @@ export function pageCards(
   }
 
   if (page === "news") {
-    const aliases: Array<[string, string]> = [["press", "Press"], ["news", "Press"], ["voice lounge", "Press"]];
-    const hit = aliases.find(([needle]) => t.includes(needle));
-    return (hit ? q.newsBySection(hit[1], 10) : q.latestNews(12)).map((item) => newsCard(item));
+    if (t.includes("opinion")) return q.newsBySection("Opinion", 10).map((item) => newsCard(item));
+    if (t.includes("politic")) return q.newsBySection("Politics", 10).map((item) => newsCard(item));
+    if (t.includes("press")) return q.newsBySection("Press", 10).map((item) => newsCard(item));
+    return q.latestNews(t.includes("complete") ? 24 : 12).map((item) => newsCard(item));
   }
 
   if (t.includes("creator spotlight")) return creatorCardsWithPortraits(0);
