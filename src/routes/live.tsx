@@ -1,11 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlatformPage, routeHead } from "@/components/pages/PlatformPage";
+import { LiveExperience } from "@/components/pages/ContentExperiences";
+import { routeHead } from "@/components/pages/PlatformPage";
 
 export const Route = createFileRoute("/live")({
   head: () => routeHead("live"),
-  component: Page,
+  component: LiveExperience,
 });
-
-function Page() {
-  return <PlatformPage page="live" />;
-}
