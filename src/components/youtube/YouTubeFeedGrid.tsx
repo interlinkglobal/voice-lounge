@@ -32,7 +32,7 @@ export function YouTubeVideoCard({
 
   if (compact) {
     return (
-      <article className={cn("vl-component-enter group w-full", className)}>
+      <article className={cn(animate && "vl-component-enter", "group w-full", className)}>
         <div className="hyper-glass grid grid-cols-[4.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2">
           <button type="button" onClick={open} aria-label={`Play ${video.title}`} className="media-shine relative aspect-video overflow-hidden rounded-lg bg-black">
             <img src={video.thumbnail} alt="" loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
@@ -50,7 +50,7 @@ export function YouTubeVideoCard({
 
   if (featured) {
     return (
-      <article className={cn("vl-component-enter card-lift hyper-glass group overflow-hidden rounded-3xl", className)}>
+      <article className={cn(animate && "vl-component-enter", "card-lift hyper-glass group overflow-hidden rounded-3xl", className)}>
         <div className="grid md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           <button type="button" onClick={open} aria-label={`Play ${video.title}`} className="media-shine relative aspect-video overflow-hidden bg-black text-left md:aspect-auto md:min-h-[20rem]">
             <img src={video.thumbnail} alt={video.title} loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-out-quick)] group-hover:scale-[1.04]" />
@@ -72,7 +72,7 @@ export function YouTubeVideoCard({
   }
 
   return (
-    <article className={cn("vl-component-enter card-lift hyper-glass group overflow-hidden rounded-2xl", className)}>
+    <article className={cn(animate && "vl-component-enter", "card-lift hyper-glass group overflow-hidden rounded-2xl", className)}>
       <button type="button" onClick={open} aria-label={`Play ${video.title}`} className="media-shine relative block aspect-video w-full overflow-hidden bg-black text-left">
         <img src={video.thumbnail} alt={video.title} loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-out-quick)] group-hover:scale-[1.04]" />
         <span className="absolute inset-0 bg-gradient-to-t from-black/48 via-transparent to-white/[0.04]" aria-hidden="true" />
@@ -98,8 +98,8 @@ export function YouTubeFeedGrid({ feed, standalone = false }: { feed: YouTubeFee
   );
 
   return (
-    <section id="youtube-feed" aria-labelledby="youtube-feed-heading" className={cn("vl-section-enter", standalone ? "shell py-[clamp(1rem,3vw,2rem)]" : "shell mt-[var(--section-gap)]")}>
-      <header className="hyper-glass mb-6 flex flex-col gap-4 rounded-[1.75rem] p-4 sm:flex-row sm:items-end sm:justify-between vl-component-enter">
+    <section id="youtube-feed" aria-labelledby="youtube-feed-heading" className={cn(!standalone && "vl-section-enter", standalone ? "shell py-[clamp(1rem,3vw,2rem)]" : "shell mt-[var(--section-gap)]")}>
+      <header className={cn("hyper-glass mb-6 flex flex-col gap-4 rounded-[1.75rem] p-4 sm:flex-row sm:items-end sm:justify-between", !standalone && "vl-component-enter")}>
         <div className="flex min-w-0 items-center gap-3">
           {feed.channelThumbnail ? (
             <div className="media-shine size-14 shrink-0 overflow-hidden rounded-full"><img src={feed.channelThumbnail} alt="" width={56} height={56} className="h-full w-full object-cover" loading="lazy" decoding="async" /></div>
@@ -120,7 +120,7 @@ export function YouTubeFeedGrid({ feed, standalone = false }: { feed: YouTubeFee
       ) : feed.videos.length === 0 ? (
         <div className="hyper-glass rounded-3xl p-8 text-center vl-component-enter"><h3 className="font-display text-xl font-bold">No public uploads were returned.</h3><p className="mt-2 text-sm text-muted-foreground">The channel connection is valid, but there are no public videos to display yet.</p></div>
       ) : (
-        <div className="grid gap-[var(--rail-gap)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{orderedVideos.map((video, index) => <YouTubeVideoCard key={video.id} video={video} priority={index < 4} className="w-full" />)}</div>
+        <div className="grid gap-[var(--rail-gap)] sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{orderedVideos.map((video, index) => <YouTubeVideoCard key={video.id} video={video} priority={index < 4} animate={!standalone} className="w-full" />)}</div>
       )}
     </section>
   );
