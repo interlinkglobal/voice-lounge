@@ -2042,3 +2042,21 @@ Removed stale Gate 1 statements that billing was disconnected. Premium FAQ, acco
 
 #### `src/lib/voice-lounge/routes.ts` — Premium route proposition updated
 Updated Premium route metadata and CTA copy to describe the active R9.99 Interlink checkout and verification flow instead of the previous non-billing Gate 1 state.
+
+
+---
+
+## Development Log — 20 September 2026, 20:10 SAST
+
+### Content-first route refactor, Guests, Community and research About page
+
+- Header brand mark now uses the Voice Lounge card logo instead of the waveform glyph.
+- More navigation replaces Categories with a new research-backed Guests directory; legacy Categories route files were removed.
+- Discover now opens directly on search, content-type selection and nine faceted filter tabs. Results update immediately without a Find/apply step or ceremonial hero.
+- YouTube standalone rendering no longer uses page/card blur entrance animation and omits the skip-to-content control on that route.
+- Watch navigation is positioned above a centered, constrained video player; the newest video is first and later Next selections remain randomized from the full paginated upload pool.
+- Episodes now uses one compact episode-row component throughout, with a programme selector and no generic landing/hero or mixed video-card sections.
+- Community now loads real public YouTube comment threads and places them alongside a website-comment composer UI; website comment persistence remains intentionally unconnected.
+- Creators now surface documented programme hosts with explicit show relationships. Creator slugs render concise research-constrained profiles rather than generic filler sections.
+- About is now a long-form research page derived from the repository's voice-lounge-research.md baseline, with organisation history, programme/guest context, distribution, audience signals, commercial model, research gaps, public links and contact information.
+- Responsive layouts use fluid grids, labelled form controls, semantic headings, keyboard-operable actions and mobile-safe touch targets across the new route components.
