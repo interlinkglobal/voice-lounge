@@ -1,12 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { PodcastsExperience } from "@/components/pages/RouteExperiences";
-import { routeHead } from "@/components/pages/PlatformPage";
+import { Outlet, createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/podcasts")({
-  head: () => routeHead("podcasts"),
-  component: Page,
+  component: PodcastsLayout,
 });
 
-function Page() {
-  return <PodcastsExperience />;
+function PodcastsLayout() {
+  return <Outlet />;
 }
