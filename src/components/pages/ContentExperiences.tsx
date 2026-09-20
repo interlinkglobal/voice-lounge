@@ -419,46 +419,54 @@ export function WatchExperience() {
 
   return (
     <div className="shell pb-[var(--section-gap)] pt-[clamp(1rem,3vw,2rem)]" data-primary-route="watch">
-      <section className="overflow-hidden border border-hairline bg-black text-white">
-        <div className="aspect-video w-full bg-black">
-          <iframe
-            key={current.id}
-            src={`${current.embedUrl}?autoplay=0&rel=0&playsinline=1&modestbranding=1`}
-            title={current.title}
-            className="h-full w-full"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
-        </div>
-        <div className="grid gap-4 p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+      <section className="mx-auto max-w-5xl">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--green)]">Now watching</p>
-            <h1 className="mt-2 font-display text-[clamp(1.35rem,3vw,2.25rem)] font-black leading-tight">{current.title}</h1>
-            {current.description && <p className="mt-2 line-clamp-2 max-w-4xl text-sm leading-6 text-white/60">{current.description}</p>}
+            <h1 className="mt-1 line-clamp-1 font-display text-[clamp(1.15rem,2.4vw,1.8rem)] font-black">{current.title}</h1>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
               onClick={previous}
               disabled={!history.length}
-              className="press inline-flex min-h-11 items-center gap-2 border border-white/20 px-4 text-sm font-bold disabled:opacity-35"
+              className="press inline-flex min-h-11 items-center gap-2 border border-hairline px-4 text-sm font-bold disabled:opacity-35"
             >
               <ChevronLeft className="size-4" aria-hidden="true" /> Prev
             </button>
             <button
               type="button"
               onClick={next}
-              className="press inline-flex min-h-11 items-center gap-2 bg-[var(--green-action)] px-4 text-sm font-bold"
+              className="press inline-flex min-h-11 items-center gap-2 bg-[var(--green-action)] px-4 text-sm font-bold text-white"
             >
               Next <ChevronRight className="size-4" aria-hidden="true" />
             </button>
           </div>
         </div>
+
+        <div className="mx-auto w-full max-w-4xl overflow-hidden border border-hairline bg-black text-white shadow-lift">
+          <div className="aspect-video w-full bg-black">
+            <iframe
+              key={current.id}
+              src={`${current.embedUrl}?autoplay=0&rel=0&playsinline=1&modestbranding=1`}
+              title={current.title}
+              className="h-full w-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
+              allowFullScreen
+            />
+          </div>
+          {current.description && (
+            <div className="border-t border-white/10 p-4 sm:p-5">
+              <p className="line-clamp-2 text-sm leading-6 text-white/65">{current.description}</p>
+            </div>
+          )}
+        </div>
+
+        <p className="mx-auto mt-3 max-w-4xl text-xs text-muted-foreground">
+          The newest upload is shown first. Next selections are randomized from the complete paginated Voice Lounge upload pool.
+        </p>
       </section>
-      <p className="mt-3 text-xs text-muted-foreground">
-        The newest upload is shown first. Next selections are randomized from the full paginated Voice Lounge upload pool.
-      </p>
     </div>
   );
 }
