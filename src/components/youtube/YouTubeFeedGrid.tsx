@@ -98,15 +98,7 @@ export function YouTubeFeedGrid({ feed, standalone = false }: { feed: YouTubeFee
   );
 
   return (
-    <section id="youtube-feed" aria-labelledby="youtube-feed-heading" className={cn("vl-section-enter", standalone ? "shell py-[clamp(3rem,7vw,7rem)]" : "shell mt-[var(--section-gap)]")}>
-      {standalone && (
-        <div className="mb-[clamp(2rem,5vw,4.5rem)] max-w-4xl vl-component-enter">
-          <div className="hyper-glass inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] text-[var(--green)]"><Youtube className="size-4" aria-hidden="true" /> Official YouTube feed</div>
-          <h1 className="mt-5 font-display text-[var(--step-5)] font-black leading-[0.95] tracking-[-0.04em]">Watch {channelName} on YouTube.</h1>
-          <p className="mt-4 max-w-2xl text-[var(--step-1)] leading-relaxed text-muted-foreground">Latest uploads from @THEVOICELOUNGE, collected directly from the YouTube Data API and presented inside The Voice Lounge catalogue.</p>
-        </div>
-      )}
-
+    <section id="youtube-feed" aria-labelledby="youtube-feed-heading" className={cn("vl-section-enter", standalone ? "shell py-[clamp(1rem,3vw,2rem)]" : "shell mt-[var(--section-gap)]")}>
       <header className="hyper-glass mb-6 flex flex-col gap-4 rounded-[1.75rem] p-4 sm:flex-row sm:items-end sm:justify-between vl-component-enter">
         <div className="flex min-w-0 items-center gap-3">
           {feed.channelThumbnail ? (
