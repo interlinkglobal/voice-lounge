@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DetailPage, detailHead } from "@/components/pages/DetailPage";
+import { PodcastDetailExperience } from "@/components/pages/ContentExperiences";
+import { detailHead } from "@/components/pages/DetailPage";
 
 export const Route = createFileRoute("/podcasts/$slug")({
   head: ({ params }) => detailHead("podcast", params.slug),
@@ -8,5 +9,5 @@ export const Route = createFileRoute("/podcasts/$slug")({
 
 function Page() {
   const { slug } = Route.useParams();
-  return <DetailPage kind="podcast" slug={slug} />;
+  return <PodcastDetailExperience slug={slug} />;
 }
