@@ -1,12 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { DiscoverExperience } from "@/components/pages/RouteExperiences";
+import { DiscoverWorkspaceExperience } from "@/components/pages/AudienceExperiences";
 import { routeHead } from "@/components/pages/PlatformPage";
 
 export const Route = createFileRoute("/discover")({
   head: () => routeHead("discover"),
-  component: Page,
+  component: DiscoverWorkspaceExperience,
 });
-
-function Page() {
-  return <DiscoverExperience />;
-}
