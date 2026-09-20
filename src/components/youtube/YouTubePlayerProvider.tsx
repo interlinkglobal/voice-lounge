@@ -1,4 +1,3 @@
-import { useRouterState } from "@tanstack/react-router";
 import {
   createContext,
   useCallback,
@@ -50,7 +49,6 @@ export function YouTubePlayerProvider({
 }) {
   const videos = feed.status === "ready" ? feed.videos : [];
   const { pause: pauseLegacyPlayback } = usePlayer();
-  const pathname = useRouterState({ select: (state) => state.location.pathname });
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [currentId, setCurrentId] = useState<string | null>(null);
   const [surface, setSurface] = useState<YouTubePlayerSurface>(null);
@@ -131,12 +129,6 @@ export function YouTubePlayerProvider({
     });
     emblaApi?.scrollTo(Math.max(0, index - 1));
   }, [currentIndex, emblaApi, pauseLegacyPlayback, surface, videos]);
-
-  useEffect(() => {
-    if (surface !== "modal") return;
-    setCurrentId(null);
-    setSurface(null);
-  }, [pathname, surface]);
 
   const overlayOpen = surface === "modal" || (surface === "dock" && dockExpanded);
 
