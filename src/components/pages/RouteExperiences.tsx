@@ -232,11 +232,32 @@ export function DiscoverExperience() {
   );
 }
 
-const PODCAST_THUMBNAILS = [
+const PODCAST_FALLBACK_THUMBNAILS = [
   "https://res.cloudinary.com/dlokees9a/image/upload/v1789909792/podcast-thumbail-3_vvs9ad.avif",
   "https://res.cloudinary.com/dlokees9a/image/upload/v1789909792/podcast-thumbnail-2_fnmy0h.avif",
   "https://res.cloudinary.com/dlokees9a/image/upload/v1789909792/podcast-thumbnail-1_mvrnri.avif",
 ] as const;
+
+const PODCAST_THUMBNAILS: Record<string, string> = {
+  "pod-breakfast-plug": "/images/podcasts/breakfast-plug.jpg",
+  "pod-beyond-the-grey": "/images/podcasts/beyond-the-grey.jpg",
+  "pod-refuel-lounge": "/images/podcasts/refuel-lounge.jpg",
+  "pod-3-2-6-lounge": "/images/podcasts/3-2-6-lounge.jpg",
+  "pod-the-voicelounge-sitting": "/images/podcasts/the-voicelounge-sitting.jpg",
+  "pod-sports-lounge": "/images/podcasts/sports-lounge.jpg",
+  "pod-after-dark-lounge": "/images/podcasts/after-dark-lounge.jpg",
+  "pod-spirit-and-truth": "/images/podcasts/spirit-and-truth.jpg",
+  "pod-triumph-lounge": "/images/podcasts/triumph-lounge.jpg",
+  "pod-solitude-lounge": "/images/podcasts/solitude-lounge.jpg",
+  "pod-connect-and-learn": "/images/podcasts/connect-and-learn.jpg",
+  "pod-weekend-gateaway": "/images/podcasts/weekend-gateaway.jpg",
+  "pod-music-lounge": "/images/podcasts/music-lounge.jpg",
+  "pod-logos-moment": "/images/podcasts/logos-moment.jpg",
+  "pod-grace-connection": "/images/podcasts/grace-connection.jpg",
+  "pod-chapter-lounge": "/images/podcasts/chapter-lounge.jpg",
+  "pod-rhythm-and-sound-lounge": "/images/podcasts/rhythm-and-sound-lounge.jpg",
+  "pod-koinonia-the-fellowship": "/images/podcasts/koinonia-the-fellowship.jpg",
+};
 
 export function PodcastsExperience() {
   const feed = useYouTubeFeed();
@@ -269,7 +290,8 @@ export function PodcastsExperience() {
         return {
           podcast,
           category,
-          thumbnail: PODCAST_THUMBNAILS[index % PODCAST_THUMBNAILS.length],
+          thumbnail: PODCAST_THUMBNAILS[podcast.id] ?? PODCAST_FALLBACK_THUMBNAILS[index % PODCAST_FALLBACK_THUMBNAILS.length],
+          fallbackThumbnail: PODCAST_FALLBACK_THUMBNAILS[index % PODCAST_FALLBACK_THUMBNAILS.length],
           video,
           matches: !normalizedQuery || searchable.includes(normalizedQuery),
         };
@@ -302,7 +324,7 @@ export function PodcastsExperience() {
 
         {directory.length > 0 ? (
           <div className="mt-4 grid gap-4 lg:grid-cols-2">
-            {directory.map(({ podcast, category, thumbnail, video }, index) => (
+            {directory.map(({ podcast, category, thumbnail, fallbackThumbnail, video }, index) => (
               <article
                 key={podcast.id}
                 className="group grid min-h-[9.5rem] grid-cols-[38%_minmax(0,1fr)] overflow-hidden border border-hairline bg-card/45 transition-colors hover:border-[color-mix(in_oklab,var(--green)_48%,var(--hairline))] sm:grid-cols-[32%_minmax(0,1fr)]"
@@ -314,6 +336,13 @@ export function PodcastsExperience() {
                 >
                   <img
                     src={thumbnail}
+                    data-fallback={fallbackThumbnail}
+                    onError={(event) => {
+                      const fallback = event.currentTarget.dataset.fallback;
+                      if (fallback && event.currentTarget.src !== fallback) {
+                        event.currentTarget.src = fallback;
+                      }
+                    }}
                     alt={podcast.artwork.alt}
                     loading={index < 6 ? "eager" : "lazy"}
                     decoding="async"
