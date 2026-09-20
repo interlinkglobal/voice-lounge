@@ -2009,3 +2009,36 @@ Updated global Organization structured data to use the existing public Voice Lou
 
 **Gate boundary:** No new Supabase content tables, CMS persistence, RLS/admin roles, payment processor, live-stream provider integration, analytics backend, RSS ingestion, SEO redirect migration or test framework is introduced in this change. Those remain later gates by directive.
 
+
+
+---
+
+## Development Log — 20 September 2026, 14:45 SAST
+
+### Voice Lounge Premium — Interlink Cross-Site Payment Paywall
+
+**Directive:** Connect Voice Lounge Premium to the existing Interlink Global Technologies cross-site Paystack workflow and block `/premium` until payment is verified. Preserve a rapid double-click development bypass without exposing that bypass in Vercel production.
+
+#### `src/lib/premium/payment.ts` — added
+Defined the shared cross-site contract used by Voice Lounge and Interlink: product `Voice Lounge Premium`, item `Premium monthly`, fixed price `R9.99` / `999` cents, Interlink checkout URL and Interlink verification endpoint.
+
+#### `src/lib/premium/payment.server.ts` — added
+Added server-side Premium verification. It reads the authenticated Voice Lounge account from the existing HttpOnly Supabase session cookie, verifies the Paystack reference through Interlink, and requires an exact match for successful status, 999-cent amount, ZAR currency, Voice Lounge Premium product, monthly item, signed-in user ID and payer email. Added separate HttpOnly cookies for verified payment entitlement and non-production development bypass.
+
+#### `src/routes/api.premium.confirm.ts` — added
+Added the same-origin activation endpoint used after returning from Interlink. It refuses signed-out users and malformed references, fails closed on mismatched payment data, and issues the Premium entitlement cookie only after Interlink verification succeeds.
+
+#### `src/routes/api.premium.status.ts` — added
+Added Premium entitlement status checks. Verified payment references are revalidated against Interlink. Invalid references are cleared. Development bypass cookies are honored only in Vercel preview/development environments and are cleared in production.
+
+#### `src/routes/api.premium.dev-unlock.ts` — added
+Added the requested rapid-development bypass endpoint. It only issues a two-hour development Premium cookie when the app is running locally or in a Vercel preview/development environment; production returns not found.
+
+#### `src/routes/premium.tsx` — replaced open route with payment gate
+The Premium route now validates the return reference from Interlink, confirms payment through the server endpoint, and renders Premium only after activation. Locked users see a modal paywall with the fixed R9.99 monthly amount and an Interlink/Paystack checkout action. Signed-out visitors must authenticate first. Fast double-clicking the modal invokes the non-production development bypass.
+
+#### `src/components/pages/RoutePanels.tsx` — payment copy updated
+Removed stale Gate 1 statements that billing was disconnected. Premium FAQ, account billing status, comparison and access-status content now describe Interlink Global Technologies / Paystack payment processing and server-side verification.
+
+#### `src/lib/voice-lounge/routes.ts` — Premium route proposition updated
+Updated Premium route metadata and CTA copy to describe the active R9.99 Interlink checkout and verification flow instead of the previous non-billing Gate 1 state.
