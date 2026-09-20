@@ -17,6 +17,18 @@ export interface YouTubeFeedVideo {
   wasLive: boolean;
 }
 
+export interface YouTubeComment {
+  id: string;
+  authorName: string;
+  authorImage: string | null;
+  authorChannelUrl: string | null;
+  text: string;
+  likeCount: number;
+  publishedAt: string;
+  videoId: string | null;
+  source: "youtube";
+}
+
 export interface YouTubeFeedResult {
   status: YouTubeFeedStatus;
   channelId: string;
@@ -25,6 +37,7 @@ export interface YouTubeFeedResult {
   channelThumbnail: string | null;
   totalResults: number;
   videos: YouTubeFeedVideo[];
+  comments: YouTubeComment[];
   message: string | null;
 }
 
@@ -72,6 +85,27 @@ interface YouTubePlaylistResponse {
     totalResults?: number;
   };
   items?: YouTubePlaylistItem[];
+}
+
+
+interface YouTubeCommentThreadsResponse {
+  items?: Array<{
+    id?: string;
+    snippet?: {
+      videoId?: string;
+      topLevelComment?: {
+        id?: string;
+        snippet?: {
+          authorDisplayName?: string;
+          authorProfileImageUrl?: string;
+          authorChannelUrl?: string;
+          textOriginal?: string;
+          likeCount?: number;
+          publishedAt?: string;
+        };
+      };
+    };
+  }>;
 }
 
 interface YouTubeVideosResponse {
@@ -125,6 +159,7 @@ function emptyResult(status: Exclude<YouTubeFeedStatus, "ready">, channelId: str
     channelThumbnail: null,
     totalResults: 0,
     videos: [],
+    comments: [],
     message,
   };
 }
@@ -216,6 +251,51 @@ async function fetchVideoDetails(apiKey: string, videoIds: string[]) {
   return details;
 }
 
+
+async function fetchRecentChannelComments(apiKey: string, channelId: string): Promise<YouTubeComment[]> {
+  const url = new URL("https://www.googleapis.com/youtube/v3/commentThreads");
+  url.searchParams.set("part", "snippet");
+  url.searchParams.set("allThreadsRelatedToChannelId", channelId);
+  url.searchParams.set("maxResults", "50");
+  url.searchParams.set("order", "time");
+  url.searchParams.set("textFormat", "plainText");
+  url.searchParams.set("key", apiKey);
+
+  try {
+    const response = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!response.ok) {
+      console.warn(`[youtube-feed] commentThreads.list failed with HTTP ${response.status}`);
+      return [];
+    }
+
+    const data = (await response.json()) as YouTubeCommentThreadsResponse;
+    return (data.items ?? [])
+      .map((item) => {
+        const comment = item.snippet?.topLevelComment;
+        const snippet = comment?.snippet;
+        const id = comment?.id ?? item.id;
+        const authorName = snippet?.authorDisplayName?.trim();
+        const text = snippet?.textOriginal?.trim();
+        if (!id || !authorName || !text) return null;
+        return {
+          id,
+          authorName,
+          authorImage: snippet.authorProfileImageUrl ?? null,
+          authorChannelUrl: snippet.authorChannelUrl ?? null,
+          text,
+          likeCount: snippet.likeCount ?? 0,
+          publishedAt: snippet.publishedAt ?? "",
+          videoId: item.snippet?.videoId ?? null,
+          source: "youtube" as const,
+        };
+      })
+      .filter((comment): comment is NonNullable<typeof comment> => comment !== null);
+  } catch (error) {
+    console.warn("[youtube-feed] recent comments could not be loaded", error);
+    return [];
+  }
+}
+
 export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async (): Promise<YouTubeFeedResult> => {
   const apiKey = process.env.YOUTUBE_DATA_API_KEY?.trim() ?? "";
   const channelId = process.env.CHANNEL_ID?.trim() ?? "";
@@ -252,7 +332,10 @@ export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async ()
       return emptyResult("error", channelId, "No YouTube channel was found for the configured CHANNEL_ID.");
     }
 
-    const playlistData = await fetchAllUploads(apiKey, uploadsPlaylistId);
+    const [playlistData, comments] = await Promise.all([
+      fetchAllUploads(apiKey, uploadsPlaylistId),
+      fetchRecentChannelComments(apiKey, channel.id ?? channelId),
+    ]);
     const baseVideos = playlistData.items
       .map((item) => {
         const videoId = item.contentDetails?.videoId ?? item.snippet?.resourceId?.videoId;
@@ -294,6 +377,7 @@ export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async ()
       channelThumbnail: bestThumbnail(channel.snippet?.thumbnails),
       totalResults: playlistData.totalResults,
       videos,
+      comments,
       message: null,
     };
 
