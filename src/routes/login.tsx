@@ -23,13 +23,13 @@ export const Route = createFileRoute("/login")({
   }),
   head: () => ({
     meta: [
-      { title: "Sign In to Voice Lounge Demo | The Voice Lounge" },
+      { title: "Sign In to The Voice Lounge | The Voice Lounge" },
       {
         name: "description",
         content:
           "Sign in to The Voice Lounge with email or Google to keep your membership, profile and saved experiences connected.",
       },
-      { property: "og:title", content: "Sign In to Voice Lounge Demo | The Voice Lounge" },
+      { property: "og:title", content: "Sign In to The Voice Lounge | The Voice Lounge" },
       { property: "og:type", content: "website" },
     ],
   }),
@@ -95,18 +95,18 @@ function LoginPage() {
           </div>
 
           <h1 className="mt-5 max-w-3xl font-display text-[clamp(3rem,8vw,6.5rem)] font-black leading-[0.88] tracking-[-0.065em]">
-            Sign In to <span className="text-gold-foil">Voice Lounge Demo.</span>
+            Sign In to <span className="text-gold-foil">The Voice Lounge.</span>
           </h1>
 
           <p className="mt-6 max-w-2xl text-[clamp(1rem,1.45vw,1.28rem)] leading-relaxed text-muted-foreground">
-            Keep your membership card, saved content and account experience connected across devices.
+            Access your Voice Lounge identity and membership profile. Saved-content syncing will be connected to the account backend separately.
           </p>
 
           <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
             {[
-              ["Your membership", "Keep your plan and member card attached to your account."],
-              ["Your library", "Return to saved shows, videos and account preferences."],
-              ["Your identity", "Google sign-in keeps your verified name and profile image in sync."],
+              ["Your membership", "Keep your authenticated membership identity attached to your account."],
+              ["Your library", "Saved content currently remains on this browser until account-library sync is connected."],
+              ["Your identity", "Google sign-in provides secure account access and a verified profile identity."],
             ].map(([title, copy]) => (
               <div key={title} className="rounded-2xl border border-hairline bg-card/45 p-4">
                 <p className="font-display font-bold">{title}</p>
@@ -122,7 +122,7 @@ function LoginPage() {
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">Member sign in</p>
             <h2 className="mt-2 font-display text-[clamp(1.8rem,4vw,2.6rem)] font-black tracking-[-0.045em]">
-              Sign In to Voice Lounge Demo
+              Sign In to The Voice Lounge
             </h2>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
               Continue with Google or use your email and password.
@@ -152,7 +152,7 @@ function LoginPage() {
           </a>
 
           <p className="mt-4 text-sm leading-6 text-muted-foreground">
-            Sign in with Google to save playlists, keep your membership card and profile synced across devices, and return to your saved shows and videos.
+            Sign in with Google for secure Voice Lounge account access and to keep your verified profile attached to your membership identity.
           </p>
 
           <div className="my-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">

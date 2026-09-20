@@ -56,7 +56,7 @@ function resolveDetail(kind: DetailKind, slug: string): DetailModel | null {
       title: p.title,
       eyebrow: p.isOriginal ? "Voice Lounge Original" : "Podcast",
       description: p.description,
-      meta: [host?.name ?? "The Voice Lounge", p.language, p.province, `${p.episodeCount} episodes`],
+      meta: [host?.name ?? "The Voice Lounge", p.language, p.province, p.episodeCount > 0 ? `${p.episodeCount} episodes` : "Programme guide"].filter(Boolean),
       artwork: { ...p.artwork, ratio: "1/1" },
       watchId: p.id,
       relatedTitle: "Episodes",
@@ -74,7 +74,11 @@ function resolveDetail(kind: DetailKind, slug: string): DetailModel | null {
       title: e.title,
       eyebrow: e.kind === "video" ? "Video episode" : "Audio episode",
       description: e.description,
-      meta: [p?.title ?? "The Voice Lounge", formatDate(e.publishedAt), formatDuration(e.durationSec), `${e.plays.toLocaleString("en-ZA")} plays`],
+      meta: [
+        p?.title ?? "The Voice Lounge",
+        e.publishedAt ? formatDate(e.publishedAt) : "Date not published",
+        e.durationSec > 0 ? formatDuration(e.durationSec) : "",
+      ].filter(Boolean),
       artwork: e.artwork,
       watchId: e.id,
       relatedTitle: `More from ${p?.title ?? "this show"}`,
@@ -90,7 +94,7 @@ function resolveDetail(kind: DetailKind, slug: string): DetailModel | null {
       title: c.name,
       eyebrow: "Creator",
       description: c.bio,
-      meta: [c.role, `${c.city}, ${c.province}`, `${c.followers.toLocaleString("en-ZA")} followers`],
+      meta: [c.role, c.city && c.province ? `${c.city}, ${c.province}` : "The Voice Lounge"].filter(Boolean),
       artwork: { ...c.artwork, ratio: "1/1" },
       relatedTitle: `Shows with ${c.name}`,
       related: podcasts.filter((p) => p.creatorId === c.id).slice(0, 12).map((p) => podcastCard(p)),
@@ -122,7 +126,7 @@ function resolveDetail(kind: DetailKind, slug: string): DetailModel | null {
       title: event.title,
       eyebrow: event.status === "live" ? "Live now" : event.status === "ended" ? "Replay" : "Live programming",
       description: event.description,
-      meta: [event.host, event.strand, `${event.durationMin} min`, event.status === "live" ? `${event.listeners.toLocaleString("en-ZA")} listening` : formatDate(event.startsAt)],
+      meta: [event.host, event.strand, event.durationMin > 0 ? `${event.durationMin} min` : "", event.startsAt ? formatDate(event.startsAt) : "Schedule pending"].filter(Boolean),
       artwork: event.artwork,
       relatedTitle: "More live programming",
       related: liveEvents.filter((item) => item.id !== event.id).slice(0, 10).map((item) => liveCard(item)),
@@ -138,7 +142,7 @@ function resolveDetail(kind: DetailKind, slug: string): DetailModel | null {
     title: category.name,
     eyebrow: "Category",
     description: category.blurb,
-    meta: [`${category.count} shows`, "South Africa", "Updated daily"],
+    meta: [`${category.count} programmes`, "The Voice Lounge", "East London / Eastern Cape"],
     artwork: { seed: `category-detail-${category.slug}`, alt: `${category.name} podcasts`, ratio: "16/9" },
     relatedTitle: `${category.name} podcasts and episodes`,
     related: [
@@ -242,7 +246,7 @@ export function DetailPage({ kind, slug }: { kind: DetailKind; slug: string }) {
         </div>
       </section>
 
-      {model.body && <article className="shell py-[clamp(2.5rem,6vw,6rem)]"><div className="mx-auto max-w-3xl"><p className="mb-8 text-xs font-bold uppercase tracking-[0.2em] text-[var(--gold)]">Voice Lounge newsroom</p>{model.body.map((paragraph, index) => <p key={index} className="mb-6 text-[clamp(1rem,1.2vw,1.2rem)] leading-8 text-foreground/90">{paragraph}</p>)}<p className="mt-10 rounded-2xl border border-hairline bg-surface-2 p-5 text-sm text-muted-foreground">This is demonstration editorial content for The Voice Lounge website build. Replace it with the newsroom CMS feed before launch.</p></div></article>}
+      {model.body && <article className="shell py-[clamp(2.5rem,6vw,6rem)]"><div className="mx-auto max-w-3xl"><p className="mb-8 text-xs font-bold uppercase tracking-[0.2em] text-[var(--gold)]">Voice Lounge newsroom</p>{model.body.map((paragraph, index) => <p key={index} className="mb-6 text-[clamp(1rem,1.2vw,1.2rem)] leading-8 text-foreground/90">{paragraph}</p>)}<p className="mt-10 rounded-2xl border border-hairline bg-surface-2 p-5 text-sm text-muted-foreground">Public-source summary aligned to the Voice Lounge research baseline dated 20 September 2026. Source publication names and dates are preserved above; uncertain details are intentionally omitted.</p></div></article>}
 
       <Section index={0} spec={{ id: `${kind}-related`, eyebrow: "Keep exploring", title: model.relatedTitle, blurb: "The next useful thing should always be one tap away.", layout: "rail", items: model.related, variant: kind === "news" ? "news" : kind === "creator" ? "portrait" : kind === "live" ? "live" : "landscape", priority: true }} />
       {model.related.length === 0 && <section className="shell my-[var(--section-gap)] rounded-3xl border border-hairline bg-card p-8 text-center"><h2 className="font-display text-2xl font-bold">More is being recorded.</h2><p className="mt-2 text-sm text-muted-foreground">Browse the wider catalogue while this page fills out.</p><Link to="/discover" className="press mt-5 inline-flex rounded-full bg-[var(--green-action)] px-5 py-2.5 text-sm font-semibold text-white">Discover something new</Link></section>}

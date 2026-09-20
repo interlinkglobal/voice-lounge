@@ -28,6 +28,7 @@ import { PwaLifecycle } from "@/components/system/PwaLifecycle";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { getCurrentUser } from "@/lib/auth/auth.functions";
 import { CMS_BASE } from "@/lib/cms/routes";
+import { VOICE_LOUNGE } from "@/lib/voice-lounge/organization";
 
 function NotFoundComponent() {
   return (
@@ -122,10 +123,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: "The Voice Lounge",
-          url: "/",
-          areaServed: "ZA",
-          description: "South Africa's destination for podcasts, video podcasts, live programming and media news.",
+          name: VOICE_LOUNGE.name,
+          url: VOICE_LOUNGE.publicWebsite,
+          areaServed: "Eastern Cape, South Africa",
+          description: VOICE_LOUNGE.description,
+          sameAs: VOICE_LOUNGE.socials.map((item) => item.url),
         }),
       },
     ],

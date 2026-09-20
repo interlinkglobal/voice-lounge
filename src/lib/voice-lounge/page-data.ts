@@ -8,32 +8,23 @@ import {
   universalSearch,
 } from "@/lib/content/adapters";
 import { categories, creators, liveEvents } from "@/lib/content/catalog";
-import { CREATOR_PROFILE_IMAGES } from "@/lib/stock-images";
 import type { MediaCardModel } from "@/lib/content/types";
 import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
 import type { PageKey } from "@/lib/voice-lounge/routes";
 
 export type SearchFilter = "all" | "videos" | "podcasts" | "episodes" | "creators" | "news" | "live";
 
-const LANGUAGES = ["English", "isiZulu", "isiXhosa", "Sesotho", "Setswana", "Afrikaans"];
-const PROVINCES = ["Gauteng", "Western Cape", "KwaZulu-Natal", "Eastern Cape", "Free State", "Limpopo", "Mpumalanga", "North West", "Northern Cape"];
+const LANGUAGES = ["English"];
+const PROVINCES = ["Eastern Cape"];
 const FORMATS = ["Audio", "Video", "Hybrid"];
 const MOODS = ["Quick hit", "Deep dive", "Laugh", "Learn", "Debate", "Unwind"];
 const DISCOVERY_TAGS = ["New voices", "Staff picks", "Originals", "Independent", "Local stories", "Long-form"];
 const YOUTUBE_LED_PAGES = new Set<PageKey>(["discover", "shows", "episodes", "watch"]);
 
 function creatorCardsWithPortraits(offset = 0) {
-  return creators.slice(0, CREATOR_PROFILE_IMAGES.length).map((item, i) => {
-    const card = creatorCard(item);
-    return {
-      ...card,
-      artwork: {
-        ...card.artwork,
-        src: CREATOR_PROFILE_IMAGES[(i + offset) % CREATOR_PROFILE_IMAGES.length],
-        ratio: "1/1" as const,
-      },
-    };
-  });
+  if (!creators.length) return [];
+  const shift = offset % creators.length;
+  return [...creators.slice(shift), ...creators.slice(0, shift)].map((item) => creatorCard(item));
 }
 
 function formatYouTubeCount(value: number | null) {
@@ -227,11 +218,7 @@ export function pageCards(
   }
 
   if (page === "news") {
-    const aliases: Array<[string, string]> = [
-      ["voice lounge", "Voice Lounge"], ["creator", "Creator"], ["technology", "Technology"],
-      ["business", "Business"], ["music", "Music"], ["film", "Film & Television"],
-      ["sport", "Sport"], ["opinion", "Opinion"], ["features", "Features"], ["entertainment", "Entertainment"],
-    ];
+    const aliases: Array<[string, string]> = [["press", "Press"], ["news", "Press"], ["voice lounge", "Press"]];
     const hit = aliases.find(([needle]) => t.includes(needle));
     return (hit ? q.newsBySection(hit[1], 10) : q.latestNews(12)).map((item) => newsCard(item));
   }
@@ -269,11 +256,10 @@ export function pageCards(
   }
 
   const categoryAliases: Array<[string, string]> = [
-    ["entrepreneur", "Entrepreneurship"], ["business", "Business"], ["technology", "Technology"],
-    ["sport", "Sport"], ["music", "Music"], ["entertainment", "Entertainment"], ["comedy", "Comedy"],
-    ["society", "Society & Culture"], ["culture", "Society & Culture"], ["education", "Education"],
-    ["health", "Health & Wellness"], ["lifestyle", "Lifestyle"], ["faith", "Faith & Spirituality"],
-    ["african stories", "African Stories"], ["youth", "Youth & Campus"], ["film", "Film & Television"], ["news", "News"],
+    ["politic", "News & Politics"], ["news", "News & Politics"], ["culture", "Interviews & Culture"],
+    ["interview", "Interviews & Culture"], ["music", "Music & Entertainment"], ["entertainment", "Music & Entertainment"],
+    ["sport", "Sport"], ["faith", "Faith & Spirituality"], ["spiritual", "Faith & Spirituality"],
+    ["community", "Community & Development"], ["education", "Community & Development"], ["lifestyle", "Lifestyle"],
   ];
   const category = categoryAliases.find(([needle]) => t.includes(needle));
   if (category) {
