@@ -426,6 +426,10 @@ const GUESTS: GuestProfile[] = [
   { name: "Pastor Tetese", description: "Koinonia guest featured in spiritual reflection and biblical teaching around 1 Samuel 17:34." },
   { name: "Duke Maplanka Atterball", description: "Guest in a Voice Lounge conversation about migration, South African public life, human rights and ubuntu.", aliases: ["Duke Atterbell Maplanka", "Duke Maplanka"] },
   { name: "Joshua Maponga", description: "Recurring long-form guest in a cluster of Voice Lounge conversations on African identity, faith, spirituality, geopolitics and leadership.", links: [{ label: "Website", url: "http://www.joshuamaponga.com", kind: "website" }, { label: "LinkedIn", url: "https://za.linkedin.com/in/joshua-iii-marara-maponga-793ba921", kind: "linkedin" }] },
+  { name: "Dr Noma Mbeki", description: "Refuel Lounge guest identified in the public Voice Lounge research baseline as an entrepreneur, philanthropist and musician in a long-form September 2026 upload." },
+  { name: "Goldmax", description: "Music guest identified in the public Voice Lounge release record through an August 2026 Refuel Lounge interview.", aliases: ["Gold Max"] },
+  { name: "Woza Bakzin", description: "Music guest identified in the public Voice Lounge release record through an August 2026 Refuel Lounge interview.", aliases: ["Woza Bakzin"] },
+  { name: "Apostle S Khoza", description: "Named principal voice in a Voice Lounge on-demand catalogue item recovered in the public research baseline." },
 ];
 
 export function GuestsExperience() {
