@@ -13,6 +13,8 @@ export interface YouTubeFeedVideo {
   durationSec: number | null;
   viewCount: number | null;
   likeCount: number | null;
+  liveBroadcastContent: "live" | "upcoming" | "none";
+  wasLive: boolean;
 }
 
 export interface YouTubeFeedResult {
@@ -75,12 +77,20 @@ interface YouTubePlaylistResponse {
 interface YouTubeVideosResponse {
   items?: Array<{
     id?: string;
+    snippet?: {
+      liveBroadcastContent?: "live" | "upcoming" | "none";
+    };
     contentDetails?: {
       duration?: string;
     };
     statistics?: {
       viewCount?: string;
       likeCount?: string;
+    };
+    liveStreamingDetails?: {
+      actualStartTime?: string;
+      actualEndTime?: string;
+      scheduledStartTime?: string;
     };
   }>;
 }
@@ -167,14 +177,20 @@ async function fetchAllUploads(apiKey: string, playlistId: string) {
 }
 
 async function fetchVideoDetails(apiKey: string, videoIds: string[]) {
-  const details = new Map<string, { durationSec: number | null; viewCount: number | null; likeCount: number | null }>();
+  const details = new Map<string, {
+    durationSec: number | null;
+    viewCount: number | null;
+    likeCount: number | null;
+    liveBroadcastContent: "live" | "upcoming" | "none";
+    wasLive: boolean;
+  }>();
 
   for (let start = 0; start < videoIds.length; start += 50) {
     const ids = videoIds.slice(start, start + 50);
     if (!ids.length) continue;
 
     const url = new URL("https://www.googleapis.com/youtube/v3/videos");
-    url.searchParams.set("part", "contentDetails,statistics");
+    url.searchParams.set("part", "snippet,contentDetails,statistics,liveStreamingDetails");
     url.searchParams.set("id", ids.join(","));
     url.searchParams.set("key", apiKey);
 
@@ -191,6 +207,8 @@ async function fetchVideoDetails(apiKey: string, videoIds: string[]) {
         durationSec: parseIsoDuration(item.contentDetails?.duration),
         viewCount: parseCount(item.statistics?.viewCount),
         likeCount: parseCount(item.statistics?.likeCount),
+        liveBroadcastContent: item.snippet?.liveBroadcastContent ?? "none",
+        wasLive: Boolean(item.liveStreamingDetails?.actualStartTime || item.liveStreamingDetails?.actualEndTime),
       });
     }
   }
@@ -262,6 +280,8 @@ export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async ()
         durationSec: detail?.durationSec ?? null,
         viewCount: detail?.viewCount ?? null,
         likeCount: detail?.likeCount ?? null,
+        liveBroadcastContent: detail?.liveBroadcastContent ?? "none",
+        wasLive: detail?.wasLive ?? false,
       };
     });
 
