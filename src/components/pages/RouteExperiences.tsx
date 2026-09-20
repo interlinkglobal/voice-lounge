@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Check, Filter, Search, SlidersHorizontal } from "lucide-react";
+import { ArrowRight, Check, Filter, Play, Search, SlidersHorizontal } from "lucide-react";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
+import { useYouTubePlayer } from "@/components/youtube/YouTubePlayerProvider";
 import { YouTubeVideoCard } from "@/components/youtube/YouTubeFeedGrid";
 import { WatchButton } from "@/components/media/WatchButton";
 import { categories, podcasts } from "@/lib/content/catalog";
@@ -231,46 +232,139 @@ export function DiscoverExperience() {
   );
 }
 
+const PODCAST_THUMBNAILS = [
+  "https://res.cloudinary.com/dlokees9a/image/upload/v1789909792/podcast-thumbail-3_vvs9ad.avif",
+  "https://res.cloudinary.com/dlokees9a/image/upload/v1789909792/podcast-thumbnail-2_fnmy0h.avif",
+  "https://res.cloudinary.com/dlokees9a/image/upload/v1789909792/podcast-thumbnail-1_mvrnri.avif",
+] as const;
+
 export function PodcastsExperience() {
+  const feed = useYouTubeFeed();
+  const youtubePlayer = useYouTubePlayer();
+  const videos = feed?.status === "ready" ? feed.videos : [];
+  const [query, setQuery] = useState("");
+
+  const directory = useMemo(() => {
+    const normalizedQuery = normalize(query);
+
+    return podcasts
+      .map((podcast, index) => {
+        const category = categories.find((item) => item.id === podcast.categoryId)?.name ?? "Voice Lounge";
+        const podcastTitle = normalize(podcast.title);
+        const titleTerms = podcastTitle.split(" ").filter((term) => term.length >= 4);
+        const exactVideo = videos.find((video) =>
+          normalize(`${video.title} ${video.description}`).includes(podcastTitle),
+        );
+        const partialVideo = videos.find((video) => {
+          if (!titleTerms.length) return false;
+          const haystack = normalize(`${video.title} ${video.description}`);
+          const matches = titleTerms.filter((term) => haystack.includes(term)).length;
+          return matches >= Math.min(2, titleTerms.length);
+        });
+        const video = exactVideo ?? partialVideo ?? (videos.length ? videos[index % videos.length] : undefined);
+        const searchable = normalize(
+          `${podcast.title} ${podcast.tagline} ${category} ${podcast.language} ${podcast.format}`,
+        );
+
+        return {
+          podcast,
+          category,
+          thumbnail: PODCAST_THUMBNAILS[index % PODCAST_THUMBNAILS.length],
+          video,
+          matches: !normalizedQuery || searchable.includes(normalizedQuery),
+        };
+      })
+      .filter((item) => item.matches);
+  }, [query, videos]);
+
   return (
     <div className="pb-[var(--section-gap)]" data-primary-route="podcasts">
-      <section className="shell pt-[clamp(2.5rem,6vw,6rem)]">
-        <div className="max-w-4xl">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--gold)]">Podcast directory</p>
-          <h1 className="mt-3 font-display text-[clamp(3rem,8vw,7rem)] font-black leading-[0.88] tracking-[-0.065em]">
-            Shows built to be heard.
-          </h1>
-          <p className="mt-5 max-w-2xl text-[clamp(1rem,1.3vw,1.2rem)] leading-7 text-muted-foreground">
-            A dense catalogue of South African voices without video-card chrome.
-          </p>
+      <section className="shell pt-[clamp(1.25rem,3vw,2.5rem)]">
+        <label className="relative block border border-hairline bg-background">
+          <span className="sr-only">Search podcasts</span>
+          <Search
+            className="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Search podcasts"
+            className="h-14 w-full rounded-none bg-transparent pl-12 pr-4 text-base outline-none placeholder:text-muted-foreground focus:border-foreground"
+          />
+        </label>
+
+        <div className="mt-3 flex items-center justify-between gap-4 border-b border-hairline pb-3 text-xs text-muted-foreground">
+          <span>{directory.length} podcasts</span>
+          <span className="hidden sm:inline">Official Voice Lounge YouTube playback</span>
         </div>
 
-        <div className="mt-[clamp(2rem,5vw,4rem)] grid gap-4 xl:grid-cols-2">
-          {podcasts.map((podcast, index) => (
-            <article
-              key={podcast.id}
-              className="group grid min-h-[9.5rem] grid-cols-[28%_minmax(0,1fr)] overflow-hidden rounded-[999px] border border-hairline bg-card/55 p-2 pr-[clamp(.9rem,2vw,1.5rem)] transition-colors hover:border-[color-mix(in_oklab,var(--green)_46%,var(--hairline))]"
-            >
-              <Link to="/podcasts/$slug" params={{ slug: podcast.slug }} className="relative overflow-hidden rounded-full bg-black">
-                <img
-                  src={stockImageForSeed(podcast.artwork.seed)}
-                  alt={podcast.artwork.alt}
-                  loading={index < 6 ? "eager" : "lazy"}
-                  decoding="async"
-                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.045]"
-                />
-              </Link>
-              <div className="flex min-w-0 items-center gap-3 pl-[clamp(.75rem,2vw,1.4rem)]">
-                <Link to="/podcasts/$slug" params={{ slug: podcast.slug }} className="min-w-0 flex-1">
-                  <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-[var(--green)]">{[podcast.language, podcast.format].filter(Boolean).join(" · ") || "Voice Lounge programme"}</p>
-                  <h2 className="mt-1 truncate font-display text-[clamp(1rem,2vw,1.45rem)] font-black">{podcast.title}</h2>
-                  <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">{podcast.tagline}</p>
+        {directory.length > 0 ? (
+          <div className="mt-4 grid gap-4 lg:grid-cols-2">
+            {directory.map(({ podcast, category, thumbnail, video }, index) => (
+              <article
+                key={podcast.id}
+                className="group grid min-h-[9.5rem] grid-cols-[38%_minmax(0,1fr)] overflow-hidden border border-hairline bg-card/45 transition-colors hover:border-[color-mix(in_oklab,var(--green)_48%,var(--hairline))] sm:grid-cols-[32%_minmax(0,1fr)]"
+              >
+                <Link
+                  to="/podcasts/$slug"
+                  params={{ slug: podcast.slug }}
+                  className="relative min-h-[9.5rem] overflow-hidden bg-black"
+                >
+                  <img
+                    src={thumbnail}
+                    alt={podcast.artwork.alt}
+                    loading={index < 6 ? "eager" : "lazy"}
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                  />
                 </Link>
-                <WatchButton targetId={podcast.id} label="Play" size="sm" className="shrink-0" />
-              </div>
-            </article>
-          ))}
-        </div>
+
+                <div className="flex min-w-0 flex-col justify-between gap-3 p-[clamp(.85rem,2.2vw,1.25rem)]">
+                  <Link to="/podcasts/$slug" params={{ slug: podcast.slug }} className="min-w-0">
+                    <p className="text-[0.65rem] font-black uppercase tracking-[0.14em] text-[var(--green)]">
+                      {category}
+                    </p>
+                    <h2 className="mt-1 line-clamp-2 font-display text-[clamp(1rem,2vw,1.35rem)] font-black leading-tight">
+                      {podcast.title}
+                    </h2>
+                    <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">
+                      {podcast.tagline}
+                    </p>
+                    <p className="mt-2 text-[0.68rem] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                      {podcast.language} · {podcast.format}
+                    </p>
+                  </Link>
+
+                  <div className="flex items-center justify-between gap-3 border-t border-hairline pt-3">
+                    <span className="truncate text-xs text-muted-foreground">
+                      {video ? "Voice Lounge YouTube" : "Playback unavailable"}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={!video}
+                      onClick={() => {
+                        if (video) youtubePlayer.openDocked(video);
+                      }}
+                      className="press inline-flex h-10 shrink-0 items-center gap-2 rounded-none bg-[var(--green-action)] px-4 text-sm font-semibold text-white shadow-[0_6px_18px_-8px_var(--green-deep)] hover:bg-[var(--emerald)] hover:text-[oklch(0.16_0.02_155)] disabled:cursor-not-allowed disabled:opacity-45"
+                      aria-label={video ? `Play ${podcast.title}` : `${podcast.title} playback unavailable`}
+                    >
+                      <Play className="size-4 fill-current" aria-hidden="true" />
+                      Play
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="mt-4 border border-hairline p-8 text-center">
+            <Search className="mx-auto size-6 text-muted-foreground" aria-hidden="true" />
+            <h2 className="mt-3 font-display text-xl font-bold">No podcast matches</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Try a show name, category or format.</p>
+          </div>
+        )}
       </section>
     </div>
   );
