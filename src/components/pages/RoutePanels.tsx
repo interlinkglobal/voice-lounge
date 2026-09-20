@@ -77,7 +77,7 @@ export function faqFor(page: PageKey) {
   ];
   return [
     { q: "What is Voice Lounge Premium?", a: "The public Voice Lounge website advertises a seven-day trial followed by R9.99 per month, with premium live and podcast benefits." },
-    { q: "Will this upgraded preview charge me?", a: "No. Payment processing is not connected in Gate 1, so this interface cannot create a paid subscription." },
+    { q: "How is Premium payment handled?", a: "The Voice Lounge sends signed-in members to Interlink Global Technologies for Paystack checkout, then re-verifies the completed transaction before Premium access opens." },
     { q: "Where else can I use The Voice Lounge?", a: "Verified Android and iOS applications are publicly available, alongside the official website, YouTube, Facebook and X profiles." },
   ];
 }
@@ -93,7 +93,7 @@ export function statsFor(page: PageKey, title: string) {
   if (page === "account" && t.includes("premium")) return [
     { k: "Public price", v: `R${VOICE_LOUNGE.premium.monthlyPriceZar}/month` },
     { k: "Trial", v: `${VOICE_LOUNGE.premium.trialDays} days` },
-    { k: "Billing", v: "Not connected" },
+    { k: "Billing", v: "Interlink + Paystack" },
     { k: "Source", v: "Public site" },
   ];
   if (page === "about" && t.includes("audience")) return [
@@ -106,7 +106,7 @@ export function statsFor(page: PageKey, title: string) {
     { k: "Price", v: `R${VOICE_LOUNGE.premium.monthlyPriceZar}/month` },
     { k: "Trial", v: `${VOICE_LOUNGE.premium.trialDays} days` },
     { k: "Public benefit", v: "Premium streams" },
-    { k: "Billing here", v: "Not connected" },
+    { k: "Billing", v: "Interlink + Paystack" },
   ];
   return [
     { k: "Programmes", v: String(podcasts.length) },
@@ -232,7 +232,7 @@ function PremiumComparison() {
     <div className="rounded-3xl border border-hairline bg-card p-5 sm:p-7">
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--gold)]">Publicly advertised premium</p>
       <h3 className="mt-2 font-display text-2xl font-black">7-day trial · R9.99/month</h3>
-      <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">The verified public proposition includes uninterrupted live streaming, studio audio, exclusive podcasts, premium back-catalogues, broadcaster shout-outs and real-time notifications/reminders. Payment activation is intentionally outside Gate 1.</p>
+      <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">The verified public proposition includes uninterrupted live streaming, studio audio, exclusive podcasts, premium back-catalogues, broadcaster shout-outs and real-time notifications/reminders. Premium payment is processed through Interlink Global Technologies and verified before access opens.</p>
     </div>
   );
 }
@@ -241,8 +241,8 @@ function PremiumAccessStatus() {
   return (
     <div className="rounded-3xl border border-hairline bg-card p-5 sm:p-7">
       <ShieldCheck className="size-8 text-[var(--green)]" aria-hidden="true" />
-      <h3 className="mt-3 font-display text-xl font-bold">No payment flow is connected here</h3>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">Gate 1 establishes factual pricing and benefits only. A future billing implementation must confirm the current processor and subscription semantics before charging users.</p>
+      <h3 className="mt-3 font-display text-xl font-bold">Interlink payment verification connected</h3>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">Premium checkout is processed by Interlink Global Technologies through Paystack. The returned transaction is checked again against the exact Voice Lounge Premium amount, currency, product and signed-in account before this route unlocks.</p>
     </div>
   );
 }
