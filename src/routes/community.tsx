@@ -1,11 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlatformPage, routeHead } from "@/components/pages/PlatformPage";
+import { CommunityExperience } from "@/components/pages/AudienceExperiences";
+import { routeHead } from "@/components/pages/PlatformPage";
 
 export const Route = createFileRoute("/community")({
   head: () => routeHead("community"),
-  component: Page,
+  component: CommunityExperience,
 });
-
-function Page() {
-  return <PlatformPage page="community" />;
-}
