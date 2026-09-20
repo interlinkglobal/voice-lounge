@@ -177,7 +177,7 @@ function RootComponent() {
                   <>
                     <Header />
                     <main id="main" className="min-h-[60vh] pb-8">
-                      <div key={pathname} className="vl-page-enter">
+                      <div key={pathname} className={pathname === "/youtube" ? undefined : "vl-page-enter"}>
                         <Outlet />
                       </div>
                     </main>
