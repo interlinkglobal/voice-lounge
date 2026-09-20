@@ -9,18 +9,19 @@ import { useAuth } from "@/components/auth/AuthProvider";
 
 export const PRIMARY_NAV = [
   { to: "/", label: "Home" },
-  { to: "/discover", label: "Discover" },
+  { to: "/youtube", label: "YouTube" },
   { to: "/podcasts", label: "Podcasts" },
   { to: "/shows", label: "Shows" },
-  { to: "/episodes", label: "Episodes" },
+  { to: "/news", label: "News" },
   { to: "/watch", label: "Watch" },
   { to: "/live", label: "Live" },
 ] as const;
 
 export const SECONDARY_NAV = [
+  { to: "/discover", label: "Discover" },
+  { to: "/episodes", label: "Episodes" },
   { to: "/categories", label: "Categories" },
   { to: "/creators", label: "Creators" },
-  { to: "/news", label: "News" },
   { to: "/community", label: "Community" },
   { to: "/about", label: "About" },
 ] as const;
