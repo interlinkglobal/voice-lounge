@@ -43,20 +43,20 @@ const CREATOR_DEFS: Array<{
   image?: string;
 }> = [
   { id: "network", name: "The Voice Lounge", role: "East London media network", bio: "The Eastern Cape's Voice, Amplified — an East London multimedia organisation spanning radio, podcasts, studio production, editorial work, mobile apps and commercial media.", shows: [] },
-  { id: "miss-vee", name: "Miss Vee", role: "Presenter", bio: "Presenter named on The Voice Lounge's current public programme schedule.", shows: [] },
-  { id: "garth-ah-mook", name: "Garth Ah-Mook", role: "Presenter / music contributor", bio: "Presenter named on The Voice Lounge schedule and in the public on-demand catalogue.", shows: [] },
+  { id: "miss-vee", name: "Miss Vee", role: "Presenter, The Breakfast Plug", bio: "Presenter named on The Voice Lounge current public programme schedule and daily-news catalogue.", shows: ["pod-breakfast-plug"] },
+  { id: "garth-ah-mook", name: "Garth Ah-Mook", role: "Presenter / music contributor", bio: "Presenter named on The Voice Lounge schedule and in the public on-demand catalogue, including Breakfast Plug and music-session material.", shows: ["pod-breakfast-plug", "pod-music-lounge"] },
   { id: "baby-obuhle-sihu", name: "Baby Obuhle Sihu", role: "Host, Beyond The Grey", bio: "Host associated publicly with Beyond The Grey and Connect & Learn.", shows: ["pod-beyond-the-grey", "pod-connect-and-learn"], image: "/politics-beyond-the-grey-by-baby-obuhle-sihu.png" },
   { id: "zan", name: "Zan", role: "Host, Refuel Lounge", bio: "Voice Lounge presenter associated with Refuel Lounge.", shows: ["pod-refuel-lounge"], image: "/comedy-refuel-lounge.png" },
-  { id: "brian", name: "Brian", role: "Presenter", bio: "Presenter named on The Voice Lounge's current public programme schedule.", shows: [] },
-  { id: "asanda-magaqa", name: "Asanda Magaqa", role: "Presenter", bio: "Presenter named on The Voice Lounge's current public programme schedule.", shows: [] },
-  { id: "tsepang", name: "Tsepang", role: "Presenter", bio: "Presenter named on The Voice Lounge's current public programme schedule.", shows: [] },
-  { id: "narcho-mabizela", name: "Narcho Mabizela", role: "Presenter", bio: "Presenter named on the official schedule. Public catalogue copy also contains the spelling “Nacho Mabizela”; the canonical spelling remains subject to management confirmation.", shows: [] },
-  { id: "sasa-mapolisa", name: "Sasa Mapolisa", role: "Presenter", bio: "Presenter named on The Voice Lounge's current public programme schedule.", shows: [] },
-  { id: "tsepo-nontyi", name: "Tsepo Nontyi", role: "Presenter", bio: "Presenter named on The Voice Lounge's public schedule and on-demand catalogue.", shows: [], image: "/lifestyle-the-trial-lounge-tsepo-nontyi.png" },
-  { id: "tsepang-liphapang", name: "Tsepang Liphapang", role: "Presenter", bio: "Presenter named on The Voice Lounge's current public programme schedule.", shows: [], image: "/lifestyle-tsepang-liphapang.png" },
-  { id: "pastor-mafaya", name: "Pastor Mafaya", role: "Presenter", bio: "Presenter named on The Voice Lounge's current public programme schedule.", shows: [] },
-  { id: "pastor-jaytee", name: "Pastor Jaytee", role: "Presenter", bio: "Presenter named on The Voice Lounge's current public programme schedule.", shows: [] },
-  { id: "pastor-gugu", name: "Pastor Gugu", role: "Presenter", bio: "Presenter named on The Voice Lounge schedule; the public catalogue also features Pastor Gugu Mbuku.", shows: [] },
+  { id: "brian", name: "Brian", role: "Presenter, 3-2-6 Lounge", bio: "Presenter named on The Voice Lounge current public programme schedule.", shows: ["pod-3-2-6-lounge"] },
+  { id: "asanda-magaqa", name: "Asanda Magaqa", role: "Presenter, The VoiceLounge Sitting", bio: "Presenter named on The Voice Lounge current public programme schedule.", shows: ["pod-the-voicelounge-sitting"] },
+  { id: "tsepang", name: "Tsepang", role: "Presenter, The Sports Lounge", bio: "Presenter named on The Voice Lounge current public programme schedule.", shows: ["pod-sports-lounge"] },
+  { id: "narcho-mabizela", name: "Narcho Mabizela", role: "Presenter, After Dark Lounge", bio: "Presenter named on the official schedule. Public catalogue copy also contains the spelling “Nacho Mabizela”; the canonical spelling remains subject to management confirmation.", shows: ["pod-after-dark-lounge"] },
+  { id: "sasa-mapolisa", name: "Sasa Mapolisa", role: "Presenter, Spirit & Truth", bio: "Presenter named on The Voice Lounge current public programme schedule.", shows: ["pod-spirit-and-truth"] },
+  { id: "tsepo-nontyi", name: "Tsepo Nontyi", role: "Presenter, The Triumph Lounge", bio: "Presenter named on The Voice Lounge public schedule and on-demand catalogue.", shows: ["pod-triumph-lounge"], image: "/lifestyle-the-trial-lounge-tsepo-nontyi.png" },
+  { id: "tsepang-liphapang", name: "Tsepang Liphapang", role: "Presenter, Solitude Lounge", bio: "Presenter named on The Voice Lounge current public programme schedule.", shows: ["pod-solitude-lounge"], image: "/lifestyle-tsepang-liphapang.png" },
+  { id: "pastor-mafaya", name: "Pastor Mafaya", role: "Presenter, The Logos Moment", bio: "Presenter named on The Voice Lounge current public programme schedule.", shows: ["pod-logos-moment"] },
+  { id: "pastor-jaytee", name: "Pastor Jaytee", role: "Presenter, The Grace Connection", bio: "Presenter named on The Voice Lounge current public programme schedule.", shows: ["pod-grace-connection"] },
+  { id: "pastor-gugu", name: "Pastor Gugu", role: "Presenter, Koinonia — The Fellowship", bio: "Presenter named on The Voice Lounge schedule; the public catalogue also features Pastor Gugu Mbuku.", shows: ["pod-koinonia-the-fellowship"] },
 ];
 
 export const creators: Creator[] = CREATOR_DEFS.map((item) => ({
