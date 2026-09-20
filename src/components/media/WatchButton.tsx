@@ -26,9 +26,10 @@ export function WatchButton({
   const { play, current, playing, toggle } = usePlayer();
   const youtubeVideo = useYouTubeVideoForKey(targetId);
   const youtubePlayer = useYouTubePlayer();
-  const episode = episodes.find((x) => x.id === targetId) ?? episodes.find((x) => x.podcastId === targetId) ?? episodes[0];
-  const isVideoEpisode = episode?.kind === "video";
-  const isCurrent = !isVideoEpisode && current?.id === targetId;
+  const episode = episodes.find((x) => x.id === targetId) ?? episodes.find((x) => x.podcastId === targetId);
+  const isVideoEpisode = episode?.kind === "video" || Boolean(youtubeVideo);
+  const playable = Boolean(youtubeVideo || (episode?.kind === "audio" && episode.mediaUrl));
+  const isCurrent = Boolean(episode && episode.kind === "audio" && current?.id === episode.id);
 
   const sizes: Record<string, string> = {
     xs: "h-7 gap-1 px-2 text-[0.68rem]",
@@ -41,20 +42,29 @@ export function WatchButton({
   function onClick(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    track("watch_click", { id: targetId });
-
-    if (isVideoEpisode) {
-      if (youtubeVideo) youtubePlayer.open(youtubeVideo);
+    if (!playable || !episode && !youtubeVideo) {
+      track("watch_unavailable", { id: targetId });
       return;
     }
+
+    track("watch_click", { id: targetId });
+
+    if (youtubeVideo) {
+      youtubePlayer.open(youtubeVideo);
+      return;
+    }
+
+    if (!episode) return;
 
     if (isCurrent) {
       toggle();
       return;
     }
 
+    if (episode.kind !== "audio" || !episode.mediaUrl) return;
+
     const upNext = episodes
-      .filter((x) => x.kind === "audio" && x.podcastId === episode.podcastId && x.id !== episode.id)
+      .filter((x) => x.kind === "audio" && x.mediaUrl && x.podcastId === episode.podcastId && x.id !== episode.id)
       .slice(0, 6)
       .map(trackFromEpisode);
     play(trackFromEpisode(episode), upNext);
@@ -64,6 +74,8 @@ export function WatchButton({
     <button
       type="button"
       onClick={onClick}
+      disabled={!playable}
+      title={!playable ? "No verified playback source is mapped to this item yet." : undefined}
       aria-label={isCurrent && playing ? `Pause ${label}` : `${label} now`}
       className={cn(
         "press inline-flex items-center justify-center rounded-full font-semibold tracking-tight",
@@ -72,6 +84,7 @@ export function WatchButton({
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--emerald)]",
         sizes[size],
         fullWidth && "w-full",
+        !playable && "cursor-not-allowed opacity-50",
         className,
       )}
     >

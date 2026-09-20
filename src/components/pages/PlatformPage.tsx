@@ -8,7 +8,7 @@ import { EditableMembershipCard, MEMBERSHIP_CARD_ASSETS } from "@/components/pre
 import { SearchFilterBar } from "@/components/search/SearchFilterBar";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { demoProfile, episodes, podcasts } from "@/lib/content/catalog";
+import { episodes, podcasts } from "@/lib/content/catalog";
 import { createMembershipCardViewModel } from "@/lib/membership/card";
 import { pageCards, chipsFor, type SearchFilter } from "@/lib/voice-lounge/page-data";
 import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
@@ -326,7 +326,7 @@ function PlatformHero({
               <div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Playback</dt><dd className="mt-1 font-display text-xl font-black">In-site</dd></div>
             </dl>
           ) : (
-            <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-2 border-t border-hairline pt-5"><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Catalogue</dt><dd className="mt-1 font-display text-xl font-black">{podcasts.length} shows</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Episodes</dt><dd className="mt-1 font-display text-xl font-black">{episodes.length}+</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Languages</dt><dd className="mt-1 font-display text-xl font-black">6 ready</dd></div></dl>
+            <dl className="mt-8 grid max-w-2xl grid-cols-3 gap-2 border-t border-hairline pt-5"><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Programme guide</dt><dd className="mt-1 font-display text-xl font-black">{podcasts.length}</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Public catalogue</dt><dd className="mt-1 font-display text-xl font-black">{episodes.length}</dd></div><div><dt className="text-[0.65rem] uppercase tracking-[0.16em] text-muted-foreground">Home</dt><dd className="mt-1 font-display text-xl font-black">East London</dd></div></dl>
           )}
         </div>
         <HeroVisual page={page} />
@@ -392,6 +392,6 @@ export function PlatformPage({
 
 export function routeHead(page: PageKey) {
   const info = PAGE_INFO[page];
-  const title = page === "home" ? "The Voice Lounge — South African podcasts, video and live" : `${routeName(page)} | The Voice Lounge`;
+  const title = page === "home" ? "The Voice Lounge — Eastern Cape radio, podcasts, video and studio" : `${routeName(page)} | The Voice Lounge`;
   return { meta: [{ title }, { name: "description", content: info.lede }, { property: "og:title", content: title }, { property: "og:description", content: info.lede }, { property: "og:type", content: "website" }] };
 }

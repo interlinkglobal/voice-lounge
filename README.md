@@ -1950,3 +1950,62 @@ cd <repository-name>
 npm i
 npm run dev
 ```
+
+
+---
+
+## Development Log — 20 September 2026, 13:06 SAST
+
+### Gate 1 — Replace Fiction With the Researched Voice Lounge
+
+**Directive:** Implement production-readiness Gate 1 only. This change establishes factual product/content truth from `voice-lounge-research.md` and the verified public information already collected. It deliberately does **not** implement the later Supabase CMS/backend, billing, live-stream transport, analytics sink, migration SEO or automated QA gates.
+
+**Source-of-truth rule for this implementation:** when public research did not verify a field, the application now leaves it unknown, neutral or unavailable instead of manufacturing a value. Ambiguous fields such as the current street address, Instagram canonical account, TikTok, LinkedIn company page, podcast RSS/Spotify/Apple Podcast IDs, lifetime episode count, show-level dates/durations and most direct show-to-YouTube mappings are not guessed.
+
+#### `src/lib/voice-lounge/organization.ts` — added
+Created a central research-backed organisation record for The Voice Lounge. It defines the verified East London / Eastern Cape positioning, the “Eastern Cape's Voice, Amplified” proposition, the 1 August 2025 online-radio launch date, verified public telephone/email contacts, verified Facebook/YouTube/X profiles, confirmed Android/iOS store listings, the public seven-day-trial / R9.99-per-month premium proposition and the publicly documented multimedia operating pillars. The conflicting Baysville/Vincent street-address evidence is recorded as unresolved and is intentionally not published as a canonical address.
+
+#### `src/lib/content/catalog.ts` — replaced generated demonstration catalogue
+Removed the pseudo-random national podcast-network dataset and replaced it with research-backed Voice Lounge information. The previous fictional 24 creators, 40 podcasts, 180 generated episodes, fictional news, generated live events, artificial collections, R89/R149 plans and Naledi Mahlangu demo identity are no longer used as product truth. The catalogue now contains the public Voice Lounge programme guide, presenters named on the public schedule, 27 publicly visible on-demand catalogue items from the research, real press-development summaries, the Joshua Maponga and Beyond The Grey research-backed collections, and the verified Premium offer. Unpublished dates, durations, plays, ratings, followers and listener counts are represented as unknown/zero and are suppressed by adapters rather than surfaced as invented statistics. Four management-supplied host portraits are attached only to the confirmed identities supplied in the repository.
+
+#### `src/lib/content/adapters.ts` — removed fabricated metrics/date logic
+Removed the fixed 15 September 2026 relative-date anchor and now calculate relative time against the real current time. Unknown dates return “Date not published”. Zero/unknown durations, plays and follower counts are not presented. Podcast/show cards no longer manufacture episode totals or popularity statistics. Search now identifies the real catalogue entities as shows/presenters/press rather than the former fictional network.
+
+#### `src/components/media/Artwork.tsx` — truth-preserving media fallback
+Added a branded Voice Lounge placeholder for shows, people and press items that do not yet have approved real artwork. This prevents the existing stock-image fallback from depicting arbitrary people or scenes as if they were actual Voice Lounge presenters/programmes. Confirmed supplied portraits continue to render normally.
+
+#### `src/components/youtube/YouTubeFeedProvider.tsx` — removed arbitrary video matching
+Removed the hash-based fallback that paired any catalogue key with a random official-channel video. Catalogue/video relationships now require an exact verified YouTube ID. This prevents a real show or presenter from being visually associated with an unrelated channel upload.
+
+#### `src/components/media/WatchButton.tsx` — require a verified playback source
+Removed the previous first-episode fallback. Watch controls now require either an exact YouTube mapping or a real audio media URL. Items without verified playback are disabled with an explanatory title instead of silently opening unrelated content.
+
+#### `src/lib/voice-lounge/page-data.ts` — real presenter imagery and factual taxonomy
+Removed stock portrait substitution for presenters. Presenter cards now use the supplied confirmed portrait when available and the branded placeholder otherwise. Discovery language/province defaults were narrowed to the verified public baseline (English / Eastern Cape), research-backed categories replaced fictional technology/comedy/etc. aliases, and press sections now read from the factual press dataset.
+
+#### `src/components/layout/Footer.tsx` — corrected public identity and links
+Removed the incorrect “Built in Johannesburg” / Johannesburg-Cape Town-Durban positioning, fictional-content disclaimer, dead `href="#"` social buttons and unverified TikTok/LinkedIn/Instagram claims. The footer now identifies East London / Eastern Cape, exposes verified Voice Lounge email/telephone contacts, links only the confirmed Facebook/YouTube/X accounts, and links the verified Google Play and Apple App Store listings.
+
+#### `src/routes/login.tsx` — removed Demo branding and false cross-device claims
+Changed “Sign In to Voice Lounge Demo” to “Sign In to The Voice Lounge”. The account-benefit copy now distinguishes live authentication/membership identity from the browser-local saved library. Google sign-in copy no longer claims that playlists and saved videos are currently synchronised across devices.
+
+#### `src/components/pages/DetailPage.tsx` — suppress invented detail-page facts
+Removed generated plays, follower totals, listener counts and fabricated episode metadata from detail pages. Unknown publication dates/durations remain explicit rather than guessed. The former “demonstration editorial content” footer was replaced with a public-source research-baseline notice. Category metadata now reflects The Voice Lounge / East London context instead of “updated daily” claims.
+
+#### `src/components/pages/RoutePanels.tsx` — research-backed About/Premium/account facts
+Removed demo-profile metrics, fictional device counts, fake premium capabilities and the mock-checkout experience. Premium panels now expose only the publicly documented seven-day trial / R9.99 monthly price and benefits, while clearly stating that payment activation is not part of Gate 1. Account panels state browser-local persistence accurately. About content now explains the verified East London multimedia expansion. The former newsletter surface no longer accepts fake signups; it points users to verified social channels and native apps because no verified public newsletter was found.
+
+#### `src/components/pages/RouteExperiences.tsx` — real programme names, no random show/video association
+Removed the invented Shows list. The route now reads directly from the research-backed Voice Lounge programme catalogue. A selected programme only receives YouTube videos when the official channel title/description actually contains that programme name; otherwise the UI explicitly states that no verified mapping has been found. Podcast metadata no longer assumes unavailable fields.
+
+#### `src/components/pages/PlatformPage.tsx` — factual hero/supporting metrics
+Removed the unused demo-profile dependency. Generic hero statistics now report the actual research-backed programme-guide size, public catalogue-item count and East London home market instead of “6 ready” languages or seeded totals. Home SEO title now describes Eastern Cape radio/podcasts/video/studio rather than a generic national podcast directory.
+
+#### `src/lib/voice-lounge/routes.ts` — corrected product positioning and section language
+Rewrote route propositions around the researched organisation: East London, Eastern Cape, online radio, real programmes, official YouTube, public press, apps and the documented Premium offer. Replaced unsupported newsletter, fictional premium, follower-ranking, fictional category and generic corporate-vision labels with research-backed or neutral language while preserving the existing route/section architecture for later automation/manual visual work.
+
+#### `src/routes/__root.tsx` — research-backed Organization schema
+Updated global Organization structured data to use the existing public Voice Lounge domain, Eastern Cape area served, the researched multimedia description and only verified social profiles.
+
+**Gate boundary:** No new Supabase content tables, CMS persistence, RLS/admin roles, payment processor, live-stream provider integration, analytics backend, RSS ingestion, SEO redirect migration or test framework is introduced in this change. Those remain later gates by directive.
+

@@ -1,40 +1,35 @@
 import { Link } from "@tanstack/react-router";
-import { useState } from "react";
 import { Logo } from "./Logo";
-import { track } from "@/lib/analytics";
+import { VERIFIED_APPS, VERIFIED_SOCIALS, VOICE_LOUNGE } from "@/lib/voice-lounge/organization";
 
 const COLUMNS: Array<{ heading: string; links: Array<{ label: string; to: string }> }> = [
   {
     heading: "Explore",
     links: [
       { label: "Discover", to: "/discover" },
-      { label: "Podcasts", to: "/podcasts" },
       { label: "Shows", to: "/shows" },
       { label: "Episodes", to: "/episodes" },
-      { label: "Watch", to: "/watch" },
+      { label: "YouTube", to: "/youtube" },
       { label: "Live", to: "/live" },
     ],
   },
   {
-    heading: "Community",
+    heading: "Voice Lounge",
     links: [
-      { label: "Creators", to: "/creators" },
-      { label: "Categories", to: "/categories" },
-      { label: "Community", to: "/community" },
-      { label: "News", to: "/news" },
-      { label: "Search", to: "/search" },
+      { label: "Presenters", to: "/creators" },
+      { label: "News & Press", to: "/news" },
       { label: "Premium", to: "/premium" },
+      { label: "About", to: "/about" },
+      { label: "Install web app", to: "/install" },
     ],
   },
   {
-    heading: "Company",
+    heading: "Account",
     links: [
-      { label: "About", to: "/about" },
-      { label: "Careers", to: "/about" },
-      { label: "Advertising", to: "/about" },
-      { label: "Partnerships", to: "/about" },
-      { label: "Press", to: "/news" },
-      { label: "Contact", to: "/about" },
+      { label: "Sign in", to: "/login" },
+      { label: "Account", to: "/account" },
+      { label: "Search", to: "/search" },
+      { label: "Community", to: "/community" },
     ],
   },
   {
@@ -42,118 +37,51 @@ const COLUMNS: Array<{ heading: string; links: Array<{ label: string; to: string
     links: [
       { label: "Privacy (POPIA)", to: "/privacy-policy" },
       { label: "Terms of service", to: "/terms-of-service" },
-      { label: "Cookie settings", to: "/account" },
-      { label: "Accessibility", to: "/about" },
-      { label: "Data controls", to: "/account" },
-      { label: "Report a problem", to: "/about" },
     ],
   },
 ];
 
-export function NewsletterForm({ tone = "default" }: { tone?: "default" | "gold" }) {
-  const [email, setEmail] = useState("");
-  const [state, setState] = useState<"idle" | "error" | "done">("idle");
-  return (
-    <form
-      noValidate
-      onSubmit={(e) => {
-        e.preventDefault();
-        const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
-        setState(ok ? "done" : "error");
-        if (ok) track("newsletter_signup", {});
-      }}
-      className="w-full max-w-md"
-    >
-      <label htmlFor={`nl-${tone}`} className="text-sm font-medium">
-        Follow The Voice — a weekly letter from the newsroom
-      </label>
-      <div className="mt-2 flex flex-col gap-2 sm:flex-row">
-        <input
-          id={`nl-${tone}`}
-          type="email"
-          inputMode="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setState("idle");
-          }}
-          aria-invalid={state === "error"}
-          aria-describedby={`nl-msg-${tone}`}
-          placeholder="you@example.co.za"
-          className="min-h-11 flex-1 rounded-full border border-hairline bg-surface-2 px-4 text-sm outline-none focus-visible:border-[var(--green)]"
-        />
-        <button
-          type="submit"
-          className={
-            tone === "gold"
-              ? "press min-h-11 rounded-full bg-[var(--gold)] px-5 text-sm font-semibold text-[oklch(0.16_0.02_90)]"
-              : "press min-h-11 rounded-full bg-[var(--green-action)] px-5 text-sm font-semibold text-white"
-          }
-        >
-          Subscribe
-        </button>
-      </div>
-      <p
-        id={`nl-msg-${tone}`}
-        role="status"
-        className={
-          state === "error"
-            ? "mt-2 text-sm text-destructive"
-            : state === "done"
-              ? "mt-2 text-sm text-[var(--green)]"
-              : "mt-2 text-xs text-muted-foreground"
-        }
-      >
-        {state === "error"
-          ? "Enter a valid email address."
-          : state === "done"
-            ? "You're on the list. Look out for Thursday's letter."
-            : "One email a week. Unsubscribe any time."}
-      </p>
-    </form>
-  );
-}
-
 export function Footer() {
   return (
     <footer className="mt-[var(--section-gap)] border-t border-hairline bg-[color-mix(in_oklab,var(--surface-2)_70%,var(--background))]">
-      <div className="shell grid gap-10 py-[clamp(2rem,4vw,4rem)] lg:grid-cols-[minmax(0,1.3fr)_minmax(0,2.4fr)]">
+      <div className="shell grid gap-10 py-[clamp(2rem,4vw,4rem)] lg:grid-cols-[minmax(0,1.25fr)_minmax(0,2fr)]">
         <div>
           <Logo />
-          <p className="mt-4 max-w-sm text-sm text-muted-foreground">
-            The Voice Lounge is where South Africa listens, watches and follows the voices shaping the culture.
-            Built in Johannesburg, made for nine provinces.
+          <p className="mt-4 max-w-lg text-sm leading-6 text-muted-foreground">
+            {VOICE_LOUNGE.description}
           </p>
-          <div className="mt-5">
-            <NewsletterForm />
+          <p className="mt-4 text-sm font-semibold text-foreground">{VOICE_LOUNGE.tagline}</p>
+          <div className="mt-5 grid gap-1 text-sm text-muted-foreground">
+            <a href={`mailto:${VOICE_LOUNGE.contact.email}`} className="hover:text-foreground">{VOICE_LOUNGE.contact.email}</a>
+            <a href="tel:+27430506570" className="hover:text-foreground">{VOICE_LOUNGE.contact.phone}</a>
+            <a href="tel:+27839507019" className="hover:text-foreground">{VOICE_LOUNGE.contact.mobile}</a>
           </div>
           <ul className="mt-5 flex flex-wrap gap-2">
-            {["Instagram", "X", "YouTube", "TikTok", "LinkedIn"].map((s) => (
-              <li key={s}>
-                <a
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
-                  className="press inline-flex rounded-full border border-hairline px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground"
-                >
-                  {s}
+            {VERIFIED_SOCIALS.map((social) => (
+              <li key={social.platform}>
+                <a href={social.url} target="_blank" rel="noreferrer" className="press inline-flex rounded-full border border-hairline px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground">
+                  {social.platform}
                 </a>
               </li>
             ))}
           </ul>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {VERIFIED_APPS.map((app) => (
+              <a key={app.platform} href={app.url} target="_blank" rel="noreferrer" className="press rounded-full border border-hairline px-3 py-1.5 text-xs font-medium text-muted-foreground hover:text-foreground">
+                {app.label}
+              </a>
+            ))}
+          </div>
         </div>
 
         <nav aria-label="Footer" className="grid grid-cols-2 gap-8 sm:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.heading}>
-              <h2 className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                {col.heading}
-              </h2>
+              <h2 className="text-[0.7rem] font-bold uppercase tracking-[0.2em] text-muted-foreground">{col.heading}</h2>
               <ul className="mt-3 grid gap-2">
-                {col.links.map((l) => (
-                  <li key={l.label}>
-                    <Link to={l.to} className="text-sm text-muted-foreground hover:text-foreground">
-                      {l.label}
-                    </Link>
+                {col.links.map((link) => (
+                  <li key={link.label}>
+                    <Link to={link.to} className="text-sm text-muted-foreground hover:text-foreground">{link.label}</Link>
                   </li>
                 ))}
               </ul>
@@ -162,10 +90,9 @@ export function Footer() {
         </nav>
       </div>
       <div className="shell flex flex-col gap-2 border-t border-hairline py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-        <p>© 2026 The Voice Lounge (Pty) Ltd. Demonstration content — shows and articles are fictional.</p>
-        <p>Johannesburg · Cape Town · Durban</p>
+        <p>© 2026 The Voice Lounge. Public information aligned to the 20 September 2026 research baseline.</p>
+        <p>East London · Eastern Cape · South Africa</p>
       </div>
-      {/* clearance for the persistent player */}
       <div aria-hidden="true" className="h-24 md:h-20" />
     </footer>
   );

@@ -3,12 +3,6 @@ import type { YouTubeFeedResult, YouTubeFeedVideo } from "@/lib/youtube.function
 
 const YouTubeFeedContext = createContext<YouTubeFeedResult | null>(null);
 
-function hash(value: string) {
-  let out = 0;
-  for (let i = 0; i < value.length; i += 1) out = (out * 31 + value.charCodeAt(i)) >>> 0;
-  return out;
-}
-
 export function YouTubeFeedProvider({ feed, children }: { feed: YouTubeFeedResult; children: ReactNode }) {
   return <YouTubeFeedContext.Provider value={feed}>{children}</YouTubeFeedContext.Provider>;
 }
@@ -21,7 +15,6 @@ export function useYouTubeVideoForKey(key: string): YouTubeFeedVideo | null {
   const feed = useYouTubeFeed();
   return useMemo(() => {
     if (!feed || feed.status !== "ready" || feed.videos.length === 0) return null;
-    const exact = feed.videos.find((video) => video.id === key);
-    return exact ?? feed.videos[hash(key) % feed.videos.length] ?? null;
+    return feed.videos.find((video) => video.id === key) ?? null;
   }, [feed, key]);
 }

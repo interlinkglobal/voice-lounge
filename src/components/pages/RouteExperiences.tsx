@@ -262,7 +262,7 @@ export function PodcastsExperience() {
               </Link>
               <div className="flex min-w-0 items-center gap-3 pl-[clamp(.75rem,2vw,1.4rem)]">
                 <Link to="/podcasts/$slug" params={{ slug: podcast.slug }} className="min-w-0 flex-1">
-                  <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-[var(--green)]">{podcast.language} · {podcast.format}</p>
+                  <p className="text-[0.65rem] font-black uppercase tracking-[0.15em] text-[var(--green)]">{[podcast.language, podcast.format].filter(Boolean).join(" · ") || "Voice Lounge programme"}</p>
                   <h2 className="mt-1 truncate font-display text-[clamp(1rem,2vw,1.45rem)] font-black">{podcast.title}</h2>
                   <p className="mt-1 line-clamp-2 text-sm leading-5 text-muted-foreground">{podcast.tagline}</p>
                 </Link>
@@ -276,26 +276,18 @@ export function PodcastsExperience() {
   );
 }
 
-const SHOW_NAMES = [
-  "The Voice Lounge",
-  "The Sports Lounge",
-  "Business Conversations",
-  "Culture Room",
-  "On The Move",
-  "Studio Sessions",
-] as const;
-
 export function ShowsExperience() {
   const feed = useYouTubeFeed();
   const videos = feed?.status === "ready"
     ? [...feed.videos].sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt))
     : [];
   const [activeIndex, setActiveIndex] = useState(0);
-  const activeName = SHOW_NAMES[activeIndex] ?? SHOW_NAMES[0];
-  const offset = activeIndex * 5;
-  const selected = videos.length
-    ? Array.from({ length: Math.min(8, videos.length) }, (_, index) => videos[(offset + index) % videos.length]!)
-    : [];
+  const activeShow = podcasts[activeIndex] ?? podcasts[0];
+  const activeName = activeShow?.title ?? "The Voice Lounge";
+  const normalizedName = normalize(activeName);
+  const selected = videos
+    .filter((video) => normalize(`${video.title} ${video.description}`).includes(normalizedName))
+    .slice(0, 8);
   const feature = selected[0];
 
   return (
@@ -308,9 +300,9 @@ export function ShowsExperience() {
           </div>
           <div className="max-w-full overflow-x-auto">
             <div className="flex min-w-max gap-2 pb-1">
-              {SHOW_NAMES.map((name, index) => (
+              {podcasts.map((show, index) => (
                 <button
-                  key={name}
+                  key={show.id}
                   type="button"
                   onClick={() => setActiveIndex(index)}
                   className={cn(
@@ -320,7 +312,7 @@ export function ShowsExperience() {
                       : "border-hairline bg-surface-2 text-muted-foreground hover:text-foreground",
                   )}
                 >
-                  {name}
+                  {show.title}
                 </button>
               ))}
             </div>
@@ -343,7 +335,7 @@ export function ShowsExperience() {
               <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--gold)]">Now browsing</p>
               <h2 className="mt-3 font-display text-[clamp(3rem,8vw,7rem)] font-black leading-[0.86] tracking-[-0.07em]">{activeName}</h2>
               <p className="mt-5 max-w-xl text-base leading-7 text-white/65">
-                A dedicated collection from The Voice Lounge channel. Switch shows above without leaving the page.
+                {activeShow?.description ?? "A programme listed on The Voice Lounge's public schedule."} YouTube items appear here only when the official channel metadata contains this programme name; no arbitrary video matching is used.
               </p>
             </div>
 
@@ -355,7 +347,7 @@ export function ShowsExperience() {
               </div>
             ) : (
               <div className="mt-10 rounded-3xl border border-white/10 bg-black/25 p-8 text-white/70">
-                This show collection will populate from the connected channel feed.
+                No verified YouTube mapping was found for this programme in the current channel metadata. The programme remains listed because it is present on the official Voice Lounge schedule.
               </div>
             )}
           </div>
