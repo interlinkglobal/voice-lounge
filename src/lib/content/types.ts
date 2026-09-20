@@ -102,6 +102,8 @@ export interface NewsArticle {
   publishedAt: string;
   readingMinutes: number;
   artwork: Artwork;
+  sourceLabel?: string;
+  sourceUrl?: string;
   featured?: boolean;
 }
 
