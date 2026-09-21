@@ -5,7 +5,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -142,7 +141,6 @@ function ensureGoogleRuntime(language: SiteLanguage) {
 export function TranslationProvider({ children }: { children: ReactNode }) {
   const user = useAuth();
   const [language, setLanguageState] = useState<SiteLanguage>("en");
-  const observerRef = useRef<MutationObserver | null>(null);
 
   useEffect(() => {
     const stored = readLanguage();
@@ -153,12 +151,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       window.setTimeout(() => ensureGoogleRuntime(stored), 0);
     }
 
-    observerRef.current = new MutationObserver(() => suppressInjectedGoogleUi());
-    observerRef.current.observe(document.documentElement, { childList: true, subtree: true });
-
     return () => {
-      observerRef.current?.disconnect();
-      observerRef.current = null;
       delete window.tvlGoogleTranslateInit;
     };
   }, []);
