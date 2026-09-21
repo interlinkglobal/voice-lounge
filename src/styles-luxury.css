@@ -606,3 +606,15 @@ header .press {
     text-overflow: ellipsis;
   }
 }
+
+
+.account-membership-card,
+.account-membership-card * {
+  font-family: "Ubuntu", "Inter Tight", system-ui, sans-serif !important;
+}
+
+@container (max-width: 520px) {
+  .account-membership-card .member-card-footer {
+    display: none;
+  }
+}
