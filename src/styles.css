@@ -213,7 +213,7 @@
     scroll-behavior: smooth;
   }
   textarea {
-    resize: none;
+    resize: none !important;
   }
 
   body {
