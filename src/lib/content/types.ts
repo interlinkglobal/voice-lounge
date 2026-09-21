@@ -13,7 +13,7 @@
 
 export type MediaKind = "podcast" | "show" | "episode" | "video" | "live" | "news" | "creator" | "guest" | "collection";
 
-export type SALanguage = "English" | "Afrikaans" | "isiNdebele" | "isiXhosa" | "isiZulu" | "siSwati" | "Sepedi" | "Setswana" | "Sesotho" | "itsonga" | "Tshivenda" | "South African Sign Language";
+export type SALanguage = "English" | "Afrikaans" | "isiNdebele" | "isiXhosa" | "isiZulu" | "siSwati" | "Sepedi" | "Setswana" | "Sesotho" | "XiTsonga" | "Tshivenda" | "South African Sign Language";
 
 export type Province =
   | "Gauteng"
