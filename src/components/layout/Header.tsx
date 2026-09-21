@@ -167,6 +167,11 @@ function AdaptivePrimaryNav() {
       subtree: true,
       characterData: true,
     });
+    mutationObserver.observe(nav, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
 
     measure();
     window.addEventListener("resize", measure, { passive: true });
