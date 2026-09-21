@@ -180,6 +180,9 @@ export function Header() {
                       <Link to={n.to} preload="intent" className="block rounded-xl px-3 py-2 text-sm hover:bg-surface-2">{n.label}</Link>
                     </li>
                   ))}
+                  <li className="mt-2 border-t border-hairline pt-2 2xl:hidden">
+                    <LanguageSwitcher className="w-full" />
+                  </li>
                 </ul>
               </li>
             </ul>
