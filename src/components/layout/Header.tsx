@@ -6,6 +6,8 @@ import { Logo } from "./Logo";
 import { useTheme, type ThemeChoice } from "@/components/system/theme";
 import { InstallPwaButton } from "@/components/system/InstallPwaButton";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { AppSelect } from "@/components/ui/AppSelect";
+import { SITE_LANGUAGES, useTranslationLanguage, type SiteLanguage } from "@/components/system/TranslationProvider";
 
 export const PRIMARY_NAV = [
   { to: "/", label: "Home" },
@@ -50,6 +52,22 @@ function ThemeToggle() {
           <Icon className="size-4" aria-hidden="true" />
         </button>
       ))}
+    </div>
+  );
+}
+
+
+function LanguageSwitcher({ className }: { className?: string }) {
+  const { language, setLanguage } = useTranslationLanguage();
+  return (
+    <div className={cn("notranslate", className)} translate="no">
+      <AppSelect
+        value={language}
+        onValueChange={(value) => setLanguage(value as SiteLanguage)}
+        options={SITE_LANGUAGES}
+        ariaLabel="Website language"
+        className="min-h-10 w-[8.75rem] rounded-full bg-surface-2"
+      />
     </div>
   );
 }
@@ -185,6 +203,7 @@ export function Header() {
             <Link to="/search" aria-label="Search" className="press grid size-10 place-items-center rounded-full text-muted-foreground hover:text-foreground lg:hidden">
               <Search className="size-5" aria-hidden="true" />
             </Link>
+            <LanguageSwitcher className="hidden 2xl:block" />
             <div className="hidden md:block"><ThemeToggle /></div>
             <InstallPwaButton className="hidden 2xl:inline-flex" />
             <Link
@@ -304,7 +323,7 @@ export function Header() {
             >
               <Crown className="size-4" aria-hidden="true" /> Explore Premium
             </Link>
-            <div className="mt-5 flex justify-center pb-6"><ThemeToggle /></div>
+            <div className="mt-5 grid gap-3 pb-6"><LanguageSwitcher /><div className="flex justify-center"><ThemeToggle /></div></div>
           </div>
         </div>
       )}
