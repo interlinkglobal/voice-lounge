@@ -11,7 +11,7 @@ import {
   Send,
   Youtube,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
@@ -200,18 +200,17 @@ export function DiscoverWorkspaceExperience() {
             />
           </label>
 
-          <label>
-            <span className="sr-only">Content type</span>
-            <select
-              value={contentType}
-              onChange={(event) => setContentType(event.target.value as typeof contentType)}
-              className="min-h-12 w-full rounded-none border border-hairline bg-background px-4 outline-none focus:border-[var(--green)]"
-            >
-              <option value="all">All content</option>
-              <option value="videos">Videos only</option>
-              <option value="podcasts">Podcasts only</option>
-            </select>
-          </label>
+          <AppSelect
+            value={contentType}
+            onValueChange={(value) => setContentType(value as typeof contentType)}
+            ariaLabel="Content type"
+            options={[
+              { value: "all", label: "All content" },
+              { value: "videos", label: "Videos only" },
+              { value: "podcasts", label: "Podcasts only" },
+            ]}
+            className="min-h-12 w-full rounded-none lg:w-full"
+          />
 
           <button
             type="button"
@@ -349,20 +348,19 @@ export function EpisodesDirectoryExperience() {
           <h1 className="font-display text-2xl font-black">Voice Lounge episodes</h1>
           <p className="mt-1 text-sm text-muted-foreground">Browse the official upload catalogue by programme.</p>
         </div>
-        <label>
-          <span className="sr-only">Filter episodes by programme</span>
-          <select
-            value={programme}
-            onChange={(event) => {
-              setProgramme(event.target.value);
-              setVisible(30);
-            }}
-            className="min-h-11 w-full rounded-none border border-hairline bg-background px-4 text-sm font-semibold sm:w-64"
-          >
-            <option value="all">All programmes</option>
-            {podcasts.map((podcast) => <option key={podcast.id} value={podcast.id}>{podcast.title}</option>)}
-          </select>
-        </label>
+        <AppSelect
+          value={programme}
+          onValueChange={(value) => {
+            setProgramme(value);
+            setVisible(30);
+          }}
+          ariaLabel="Filter episodes by programme"
+          options={[
+            { value: "all", label: "All programmes" },
+            ...podcasts.map((podcast) => ({ value: podcast.id, label: podcast.title })),
+          ]}
+          className="w-full sm:w-64"
+        />
       </div>
 
       <div className="grid gap-2 lg:grid-cols-2">
@@ -373,19 +371,19 @@ export function EpisodesDirectoryExperience() {
               key={video.id}
               type="button"
               onClick={() => player.open(video)}
-              className="press grid min-h-[4.25rem] grid-cols-[5rem_minmax(0,1fr)_auto] items-center gap-3 border border-hairline bg-card/35 p-2 text-left hover:border-[color-mix(in_oklab,var(--green)_45%,var(--hairline))]"
+              className="press grid min-h-[5.25rem] grid-cols-[20%_minmax(0,1fr)_auto] items-stretch gap-0 overflow-hidden border border-hairline bg-card/35 text-left hover:border-[color-mix(in_oklab,var(--green)_45%,var(--hairline))]"
             >
-              <span className="relative aspect-video w-20 overflow-hidden bg-black">
-                <img src={video.thumbnail} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
+              <span className="relative min-h-full overflow-hidden bg-black">
+                <SmartImage src={video.thumbnail} fallbackRatio="16:9" alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async" />
                 <span className="absolute inset-0 grid place-items-center bg-black/18"><Play className="size-4 fill-white text-white" aria-hidden="true" /></span>
               </span>
-              <span className="min-w-0">
-                <span className="block line-clamp-1 text-sm font-bold">{video.title}</span>
+              <span className="min-w-0 self-center px-3 py-2">
+                <span className="block line-clamp-2 text-sm font-bold">{video.title}</span>
                 <span className="mt-0.5 block truncate text-xs text-muted-foreground">
                   {show?.title ?? "The Voice Lounge"}{video.publishedAt ? ` · ${formatDate(video.publishedAt)}` : ""}
                 </span>
               </span>
-              <Play className="mr-2 size-4 text-[var(--green)]" aria-hidden="true" />
+              <Play className="mr-3 size-4 self-center text-[var(--green)]" aria-hidden="true" />
             </button>
           );
         })}
@@ -492,6 +490,23 @@ export function CommunityExperience() {
   const comments = feed?.status === "ready" ? feed.comments : [];
   const [draft, setDraft] = useState("");
   const [notice, setNotice] = useState("");
+  const [visible, setVisible] = useState(12);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const node = sentinelRef.current;
+    if (!node || visible >= comments.length) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setVisible((value) => Math.min(value + 12, comments.length));
+        }
+      },
+      { rootMargin: "320px 0px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [comments.length, visible]);
 
   function submitComment(event: React.FormEvent) {
     event.preventDefault();
@@ -505,11 +520,11 @@ export function CommunityExperience() {
 
   return (
     <div className="shell pb-[var(--section-gap)] pt-[clamp(1rem,3vw,2rem)]" data-primary-route="community">
-      <section className="mx-auto max-w-4xl">
+      <section className="mx-auto max-w-5xl">
         <form onSubmit={submitComment} className="border border-hairline bg-card/40 p-4 sm:p-5">
           <div className="flex items-start gap-3">
             <div className="grid size-10 shrink-0 place-items-center overflow-hidden rounded-full border border-hairline bg-surface-2">
-              {user?.picture ? <img src={user.picture} alt="" className="size-full object-cover" referrerPolicy="no-referrer" /> : <MessageCircle className="size-4" aria-hidden="true" />}
+              {user?.picture ? <SmartImage src={user.picture} fallbackRatio="1:1" alt="" className="size-full object-cover" referrerPolicy="no-referrer" /> : <MessageCircle className="size-4" aria-hidden="true" />}
             </div>
             <div className="min-w-0 flex-1">
               <label htmlFor="community-comment" className="font-display text-sm font-bold">Add a website comment</label>
@@ -524,9 +539,9 @@ export function CommunityExperience() {
                 placeholder={user ? "Share your thoughts…" : "Sign in to prepare a website comment…"}
                 className="mt-2 w-full resize-y rounded-none border border-hairline bg-background p-3 text-sm outline-none focus:border-[var(--green)]"
               />
-              <div className="mt-2 flex items-center justify-between gap-3">
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-xs text-muted-foreground">Website persistence is intentionally not connected yet.</p>
-                <button type="submit" className="press inline-flex min-h-10 items-center gap-2 bg-[var(--green-action)] px-4 text-sm font-bold text-white">
+                <button type="submit" className="press inline-flex min-h-11 items-center gap-2 bg-[var(--green-action)] px-4 text-sm font-bold text-white">
                   <Send className="size-4" aria-hidden="true" /> {user ? "Post" : "Sign in"}
                 </button>
               </div>
@@ -535,46 +550,59 @@ export function CommunityExperience() {
           </div>
         </form>
 
-        <div className="mt-4 border-b border-hairline pb-3">
+        <div className="mt-5 border-b border-hairline pb-3">
           <h1 className="font-display text-2xl font-black">Community comments</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Recent public discussion loaded from the official Voice Lounge YouTube channel, alongside the website comment interface.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Recent public discussion from the official Voice Lounge YouTube channel, alongside the website comment interface.</p>
         </div>
 
-        <div className="divide-y divide-[var(--hairline)]">
-          {comments.map((comment) => (
-            <article key={comment.id} className="py-5">
-              <div className="flex gap-3">
-                <img
-                  src={comment.authorImage ?? "/voice-lounge-card-logo.png"}
-                  alt=""
-                  className="size-10 shrink-0 rounded-full border border-hairline bg-black object-cover"
-                  loading="lazy"
-                  decoding="async"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                    {comment.authorChannelUrl ? (
-                      <a href={comment.authorChannelUrl} target="_blank" rel="noreferrer" className="font-bold hover:underline">{comment.authorName}</a>
-                    ) : (
-                      <span className="font-bold">{comment.authorName}</span>
-                    )}
-                    <span className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--green)]">YouTube</span>
-                    {comment.publishedAt && <span className="text-xs text-muted-foreground">{formatDate(comment.publishedAt)}</span>}
-                  </div>
-                  <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{comment.text}</p>
-                  <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="inline-flex items-center gap-1"><Heart className="size-3.5" aria-hidden="true" /> {comment.likeCount}</span>
-                    {comment.videoId && (
-                      <a href={`https://www.youtube.com/watch?v=${encodeURIComponent(comment.videoId)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-foreground">
-                        View video <ExternalLink className="size-3.5" aria-hidden="true" />
-                      </a>
-                    )}
+        <div className="grid gap-4 py-4">
+          {comments.slice(0, visible).map((comment, index) => {
+            const alignRight = index % 2 === 1;
+            return (
+              <article
+                key={comment.id}
+                className={cn(
+                  "w-[min(92%,44rem)] border border-hairline bg-card/45 p-4 sm:p-5",
+                  alignRight ? "ml-auto" : "mr-auto",
+                )}
+              >
+                <div className={cn("flex gap-3", alignRight && "sm:flex-row-reverse")}>
+                  <SmartImage
+                    src={comment.authorImage}
+                    fallbackRatio="1:1"
+                    alt=""
+                    className="size-11 shrink-0 rounded-full border border-hairline bg-black object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <div className={cn("min-w-0 flex-1", alignRight && "sm:text-right")}>
+                    <div className={cn("flex flex-wrap items-center gap-x-2 gap-y-1", alignRight && "sm:justify-end")}>
+                      {comment.authorChannelUrl ? (
+                        <a href={comment.authorChannelUrl} target="_blank" rel="noreferrer" className="font-bold hover:underline">{comment.authorName}</a>
+                      ) : (
+                        <span className="font-bold">{comment.authorName}</span>
+                      )}
+                      <span className="text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--green)]">YouTube</span>
+                      {comment.publishedAt && <span className="text-xs text-muted-foreground">{formatDate(comment.publishedAt)}</span>}
+                    </div>
+                    <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{comment.text}</p>
+                    <div className={cn("mt-3 flex items-center gap-4 text-xs text-muted-foreground", alignRight && "sm:justify-end")}>
+                      <span className="inline-flex items-center gap-1"><Heart className="size-3.5" aria-hidden="true" /> {comment.likeCount}</span>
+                      {comment.videoId && (
+                        <a href={`https://www.youtube.com/watch?v=${encodeURIComponent(comment.videoId)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 hover:text-foreground">
+                          View video <ExternalLink className="size-3.5" aria-hidden="true" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            );
+          })}
         </div>
+
+        <div ref={sentinelRef} aria-hidden="true" className="h-2" />
+        {visible < comments.length && <p className="text-center text-xs text-muted-foreground">Loading more comments…</p>}
 
         {feed?.status === "ready" && comments.length === 0 && (
           <div className="border border-hairline p-6 text-sm text-muted-foreground">No public YouTube comments were returned by the channel API.</div>
@@ -688,7 +716,7 @@ export function AboutResearchExperience() {
       <header className="shell grid gap-6 border-b border-hairline py-[clamp(2rem,6vw,5rem)] lg:grid-cols-[minmax(0,1.25fr)_minmax(18rem,.75fr)] lg:items-center">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--green)]">The Voice Lounge · East London, South Africa</p>
-          <h1 className="mt-3 font-display text-[clamp(3rem,8vw,7rem)] font-black leading-[.86] tracking-[-0.065em]">A multimedia home for Eastern Cape voices.</h1>
+          <h1 className="about-title mt-3 text-[clamp(2.8rem,7vw,6.25rem)] font-bold leading-[.94]">A multimedia home for Eastern Cape voices.</h1>
           <p className="mt-6 max-w-3xl text-[clamp(1rem,1.5vw,1.25rem)] leading-8 text-muted-foreground">
             The Voice Lounge is an East London multimedia organisation spanning online radio, video podcasts and interviews, recording-studio work, editorial coverage, artist development, mobile applications and commercial media.
           </p>
