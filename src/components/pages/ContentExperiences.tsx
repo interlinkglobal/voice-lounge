@@ -522,7 +522,7 @@ export function LiveExperience() {
         <section className="overflow-hidden border border-[color-mix(in_oklab,var(--live)_55%,var(--hairline))] bg-black text-white">
           <div className="aspect-video">
             <iframe
-              src={`${liveEmbed}?autoplay=1&rel=0&playsinline=1&modestbranding=1`}
+              src={`${liveEmbed}${liveEmbed.includes("?") ? "&" : "?"}autoplay=1&rel=0&playsinline=1&modestbranding=1`}
               title={liveStatus?.title ?? "The Voice Lounge live"}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
