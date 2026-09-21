@@ -100,6 +100,22 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     window.localStorage.setItem(STORAGE_KEY, next);
     setGoogleTranslateCookie(next);
     document.documentElement.lang = next === "en" ? "en-ZA" : next;
+    setLanguageState(next);
+
+    if (next === "en") {
+      window.location.reload();
+      return;
+    }
+
+    const combo = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+    if (combo) {
+      combo.value = next;
+      combo.dispatchEvent(new Event("change", { bubbles: true }));
+      return;
+    }
+
+    // The translation script may still be loading on the first interaction.
+    // Cookie persistence guarantees the requested language on the reload.
     window.location.reload();
   }, []);
 
