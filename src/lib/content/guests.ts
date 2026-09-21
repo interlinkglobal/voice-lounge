@@ -40,6 +40,7 @@ export const VERIFIED_GUESTS: GuestProfile[] = [
   { slug: "goldmax", name: "Goldmax", aliases: ["Gold Max"], description: "Music guest identified in the Voice Lounge release record through a Refuel Lounge interview.", source: "research" },
   { slug: "woza-bakzin", name: "Woza Bakzin", description: "Music guest identified in the Voice Lounge release record through a Refuel Lounge interview.", source: "research" },
   { slug: "apostle-s-khoza", name: "Apostle S Khoza", description: "Named principal voice in a Voice Lounge on-demand catalogue item recovered in the public research baseline.", source: "research" },
+  { slug: "mawande-oscar-makalima", name: "Mawande Oscar Makalima", description: "Financial analyst featured in The New Economy, discussing how international conflict and macroeconomic change can affect household finances.", links: [{ label: "LinkedIn", url: "https://za.linkedin.com/in/mawande-oscar-makalima-239aba11", kind: "linkedin" }], source: "legacy" },
 ];
 
 const GUEST_PATTERN = /(?:guest|joins?|joined by|featuring|features|ft\.?)[\s:–—-]+([A-Z][A-Za-zÀ-ÿ'’.-]+(?:\s+(?:[A-Z][A-Za-zÀ-ÿ'’.-]+|[A-Z]\.?)){0,3})/g;
