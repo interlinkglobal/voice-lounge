@@ -420,7 +420,7 @@ export function AccountExperience() {
               </span>
               <form action="/auth/logout" method="post">
                 <button type="submit" className="press inline-flex min-h-9 items-center gap-1.5 text-xs text-white/55 hover:text-white">
-                  <LogOut className="size-3.5" aria-hidden="true" /> Sign out
+                  <LogOut className="size-3.5" aria-hidden="true" /> Log out
                 </button>
               </form>
             </div>
@@ -450,7 +450,7 @@ export function AccountExperience() {
 
               <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(18rem,.75fr)]">
                 <div className="mx-auto w-full max-w-3xl xl:mx-0">
-                  <TiltSurface maxTilt={4}>
+                  <TiltSurface maxTilt={4} className="rounded-[4.8%]">
                     <EditableMembershipCard model={card} className="w-full" />
                   </TiltSurface>
                 </div>
