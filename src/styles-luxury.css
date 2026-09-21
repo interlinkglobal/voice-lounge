@@ -428,3 +428,58 @@ header button {
 .hero-card-tilt[data-interacting="true"] .vl-hero-card-flip {
   animation-play-state: paused !important;
 }
+
+
+/* Route-level motion opt-outs for media/comment surfaces that must render sharp immediately. */
+[data-primary-route="youtube"],
+[data-primary-route="youtube"] *,
+[data-primary-route="community"],
+[data-primary-route="community"] section,
+[data-primary-route="community"] article,
+[data-primary-route="community"] header,
+[data-primary-route="community"] .vl-component-enter {
+  animation: none !important;
+  filter: none !important;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.hero-card-shimmer {
+  animation: tvl-hero-card-breathe 8s ease-in-out infinite;
+  will-change: transform, filter;
+}
+
+.hero-card-shimmer::before {
+  content: "";
+  position: absolute;
+  inset: -40% -65%;
+  z-index: 9;
+  pointer-events: none;
+  transform: translateX(-145%) skewX(-14deg);
+  background: linear-gradient(100deg, transparent 38%, rgba(255,255,255,.02) 45%, rgba(255,244,190,.18) 50%, rgba(255,255,255,.03) 56%, transparent 64%);
+  mix-blend-mode: screen;
+  animation: tvl-hero-card-shimmer 7.5s ease-in-out infinite;
+}
+
+.about-title {
+  font-family: "Josefin Sans", "Inter Tight", system-ui, sans-serif !important;
+  letter-spacing: -0.035em;
+}
+
+@keyframes tvl-hero-card-breathe {
+  0%, 100% { filter: brightness(1) saturate(1); }
+  50% { filter: brightness(1.025) saturate(1.035); }
+}
+
+@keyframes tvl-hero-card-shimmer {
+  0%, 54% { transform: translateX(-145%) skewX(-14deg); opacity: 0; }
+  62% { opacity: .85; }
+  78%, 100% { transform: translateX(145%) skewX(-14deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-card-shimmer,
+  .hero-card-shimmer::before {
+    animation: none !important;
+  }
+}
