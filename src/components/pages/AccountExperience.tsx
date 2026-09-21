@@ -24,10 +24,10 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { EditableMembershipCard } from "@/components/premium/EditableMembershipCard";
 import { AppSelect } from "@/components/ui/AppSelect";
 import {
-  SITE_LANGUAGES,
   useTranslationLanguage,
   type SiteLanguage,
 } from "@/components/system/TranslationProvider";
+import { LanguagePicker } from "@/components/system/LanguagePicker";
 import { compactMembershipName, createMembershipCardViewModel } from "@/lib/membership/card";
 import type { MembershipPlan } from "@/lib/auth/supabase";
 import { cn } from "@/lib/utils";
@@ -301,25 +301,28 @@ export function AccountExperience() {
     }
   };
 
-  const updateLanguage = async (next: string) => {
-    const value = next as SiteLanguage;
+  const updateLanguage = async (next: SiteLanguage) => {
+    // Switch immediately. Account persistence must never block the user's
+    // explicit language choice on this device.
+    setLanguage(next);
+    setData((current) => ({
+      ...current,
+      profile: current.profile
+        ? { ...current.profile, preferred_language: next }
+        : current.profile,
+    }));
+
     try {
       const response = await fetch("/api/account", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ preferred_language: value }),
+        body: JSON.stringify({ preferred_language: next }),
       });
       const payload = (await response.json().catch(() => ({}))) as { error?: string };
       if (!response.ok) throw new Error(payload.error || "Language preference could not be saved.");
-      setData((current) => ({
-        ...current,
-        profile: current.profile
-          ? { ...current.profile, preferred_language: value }
-          : current.profile,
-      }));
-      setLanguage(value);
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Language preference could not be saved.");
+      setNotice("Language preference saved.");
+    } catch {
+      setNotice("Language changed on this device. Account sync could not be saved.");
     }
   };
 
@@ -739,10 +742,9 @@ export function AccountExperience() {
                   The preference is saved to your account and can follow you between devices.
                 </p>
                 <div className="mt-5">
-                  <AppSelect
-                    value={data.profile?.preferred_language || language}
+                  <LanguagePicker
+                    value={language}
                     onValueChange={(value) => void updateLanguage(value)}
-                    options={SITE_LANGUAGES}
                     ariaLabel="Preferred Voice Lounge language"
                     className="w-full"
                   />

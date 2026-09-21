@@ -115,7 +115,7 @@ export function createMembershipCardViewModel(
       country: "SOUTH AFRICA",
       access: "OPEN ACCESS",
       tagline: "VIEWER OF THE VOICE LOUNGE",
-      memberIdLabel: "VIEW NUMBER",
+      memberIdLabel: "VIEWER NUMBER",
       memberId: `VIEW-${visitorNumber}`,
       dateLabel: "TODAY",
       dateValue: today,

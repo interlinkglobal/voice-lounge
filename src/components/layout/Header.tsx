@@ -6,8 +6,8 @@ import { Logo } from "./Logo";
 import { useTheme, type ThemeChoice } from "@/components/system/theme";
 import { InstallPwaButton } from "@/components/system/InstallPwaButton";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { AppSelect } from "@/components/ui/AppSelect";
-import { SITE_LANGUAGES, useTranslationLanguage, type SiteLanguage } from "@/components/system/TranslationProvider";
+import { useTranslationLanguage } from "@/components/system/TranslationProvider";
+import { LanguagePicker } from "@/components/system/LanguagePicker";
 import { universalSearch } from "@/lib/content/adapters";
 import { CMS_BASE } from "@/lib/cms/routes";
 
@@ -64,10 +64,9 @@ function LanguageSwitcher({ className }: { className?: string }) {
   const { language, setLanguage } = useTranslationLanguage();
   return (
     <div className={cn("notranslate min-w-0", className)} translate="no">
-      <AppSelect
+      <LanguagePicker
         value={language}
-        onValueChange={(value) => setLanguage(value as SiteLanguage)}
-        options={SITE_LANGUAGES}
+        onValueChange={setLanguage}
         ariaLabel="Website language"
         className="min-h-10 w-[8.75rem] max-w-full rounded-full bg-surface-2"
       />

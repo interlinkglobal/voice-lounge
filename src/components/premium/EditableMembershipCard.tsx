@@ -34,7 +34,7 @@ const DEFAULT_CARD: MembershipCardViewModel = {
   country: "SOUTH AFRICA",
   access: "OPEN ACCESS",
   tagline: "VIEWER OF THE VOICE LOUNGE",
-  memberIdLabel: "VIEW NUMBER",
+  memberIdLabel: "VIEWER NUMBER",
   memberId: "VIEW-000000",
   dateLabel: "TODAY",
   dateValue: "19 SEP 2026",
@@ -103,7 +103,7 @@ export function EditableMembershipCard({
   const theme = CARD_THEMES[resolved.theme];
   const accent = change?.color ?? theme.accent;
   const memberIdIsEmail = resolved.memberId.includes("@");
-  const isVisitor = resolved.memberIdLabel === "VIEW NUMBER";
+  const isVisitor = resolved.memberIdLabel === "VIEWER NUMBER";
   const style = {
     "--member-accent": accent,
     "--member-metal": theme.metal,
@@ -122,6 +122,7 @@ export function EditableMembershipCard({
       style={{ ...style, containerType: "inline-size" }}
       aria-label={`${resolved.plan} card for ${resolved.name}`}
       data-membership-theme={resolved.theme}
+      data-visitor-card={isVisitor ? "true" : "false"}
     >
       <div className="relative h-full w-full overflow-hidden rounded-[4.55%] bg-[#050908] shadow-[inset_0_0_34px_rgba(0,0,0,.76)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_13%_17%,color-mix(in_oklab,var(--member-accent)_34%,transparent),transparent_25%),radial-gradient(circle_at_58%_46%,color-mix(in_oklab,var(--member-accent)_14%,transparent),transparent_34%),linear-gradient(120deg,var(--member-bg-start)_0%,var(--member-bg-mid)_38%,var(--member-bg-end)_100%)]" />
@@ -202,7 +203,7 @@ export function EditableMembershipCard({
         <div className="absolute right-[5.2%] top-[46.4%] z-20 aspect-square w-[22.5%]">
           <img
             src={MEMBERSHIP_CARD_ASSETS.badge}
-            alt="South Africa — Louder Together gold badge"
+            alt="South Africa - Louder Together gold badge"
             width={512}
             height={512}
             loading="eager"

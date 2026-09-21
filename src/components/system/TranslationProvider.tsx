@@ -73,11 +73,14 @@ declare global {
   }
 }
 
-function readLanguage(): SiteLanguage {
-  if (typeof window === "undefined") return "en";
+function readStoredLanguage(): SiteLanguage | null {
+  if (typeof window === "undefined") return null;
   const stored = window.localStorage.getItem(STORAGE_KEY) as SiteLanguage | null;
-  if (!stored || !TRANSLATABLE.has(stored)) return "en";
-  return stored;
+  return stored && TRANSLATABLE.has(stored) ? stored : null;
+}
+
+function readLanguage(): SiteLanguage {
+  return readStoredLanguage() ?? "en";
 }
 
 function setGoogleTranslateCookie(language: SiteLanguage) {
@@ -179,6 +182,11 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!user) return;
+
+    // An explicit choice made in this browser is authoritative. Account
+    // preference is only used to seed a device that has never chosen a language.
+    if (readStoredLanguage()) return;
+
     const syncMarker = `${ACCOUNT_SYNC_KEY}:${user.id}`;
     if (window.sessionStorage.getItem(syncMarker) === "1") return;
     window.sessionStorage.setItem(syncMarker, "1");
@@ -197,9 +205,8 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
         if (!active || !preferred || !TRANSLATABLE.has(preferred)) return;
 
         const current = readLanguage();
-        if (preferred === current) return;
-
         window.localStorage.setItem(STORAGE_KEY, preferred);
+        if (preferred === current) return;
         setGoogleTranslateCookie(preferred);
         document.documentElement.lang = preferred === "en" ? "en-ZA" : preferred;
         setLanguageState(preferred);

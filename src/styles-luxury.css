@@ -683,3 +683,10 @@ header .press {
     animation: none !important;
   }
 }
+
+
+@container (max-width: 520px) {
+  .member-card-frame[data-visitor-card="true"] .member-card-footer {
+    display: none;
+  }
+}
