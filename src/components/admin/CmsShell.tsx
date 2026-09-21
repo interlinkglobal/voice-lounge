@@ -10,6 +10,7 @@ import {
   Menu,
   Newspaper,
   Podcast,
+  Radio,
   Search,
   Tv2,
 } from "lucide-react";
@@ -29,6 +30,7 @@ const ICONS = {
   podcasts: Podcast,
   shows: LayoutGrid,
   watch: Tv2,
+  live: Radio,
   news: Newspaper,
   uploads: ImagePlus,
 } as const;
@@ -128,7 +130,12 @@ export function CmsShell() {
 
               <div className="min-w-0">
                 <div className="text-xs uppercase tracking-wider text-muted-foreground">Admin</div>
-                <div className="truncate text-base font-semibold">{current?.label ?? "Overview"}</div>
+                <div className="flex min-w-0 items-center gap-2">
+                  <div className="truncate text-base font-semibold">{current?.label ?? "Overview"}</div>
+                  <Badge variant="outline" className="shrink-0 border-[color-mix(in_oklab,var(--gold)_45%,var(--hairline))] text-[0.62rem] uppercase tracking-[0.12em] text-[var(--gold)]">
+                    In development
+                  </Badge>
+                </div>
               </div>
             </div>
 
