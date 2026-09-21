@@ -26,7 +26,7 @@ import {
 } from "@/lib/content/programme-directory";
 import { formatDate } from "@/lib/content/adapters";
 import { getYouTubeLiveStatus, type YouTubeLiveStatus } from "@/lib/youtube.functions";
-import { youtubeEmbedUrl } from "@/lib/youtube-url";
+import { youtubeEmbedUrl, youtubeWatchUrl } from "@/lib/youtube-url";
 
 function podcastCategory(categoryId: string) {
   return categories.find((item) => item.id === categoryId)?.name ?? "Voice Lounge";
@@ -549,6 +549,7 @@ export function LiveExperience() {
       ? (liveStatus.videoEmbedUrl ?? liveStatus.permanentEmbedUrl)
       : null;
   const liveTitle = manualLive?.title ?? liveStatus?.title ?? "The Voice Lounge Live";
+  const liveWatchUrl = manualLive?.youtube_url ?? (activeVideoId ? youtubeWatchUrl(activeVideoId) : null);
 
   return (
     <div className="shell pb-[var(--section-gap)] pt-[clamp(1rem,3vw,2rem)]" data-primary-route="live">
@@ -570,6 +571,16 @@ export function LiveExperience() {
             <p className="mt-2 text-xs text-white/55">
               {manualLive ? "Served by the Voice Lounge live control." : "Live status refreshes automatically from the official YouTube channel."}
             </p>
+            {liveWatchUrl && (
+              <a
+                href={liveWatchUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="press mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/20 px-4 text-sm font-semibold text-white hover:bg-white/10"
+              >
+                Open live on YouTube <ExternalLink className="size-4" aria-hidden="true" />
+              </a>
+            )}
           </div>
         </section>
       ) : (
@@ -578,9 +589,13 @@ export function LiveExperience() {
             <span className="live-offline-icon mx-auto grid size-16 place-items-center rounded-full border border-hairline bg-background/35"><WifiOff className="size-7 text-muted-foreground" aria-hidden="true" /></span>
             <h1 className="mt-5 font-display text-[clamp(2rem,6vw,4.5rem)] font-black tracking-[-0.05em]">There isn’t a live broadcast right now.</h1>
             <p className="mt-4 text-base leading-7 text-muted-foreground">This page checks the official channel and the Voice Lounge live control automatically.</p>
-            <a href="#previous-lives" className="press mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--green-action)] px-5 font-bold text-white">
+            <button
+              type="button"
+              onClick={() => document.getElementById("previous-lives")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+              className="press mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--green-action)] px-5 font-bold text-white"
+            >
               Watch Past Lives <ArrowDown className="size-4" aria-hidden="true" />
-            </a>
+            </button>
           </div>
         </section>
       )}
