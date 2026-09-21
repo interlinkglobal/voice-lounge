@@ -14,7 +14,7 @@ import type { PageKey } from "@/lib/voice-lounge/routes";
 
 export type SearchFilter = "all" | "videos" | "podcasts" | "episodes" | "creators" | "guests" | "news" | "live";
 
-const LANGUAGES = ["English","Afrikaans","isiNdebele","isiXhosa","isiZulu","siSwati","Sepedi","Setswana","Sesotho","itsonga","Tshivenda","South African Sign Language"];
+const LANGUAGES = ["English","Afrikaans","isiNdebele","isiXhosa","isiZulu","siSwati","Sepedi","Setswana","Sesotho","XiTsonga","Tshivenda","South African Sign Language"];
 const PROVINCES = ["Eastern Cape"];
 const FORMATS = ["Audio", "Video", "Hybrid"];
 const MOODS = ["Quick hit", "Deep dive", "Laugh", "Learn", "Debate", "Unwind"];
