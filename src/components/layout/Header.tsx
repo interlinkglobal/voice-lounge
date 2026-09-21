@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Crown, LogIn, LogOut, Menu, Monitor, Moon, Search, Sun, User, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./Logo";
@@ -8,6 +8,7 @@ import { InstallPwaButton } from "@/components/system/InstallPwaButton";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { AppSelect } from "@/components/ui/AppSelect";
 import { SITE_LANGUAGES, useTranslationLanguage, type SiteLanguage } from "@/components/system/TranslationProvider";
+import { universalSearch } from "@/lib/content/adapters";
 
 export const PRIMARY_NAV = [
   { to: "/", label: "Home" },
@@ -90,17 +91,28 @@ function AccountControl() {
   }
 
   return (
-    <Link
-      to="/account"
-      aria-label={`Account for ${user.name}`}
-      className="press hidden size-10 place-items-center overflow-hidden rounded-full border border-[color-mix(in_oklab,var(--green)_45%,transparent)] bg-surface-2 sm:grid"
-    >
-      {user.picture ? (
-        <img src={user.picture} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
-      ) : (
-        <User className="size-4" aria-hidden="true" />
-      )}
-    </Link>
+    <div className="hidden items-center gap-1.5 sm:flex">
+      <Link
+        to="/account"
+        aria-label={`Account for ${user.name}`}
+        className="press grid size-10 place-items-center overflow-hidden rounded-full border border-[color-mix(in_oklab,var(--green)_45%,transparent)] bg-surface-2"
+      >
+        {user.picture ? (
+          <img src={user.picture} alt="" referrerPolicy="no-referrer" className="size-full object-cover" />
+        ) : (
+          <User className="size-4" aria-hidden="true" />
+        )}
+      </Link>
+      <form action="/auth/logout" method="post" className="hidden 2xl:block">
+        <button
+          type="submit"
+          className="press inline-flex min-h-10 items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-3 text-sm font-semibold"
+        >
+          <LogOut className="size-4" aria-hidden="true" />
+          Log out
+        </button>
+      </form>
+    </div>
   );
 }
 
@@ -109,8 +121,13 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [term, setTerm] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const suggestions = useMemo(
+    () => term.trim().length >= 2 ? universalSearch(term).slice(0, 6) : [],
+    [term],
+  );
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -191,19 +208,52 @@ export function Header() {
           <span className="xl:hidden" />
 
           <div className="flex shrink-0 items-center gap-1.5">
-            <form onSubmit={submit} role="search" className="hidden items-center lg:flex">
-              <label htmlFor="global-search" className="sr-only">Search The Voice Lounge</label>
-              <div className="flex items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 py-1.5">
-                <Search className="size-4 text-muted-foreground" aria-hidden="true" />
-                <input
-                  id="global-search"
-                  value={term}
-                  onChange={(e) => setTerm(e.target.value)}
-                  placeholder="Titles, descriptions, people"
-                  className="w-40 bg-transparent text-sm outline-none placeholder:text-muted-foreground xl:w-52"
-                />
-              </div>
-            </form>
+            <div className="relative hidden lg:block">
+              <form onSubmit={submit} role="search" className="flex items-center">
+                <label htmlFor="global-search" className="sr-only">Search The Voice Lounge</label>
+                <div className="flex items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 py-1.5">
+                  <Search className="size-4 text-muted-foreground" aria-hidden="true" />
+                  <input
+                    id="global-search"
+                    value={term}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}
+                    onChange={(e) => setTerm(e.target.value)}
+                    placeholder="Videos, guests, shows, creators…"
+                    className="w-44 bg-transparent text-sm outline-none placeholder:text-muted-foreground xl:w-56"
+                  />
+                </div>
+              </form>
+              {searchFocused && term.trim().length >= 2 && (
+                <div className="absolute right-0 top-[calc(100%+.55rem)] z-50 w-[min(28rem,78vw)] overflow-hidden rounded-2xl border border-hairline bg-popover p-2 shadow-lift">
+                  {suggestions.map((hit) => (
+                    <Link
+                      key={`${hit.type}-${hit.card.id}`}
+                      to={hit.card.href}
+                      onMouseDown={(event) => event.preventDefault()}
+                      className="press flex items-start justify-between gap-3 rounded-xl px-3 py-2.5 hover:bg-surface-2"
+                    >
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-semibold">{hit.card.title}</span>
+                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">{hit.type} · {hit.card.subtitle || hit.card.meta || "The Voice Lounge"}</span>
+                      </span>
+                      <span className="shrink-0 text-[0.62rem] font-black uppercase tracking-[0.12em] text-[var(--green)]">{hit.type}</span>
+                    </Link>
+                  ))}
+                  {!suggestions.length && (
+                    <p className="px-3 py-3 text-sm text-muted-foreground">No local match yet. Search the full YouTube catalogue.</p>
+                  )}
+                  <button
+                    type="button"
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => submit({ preventDefault() {} } as React.FormEvent)}
+                    className="press mt-1 flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-[var(--green-action)] px-4 text-sm font-bold text-white"
+                  >
+                    <Search className="size-4" aria-hidden="true" /> Search all results
+                  </button>
+                </div>
+              )}
+            </div>
             <Link to="/search" search={{ q: "", type: undefined }} aria-label="Search" className="press grid size-10 place-items-center rounded-full text-muted-foreground hover:text-foreground lg:hidden">
               <Search className="size-5" aria-hidden="true" />
             </Link>
@@ -307,8 +357,9 @@ export function Header() {
                     <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                   </div>
                   <form action="/auth/logout" method="post">
-                    <button type="submit" aria-label="Sign out" className="press grid size-9 place-items-center rounded-full border border-hairline">
+                    <button type="submit" className="press inline-flex min-h-10 items-center gap-2 rounded-full border border-hairline px-3 text-sm font-semibold">
                       <LogOut className="size-4" aria-hidden="true" />
+                      Log out
                     </button>
                   </form>
                 </div>
