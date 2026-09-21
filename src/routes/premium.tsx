@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Crown, ExternalLink, Loader2, LockKeyhole, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Crown, ExternalLink, Languages, Loader2, LockKeyhole, ShieldCheck, Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -199,6 +199,36 @@ function Page() {
               signed-in Voice Lounge account before access is granted.
             </p>
           </div>
+
+          <div className="mt-5 grid gap-2 sm:grid-cols-2">
+            {[
+              "Access to all supported South African language translations",
+              "Ad-free Voice Lounge experience",
+              "Uninterrupted live streaming",
+              "Exclusive podcasts and Premium back-catalogue",
+              "Studio audio and member-only releases",
+              "Broadcaster shout-outs",
+              "Saved content, playlists and member profile",
+              "Real-time notifications and reminders",
+            ].map((feature, index) => (
+              <div
+                key={feature}
+                className="wm-premium-feature flex items-start gap-2.5 rounded-2xl border border-hairline bg-card/45 p-3 text-sm"
+              >
+                {index === 0 ? (
+                  <Languages className="mt-0.5 size-4 shrink-0 text-[var(--gold)]" aria-hidden="true" />
+                ) : index === 1 ? (
+                  <Sparkles className="mt-0.5 size-4 shrink-0 text-[var(--gold)]" aria-hidden="true" />
+                ) : (
+                  <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-[var(--green)]" aria-hidden="true" />
+                )}
+                <span className="leading-5">{feature}</span>
+              </div>
+            ))}
+          </div>
+          <p className="mt-3 text-xs leading-5 text-muted-foreground">
+            Language access and the ad-free experience are shown as Premium benefits now; language choices remain open to all users during beta, and the site does not currently serve advertising.
+          </p>
 
           {error ? (
             <div className="mt-5 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm leading-6 text-destructive">
