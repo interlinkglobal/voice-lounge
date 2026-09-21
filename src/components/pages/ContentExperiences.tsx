@@ -13,6 +13,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Artwork } from "@/components/media/Artwork";
+import { SmartImage } from "@/components/media/SmartImage";
 import { YouTubeVideoCard } from "@/components/youtube/YouTubeFeedGrid";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 import { categories, news, podcastBySlug, podcasts } from "@/lib/content/catalog";
@@ -25,6 +26,7 @@ import {
   type ScheduleDay,
 } from "@/lib/content/programme-directory";
 import { formatDate } from "@/lib/content/adapters";
+import { getYouTubeLiveStatus, type YouTubeLiveStatus } from "@/lib/youtube.functions";
 
 function podcastCategory(categoryId: string) {
   return categories.find((item) => item.id === categoryId)?.name ?? "Voice Lounge";
@@ -420,12 +422,7 @@ export function WatchExperience() {
   return (
     <div className="shell pb-[var(--section-gap)] pt-[clamp(1rem,3vw,2rem)]" data-primary-route="watch">
       <section className="mx-auto max-w-5xl">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--green)]">Now watching</p>
-            <h1 className="mt-1 line-clamp-1 font-display text-[clamp(1.15rem,2.4vw,1.8rem)] font-black">{current.title}</h1>
-          </div>
-          <div className="flex items-center gap-2">
+        <div className="mb-3 flex items-center justify-end gap-2" aria-label="Watch navigation">
             <button
               type="button"
               onClick={previous}
@@ -441,7 +438,11 @@ export function WatchExperience() {
             >
               Next <ChevronRight className="size-4" aria-hidden="true" />
             </button>
-          </div>
+        </div>
+
+        <div className="mb-3 min-w-0 text-center">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--green)]">Now watching</p>
+          <h1 className="mx-auto mt-1 line-clamp-2 max-w-4xl font-display text-[clamp(1.15rem,2.4vw,1.8rem)] font-black">{current.title}</h1>
         </div>
 
         <div className="mx-auto w-full max-w-4xl overflow-hidden border border-hairline bg-black text-white shadow-lift">
@@ -474,19 +475,61 @@ export function WatchExperience() {
 export function LiveExperience() {
   const feed = useYouTubeFeed();
   const videos = feed?.status === "ready" ? feed.videos : [];
-  const live = videos.find((video) => video.liveBroadcastContent === "live");
+  const initialLive = videos.find((video) => video.liveBroadcastContent === "live");
+  const [liveStatus, setLiveStatus] = useState<YouTubeLiveStatus | null>(
+    initialLive
+      ? {
+          configured: true,
+          isLive: true,
+          channelId: feed?.channelId ?? "",
+          videoId: initialLive.id,
+          title: initialLive.title,
+          permanentEmbedUrl: feed?.channelId
+            ? `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(feed.channelId)}`
+            : null,
+          videoEmbedUrl: initialLive.embedUrl,
+          checkedAt: new Date().toISOString(),
+        }
+      : null,
+  );
+
+  useEffect(() => {
+    let active = true;
+    let timer: number | undefined;
+
+    const checkLive = async () => {
+      try {
+        const status = await getYouTubeLiveStatus();
+        if (active) setLiveStatus(status);
+      } catch (error) {
+        console.warn("[live-page] live polling failed", error);
+      }
+    };
+
+    void checkLive();
+    timer = window.setInterval(checkLive, 60_000);
+    return () => {
+      active = false;
+      if (timer) window.clearInterval(timer);
+    };
+  }, []);
+
   const previousLives = videos
-    .filter((video) => video.id !== live?.id && video.wasLive)
+    .filter((video) => video.id !== liveStatus?.videoId && video.wasLive)
     .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
+
+  const liveEmbed = liveStatus?.isLive
+    ? (liveStatus.permanentEmbedUrl ?? liveStatus.videoEmbedUrl)
+    : null;
 
   return (
     <div className="shell pb-[var(--section-gap)] pt-[clamp(1rem,3vw,2rem)]" data-primary-route="live">
-      {live ? (
+      {liveEmbed ? (
         <section className="overflow-hidden border border-[color-mix(in_oklab,var(--live)_55%,var(--hairline))] bg-black text-white">
           <div className="aspect-video">
             <iframe
-              src={`${live.embedUrl}?autoplay=1&rel=0&playsinline=1&modestbranding=1`}
-              title={live.title}
+              src={`${liveEmbed}?autoplay=1&rel=0&playsinline=1&modestbranding=1`}
+              title={liveStatus?.title ?? "The Voice Lounge live"}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
@@ -495,7 +538,8 @@ export function LiveExperience() {
           </div>
           <div className="p-5 sm:p-6">
             <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--live)]"><Radio className="size-4" aria-hidden="true" /> Live now</p>
-            <h1 className="mt-2 font-display text-[clamp(1.5rem,4vw,2.75rem)] font-black">{live.title}</h1>
+            <h1 className="mt-2 font-display text-[clamp(1.5rem,4vw,2.75rem)] font-black">{liveStatus?.title ?? "The Voice Lounge Live"}</h1>
+            <p className="mt-2 text-xs text-white/55">Live status refreshes automatically every minute from the YouTube Data API.</p>
           </div>
         </section>
       ) : (
@@ -503,7 +547,7 @@ export function LiveExperience() {
           <div className="max-w-2xl">
             <span className="mx-auto grid size-16 place-items-center border border-hairline bg-background/35"><WifiOff className="size-7 text-muted-foreground" aria-hidden="true" /></span>
             <h1 className="mt-5 font-display text-[clamp(2rem,6vw,4.5rem)] font-black tracking-[-0.05em]">There isn’t a live broadcast right now.</h1>
-            <p className="mt-4 text-base leading-7 text-muted-foreground">Scroll below to watch previous Voice Lounge live broadcasts and event streams.</p>
+            <p className="mt-4 text-base leading-7 text-muted-foreground">This page checks the channel automatically. Scroll below to watch previous Voice Lounge live broadcasts and event streams.</p>
           </div>
         </section>
       )}
