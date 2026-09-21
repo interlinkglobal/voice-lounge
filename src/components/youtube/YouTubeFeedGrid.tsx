@@ -1,7 +1,9 @@
-import { ExternalLink, Play, Youtube } from "lucide-react";
+import { ExternalLink, Heart, MessageCircle, Play, Share2, Youtube } from "lucide-react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { SmartImage } from "@/components/media/SmartImage";
 import { useYouTubePlayer } from "@/components/youtube/YouTubePlayerProvider";
+import { useAuth } from "@/components/auth/AuthProvider";
 import type { YouTubeFeedResult, YouTubeFeedVideo } from "@/lib/youtube.functions";
 
 function publishedLabel(value: string) {
@@ -13,6 +15,81 @@ function publishedLabel(value: string) {
     month: "short",
     year: "numeric",
   }).format(date);
+}
+
+function VideoCardActions({
+  video,
+  onComment,
+  compact = false,
+}: {
+  video: YouTubeFeedVideo;
+  onComment: () => void;
+  compact?: boolean;
+}) {
+  const user = useAuth();
+  const [liked, setLiked] = useState(false);
+  const [shared, setShared] = useState(false);
+
+  const like = async () => {
+    if (!user) {
+      window.location.assign(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
+    const next = !liked;
+    setLiked(next);
+    try {
+      const response = await fetch("/api/discussion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: next ? "like" : "unlike",
+          videoId: video.id,
+        }),
+      });
+      if (!response.ok) setLiked(!next);
+    } catch {
+      setLiked(!next);
+    }
+  };
+
+  const share = async () => {
+    const data = {
+      title: video.title,
+      text: `Watch ${video.title} from The Voice Lounge`,
+      url: video.watchUrl,
+    };
+
+    try {
+      if (navigator.share) await navigator.share(data);
+      else await navigator.clipboard.writeText(video.watchUrl);
+      setShared(true);
+      window.setTimeout(() => setShared(false), 1600);
+    } catch {
+      // User cancellation leaves the card unchanged.
+    }
+  };
+
+  const buttonClass = compact
+    ? "press grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-surface-2 hover:text-foreground"
+    : "press inline-flex min-h-9 items-center gap-1.5 rounded-full border border-hairline px-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground";
+
+  return (
+    <div className={cn("flex items-center gap-1", !compact && "flex-wrap")} aria-label="Video actions">
+      <button type="button" onClick={() => void like()} aria-pressed={liked} className={buttonClass}>
+        <Heart className={cn("size-3.5", liked && "fill-[var(--green)] text-[var(--green)]")} aria-hidden="true" />
+        {!compact && <span>{liked ? "Liked" : "Like"}</span>}
+      </button>
+      <button type="button" onClick={onComment} className={buttonClass}>
+        <MessageCircle className="size-3.5" aria-hidden="true" />
+        {!compact && <span>Comment</span>}
+      </button>
+      <button type="button" onClick={() => void share()} className={buttonClass}>
+        <Share2 className="size-3.5" aria-hidden="true" />
+        {!compact && <span>{shared ? "Copied" : "Share"}</span>}
+      </button>
+    </div>
+  );
 }
 
 export function YouTubeVideoCard({
@@ -32,6 +109,12 @@ export function YouTubeVideoCard({
 }) {
   const player = useYouTubePlayer();
   const open = () => player.open(video);
+  const openComments = () => {
+    player.open(video);
+    window.setTimeout(() => {
+      document.getElementById("video-discussion-heading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 220);
+  };
 
   if (compact) {
     return (
@@ -45,7 +128,10 @@ export function YouTubeVideoCard({
             <span className="block truncate text-sm font-semibold group-hover:underline">{video.title}</span>
             <span className="block truncate text-xs text-muted-foreground">{publishedLabel(video.publishedAt)} · YouTube</span>
           </button>
-          <a href={video.watchUrl} target="_blank" rel="noreferrer" aria-label={`Open ${video.title} on YouTube`} className="press grid size-8 place-items-center rounded-full text-muted-foreground hover:text-foreground"><ExternalLink className="size-4" aria-hidden="true" /></a>
+          <div className="flex items-center gap-0.5">
+            <VideoCardActions video={video} onComment={openComments} compact />
+            <a href={video.watchUrl} target="_blank" rel="noreferrer" aria-label={`Open ${video.title} on YouTube`} className="press grid size-8 place-items-center rounded-full text-muted-foreground hover:text-foreground"><ExternalLink className="size-4" aria-hidden="true" /></a>
+          </div>
         </div>
       </article>
     );
@@ -68,6 +154,9 @@ export function YouTubeVideoCard({
               <button type="button" onClick={open} className="press inline-flex min-h-10 items-center gap-2 rounded-full bg-[var(--green-action)] px-4 text-sm font-semibold text-white shadow-glow"><Play className="size-4 fill-current" /> Play here</button>
               <a href={video.watchUrl} target="_blank" rel="noreferrer" className="press hyper-glass inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-sm font-semibold">YouTube <ExternalLink className="size-4" aria-hidden="true" /></a>
             </div>
+            <div className="mt-3">
+              <VideoCardActions video={video} onComment={openComments} />
+            </div>
           </div>
         </div>
       </article>
@@ -88,6 +177,9 @@ export function YouTubeVideoCard({
         <div className="mt-4 flex items-center justify-between gap-2">
           <button type="button" onClick={open} className="press inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--green)]"><Play className="size-3.5 fill-current" /> Play here</button>
           <a href={video.watchUrl} target="_blank" rel="noreferrer" className="press inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">YouTube <ExternalLink className="size-3.5" aria-hidden="true" /></a>
+        </div>
+        <div className="mt-3 border-t border-hairline pt-3">
+          <VideoCardActions video={video} onComment={openComments} />
         </div>
       </div>
     </article>
