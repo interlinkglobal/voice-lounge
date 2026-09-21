@@ -225,7 +225,7 @@ export function AccountExperience() {
 
   if (!user) {
     return (
-      <main className="grid min-h-[70vh] place-items-center bg-background px-5 py-12">
+      <section className="grid min-h-[70vh] place-items-center bg-background px-5 py-12">
         <section className="w-full max-w-lg border border-hairline bg-card p-[clamp(1.5rem,4vw,2.5rem)] text-center">
           <CircleUserRound className="mx-auto size-9 text-[var(--green)]" aria-hidden="true" />
           <h1 className="mt-4 font-display text-3xl font-black">Your Voice Lounge account</h1>
@@ -240,7 +240,7 @@ export function AccountExperience() {
             Sign in
           </Link>
         </section>
-      </main>
+      </section>
     );
   }
 
@@ -426,7 +426,7 @@ export function AccountExperience() {
           </div>
         </aside>
 
-        <main className="min-w-0 px-[clamp(1rem,3vw,2.5rem)] py-[clamp(1.5rem,4vw,3rem)]">
+        <section className="min-w-0 px-[clamp(1rem,3vw,2.5rem)] py-[clamp(1.5rem,4vw,3rem)]">
           {notice && (
             <p role="status" className="mb-4 border border-hairline bg-card p-3 text-sm">
               {notice}
@@ -803,7 +803,7 @@ export function AccountExperience() {
               </section>
             </div>
           )}
-        </main>
+        </section>
       </div>
     </div>
   );
