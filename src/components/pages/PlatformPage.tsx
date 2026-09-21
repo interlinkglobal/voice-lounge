@@ -341,6 +341,6 @@ export function PlatformPage({
 
 export function routeHead(page: PageKey) {
   const info = PAGE_INFO[page];
-  const title = page === "home" ? "The Voice Lounge — Eastern Cape radio, podcasts, video and studio" : `${routeName(page)} | The Voice Lounge`;
+  const title = page === "home" ? "The Voice Lounge | Eastern Cape radio, podcasts, video and studio" : `${routeName(page)} | The Voice Lounge`;
   return { meta: [{ title }, { name: "description", content: info.lede }, { property: "og:title", content: title }, { property: "og:description", content: info.lede }, { property: "og:type", content: "website" }] };
 }

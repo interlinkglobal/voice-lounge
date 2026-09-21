@@ -1,17 +1,26 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CheckCircle2, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
+import { useEffect, useState } from "react";
+
 import { Logo } from "@/components/layout/Logo";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 const AUTH_MESSAGES: Record<string, string> = {
-  "invalid-input": "Enter a valid email address and a password with at least 8 characters.",
-  "invalid-credentials": "That email and password combination was not accepted.",
-  "signup-failed": "We could not create that account. Check the details and try again.",
-  "check-email": "Check your email to confirm your account, then return here to sign in.",
   "cancelled": "Google sign-in was cancelled.",
   "invalid": "The sign-in request could not be verified. Please try again.",
   "error": "Sign-in could not be completed. Please try again.",
 };
+
+const LOGIN_CARDS = [
+  {
+    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1790017709/premium_tier_elqpg7.png",
+    alt: "Voice Lounge premium membership card",
+  },
+  {
+    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1790017712/guest-tier_dsjvjc.png",
+    alt: "Voice Lounge guest membership card",
+  },
+] as const;
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -23,18 +32,66 @@ export const Route = createFileRoute("/login")({
   }),
   head: () => ({
     meta: [
-      { title: "Sign In to The Voice Lounge | The Voice Lounge" },
+      { title: "Sign In | The Voice Lounge" },
       {
         name: "description",
-        content:
-          "Sign in to The Voice Lounge with email or Google to keep your membership, profile and saved experiences connected.",
+        content: "Sign in to The Voice Lounge with Google.",
       },
-      { property: "og:title", content: "Sign In to The Voice Lounge | The Voice Lounge" },
+      { property: "og:title", content: "Sign In | The Voice Lounge" },
       { property: "og:type", content: "website" },
     ],
   }),
   component: LoginPage,
 });
+
+function GoogleIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="size-5 shrink-0" aria-hidden="true">
+      <path fill="#4285F4" d="M21.6 12.227c0-.71-.064-1.395-.182-2.046H12v3.873h5.382a4.6 4.6 0 0 1-1.995 3.017v2.513h3.23c1.89-1.74 2.983-4.307 2.983-7.357Z" />
+      <path fill="#34A853" d="M12 22c2.7 0 4.964-.895 6.618-2.416l-3.231-2.513c-.895.6-2.04.956-3.387.956-2.605 0-4.812-1.76-5.602-4.126H3.06v2.59A9.999 9.999 0 0 0 12 22Z" />
+      <path fill="#FBBC05" d="M6.398 13.9A6.01 6.01 0 0 1 6.084 12c0-.66.113-1.301.314-1.9V7.51H3.06A10 10 0 0 0 2 12c0 1.61.385 3.136 1.06 4.49l3.338-2.59Z" />
+      <path fill="#EA4335" d="M12 5.973c1.468 0 2.786.505 3.823 1.495l2.868-2.868C16.959 2.987 14.695 2 12 2a9.999 9.999 0 0 0-8.94 5.51l3.338 2.59C7.188 7.733 9.395 5.973 12 5.973Z" />
+    </svg>
+  );
+}
+
+function LoginCardShowcase() {
+  const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    LOGIN_CARDS.forEach(({ src }) => {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = src;
+    });
+
+    const timer = window.setInterval(
+      () => setActive((current) => (current + 1) % LOGIN_CARDS.length),
+      2800,
+    );
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const card = LOGIN_CARDS[active] ?? LOGIN_CARDS[0];
+
+  return (
+    <div className="relative mt-8 min-h-[16rem] sm:min-h-[21rem] lg:min-h-[28rem]" style={{ perspective: "1200px" }}>
+      <div className="absolute inset-[12%_4%_4%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_18%,transparent),color-mix(in_oklab,var(--gold)_8%,transparent)_48%,transparent_70%)] blur-3xl" />
+      <div className="absolute inset-0 grid place-items-center">
+        <img
+          key={card.src}
+          src={card.src}
+          alt={card.alt}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+          draggable={false}
+          className="vl-login-card-flip block h-auto w-[96%] max-w-[48rem] select-none rounded-[4.2%] drop-shadow-[0_30px_45px_rgba(0,0,0,.45)]"
+        />
+      </div>
+    </div>
+  );
+}
 
 function LoginPage() {
   const user = useAuth();
@@ -78,61 +135,44 @@ function LoginPage() {
 
   return (
     <section className="grain hero-wash relative isolate overflow-hidden border-b border-hairline">
+      <style>{`
+        @keyframes vl-login-card-flip {
+          0% { opacity: 0; transform: perspective(900px) rotateY(-88deg) scale(.94); }
+          20% { opacity: 1; transform: perspective(900px) rotateY(0deg) scale(1); }
+          78% { opacity: 1; transform: perspective(900px) rotateY(0deg) scale(1); }
+          100% { opacity: 0; transform: perspective(900px) rotateY(88deg) scale(.94); }
+        }
+        .vl-login-card-flip {
+          animation: vl-login-card-flip 2.8s ease-in-out both;
+          backface-visibility: hidden;
+          transform-style: preserve-3d;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .vl-login-card-flip { animation: none; }
+        }
+      `}</style>
+
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-[-12%] top-[-15%] size-[32rem] rounded-full bg-[color-mix(in_oklab,var(--green)_13%,transparent)] blur-[100px]" />
         <div className="absolute bottom-[-20%] right-[-8%] size-[30rem] rounded-full bg-[color-mix(in_oklab,var(--gold)_11%,transparent)] blur-[110px]" />
       </div>
 
-      <div className="shell grid min-h-[calc(100vh-8rem)] items-center gap-8 py-[clamp(2.5rem,7vw,6rem)] lg:grid-cols-[minmax(0,1fr)_minmax(22rem,0.78fr)] lg:gap-[clamp(3rem,7vw,7rem)]">
-        <div className="max-w-3xl">
+      <div className="shell grid min-h-[calc(100vh-8rem)] items-center gap-8 py-[clamp(2.5rem,7vw,6rem)] lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,.65fr)] lg:gap-[clamp(3rem,7vw,7rem)]">
+        <div className="min-w-0">
           <Link to="/" aria-label="The Voice Lounge home" className="inline-flex">
             <Logo />
           </Link>
-
-          <div className="mt-10 inline-flex items-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--green)_32%,transparent)] bg-[color-mix(in_oklab,var(--green)_8%,transparent)] px-3 py-1.5 text-xs font-bold uppercase tracking-[0.18em] text-[var(--green)]">
-            <ShieldCheck className="size-4" aria-hidden="true" />
-            Secure member access
-          </div>
-
-          <h1 className="mt-5 max-w-3xl font-display text-[clamp(3rem,8vw,6.5rem)] font-black leading-[0.88] tracking-[-0.065em]">
-            Sign In to <span className="text-gold-foil">The Voice Lounge.</span>
-          </h1>
-
-          <p className="mt-6 max-w-2xl text-[clamp(1rem,1.45vw,1.28rem)] leading-relaxed text-muted-foreground">
-            Access your Voice Lounge identity and membership profile. Saved-content syncing will be connected to the account backend separately.
-          </p>
-
-          <div className="mt-8 grid max-w-2xl gap-3 sm:grid-cols-3">
-            {[
-              ["Your membership", "Keep your authenticated membership identity attached to your account."],
-              ["Your library", "Saved content currently remains on this browser until account-library sync is connected."],
-              ["Your identity", "Google sign-in provides secure account access and a verified profile identity."],
-            ].map(([title, copy]) => (
-              <div key={title} className="rounded-2xl border border-hairline bg-card/45 p-4">
-                <p className="font-display font-bold">{title}</p>
-                <p className="mt-1 text-sm leading-6 text-muted-foreground">{copy}</p>
-              </div>
-            ))}
-          </div>
+          <h1 className="sr-only">Voice Lounge sign in</h1>
+          <LoginCardShowcase />
         </div>
 
         <div className="hyper-glass relative overflow-hidden rounded-[2rem] border border-hairline p-[clamp(1.25rem,4vw,2rem)] shadow-[0_30px_80px_-52px_rgba(0,0,0,.9)]">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--gold),var(--green),transparent)] opacity-80" />
 
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--gold)]">Member sign in</p>
-            <h2 className="mt-2 font-display text-[clamp(1.8rem,4vw,2.6rem)] font-black tracking-[-0.045em]">
-              Sign In to The Voice Lounge
-            </h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Continue with Google or use your email and password.
-            </p>
-          </div>
-
           {message && (
             <div
               role="status"
-              className="mt-5 rounded-2xl border border-[color-mix(in_oklab,var(--gold)_30%,transparent)] bg-[color-mix(in_oklab,var(--gold)_7%,transparent)] px-4 py-3 text-sm leading-6"
+              className="mb-5 rounded-2xl border border-[color-mix(in_oklab,var(--gold)_30%,transparent)] bg-[color-mix(in_oklab,var(--gold)_7%,transparent)] px-4 py-3 text-sm leading-6"
             >
               {message}
             </div>
@@ -140,91 +180,11 @@ function LoginPage() {
 
           <a
             href={googleHref}
-            className="press flex min-h-12 items-center justify-center gap-3 rounded-full border border-hairline bg-white px-5 font-semibold text-black hover:bg-white/95"
+            className="press flex min-h-12 items-center justify-center gap-3 rounded-full border border-black/10 bg-white px-5 font-semibold text-black shadow-sm hover:bg-white/95"
           >
-            <span
-              aria-hidden="true"
-              className="grid size-6 place-items-center rounded-full border border-black/10 font-display text-sm font-black"
-            >
-              G
-            </span>
+            <GoogleIcon />
             Sign in with Google
           </a>
-
-          <p className="mt-4 text-sm leading-6 text-muted-foreground">
-            Sign in with Google for secure Voice Lounge account access and to keep your verified profile attached to your membership identity.
-          </p>
-
-          <div className="my-6 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
-            <span className="h-px flex-1 bg-hairline" />
-            or use email
-            <span className="h-px flex-1 bg-hairline" />
-          </div>
-
-          <form action="/auth/email" method="post" className="mt-6 grid gap-4">
-            <input type="hidden" name="returnTo" value={returnTo} />
-
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">Email address</span>
-              <span className="flex min-h-12 items-center gap-3 rounded-2xl border border-hairline bg-background/55 px-4 focus-within:border-[var(--green)]">
-                <Mail className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                <input
-                  name="email"
-                  type="email"
-                  inputMode="email"
-                  autoComplete="email"
-                  required
-                  placeholder="you@example.com"
-                  className="min-w-0 flex-1 bg-transparent py-3 outline-none placeholder:text-muted-foreground"
-                />
-              </span>
-            </label>
-
-            <label className="grid gap-2">
-              <span className="text-sm font-semibold">Password</span>
-              <span className="flex min-h-12 items-center gap-3 rounded-2xl border border-hairline bg-background/55 px-4 focus-within:border-[var(--green)]">
-                <LockKeyhole className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                <input
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  minLength={8}
-                  required
-                  placeholder="At least 8 characters"
-                  className="min-w-0 flex-1 bg-transparent py-3 outline-none placeholder:text-muted-foreground"
-                />
-              </span>
-            </label>
-
-            <button
-              type="submit"
-              name="intent"
-              value="signin"
-              className="press min-h-12 rounded-full bg-[var(--green-action)] px-5 font-bold text-white shadow-glow"
-            >
-              Sign in with email
-            </button>
-
-            <button
-              type="submit"
-              name="intent"
-              value="signup"
-              className="press min-h-11 rounded-full border border-hairline bg-surface-2 px-5 text-sm font-semibold"
-            >
-              Create a free account
-            </button>
-          </form>
-
-          <p className="mt-6 text-center text-xs leading-5 text-muted-foreground">
-            By continuing, you agree to our{" "}
-            <Link to="/terms-of-service" className="font-semibold text-foreground underline-offset-4 hover:underline">
-              Terms of Service
-            </Link>{" "}
-            and acknowledge our{" "}
-            <Link to="/privacy-policy" className="font-semibold text-foreground underline-offset-4 hover:underline">
-              Privacy Policy
-            </Link>.
-          </p>
         </div>
       </div>
     </section>

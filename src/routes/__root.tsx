@@ -17,6 +17,7 @@ import { ThemeProvider, initialThemeClass, themeBootstrapScript } from "@/compon
 import { TranslationProvider } from "@/components/system/TranslationProvider";
 import { MediaFallbackProvider } from "@/components/system/MediaFallbackProvider";
 import { RouteTransitionSkeleton } from "@/components/system/RouteTransitionSkeleton";
+import { EmDashNormalizer } from "@/components/system/EmDashNormalizer";
 import { ManagedRouteVideos } from "@/components/youtube/ManagedRouteVideos";
 import { LibraryProvider } from "@/components/system/library";
 import { PlayerProvider } from "@/components/player/PlayerProvider";
@@ -90,7 +91,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "The Voice Lounge — South African podcasts, video and live" },
+      { title: "The Voice Lounge | South African podcasts, video and live" },
       {
         name: "description",
         content: "Stream South African podcasts, watch video episodes, follow creators and read entertainment news on The Voice Lounge.",
@@ -171,6 +172,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <PwaLifecycle />
+      <EmDashNormalizer />
       <AuthProvider user={user}>
         <YouTubeFeedProvider enabled={youtubeEnabled}>
           <MediaFallbackProvider>
