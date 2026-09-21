@@ -18,7 +18,6 @@ import { YouTubeVideoCard } from "@/components/youtube/YouTubeFeedGrid";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 import { categories, news, podcastBySlug, podcasts } from "@/lib/content/catalog";
 import {
-  PODCAST_FALLBACK_THUMBNAILS,
   PODCAST_THUMBNAILS,
   SHOW_SCHEDULE,
   normalizeProgrammeText,
@@ -32,9 +31,8 @@ function podcastCategory(categoryId: string) {
   return categories.find((item) => item.id === categoryId)?.name ?? "Voice Lounge";
 }
 
-function podcastImage(podcastId: string, index = 0) {
-  return PODCAST_THUMBNAILS[podcastId]
-    ?? PODCAST_FALLBACK_THUMBNAILS[index % PODCAST_FALLBACK_THUMBNAILS.length];
+function podcastImage(podcastId: string) {
+  return PODCAST_THUMBNAILS[podcastId] ?? null;
 }
 
 export function PodcastsDirectoryExperience() {
@@ -75,21 +73,16 @@ export function PodcastsDirectoryExperience() {
 
         <div className="mt-4 grid gap-4 lg:grid-cols-2">
           {results.map((podcast, index) => {
-            const image = podcastImage(podcast.id, index);
-            const fallback = PODCAST_FALLBACK_THUMBNAILS[index % PODCAST_FALLBACK_THUMBNAILS.length];
+            const image = podcastImage(podcast.id);
             return (
               <article
                 key={podcast.id}
                 className="group grid min-h-[9.5rem] grid-cols-[38%_minmax(0,1fr)] overflow-hidden border border-hairline bg-card/45 transition-colors hover:border-[color-mix(in_oklab,var(--green)_48%,var(--hairline))] sm:grid-cols-[32%_minmax(0,1fr)]"
               >
                 <Link to="/podcasts/$slug" params={{ slug: podcast.slug }} className="relative min-h-[9.5rem] overflow-hidden bg-black">
-                  <img
+                  <SmartImage
                     src={image}
-                    data-fallback={fallback}
-                    onError={(event) => {
-                      const next = event.currentTarget.dataset.fallback;
-                      if (next && event.currentTarget.src !== next) event.currentTarget.src = next;
-                    }}
+                    fallbackRatio="1:1"
                     alt={podcast.artwork.alt}
                     loading={index < 6 ? "eager" : "lazy"}
                     decoding="async"
@@ -198,7 +191,7 @@ export function PodcastDetailExperience({ slug }: { slug: string }) {
     <div className="shell min-h-[calc(100vh-5rem)] py-[clamp(1rem,3vw,2.5rem)]">
       <section className="grid overflow-hidden border border-hairline bg-card/35 md:grid-cols-[minmax(15rem,28rem)_minmax(0,1fr)]">
         <div className="aspect-square bg-black md:aspect-auto md:min-h-[20rem]">
-          <img src={image} alt={podcast.artwork.alt} className="h-full w-full object-cover" />
+          <SmartImage src={image} fallbackRatio="1:1" alt={podcast.artwork.alt} className="h-full w-full object-cover" />
         </div>
         <div className="flex flex-col justify-center p-[clamp(1.25rem,4vw,3rem)]">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--green)]">{podcastCategory(podcast.categoryId)}</p>
@@ -234,8 +227,9 @@ function ScheduleCard({ entry, index }: { entry: (typeof SHOW_SCHEDULE)[number];
       params={{ slug: show.slug }}
       className="group relative min-h-[24rem] overflow-hidden border border-hairline bg-black sm:min-h-[28rem]"
     >
-      <img
+      <SmartImage
         src={image}
+        fallbackRatio="9:16"
         alt=""
         loading={index < 6 ? "eager" : "lazy"}
         decoding="async"
@@ -289,7 +283,7 @@ export function ShowDetailExperience({ slug }: { slug: string }) {
   return (
     <div className="shell min-h-[calc(100vh-5rem)] py-[clamp(1rem,3vw,2.5rem)]">
       <section className="relative min-h-[19rem] overflow-hidden border border-hairline bg-black">
-        <img src={podcastImage(show.id)} alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" />
+        <SmartImage src={podcastImage(show.id)} fallbackRatio="16:9" alt="" className="absolute inset-0 h-full w-full object-cover opacity-55" />
         <span className="absolute inset-0 bg-gradient-to-r from-black via-black/75 to-black/20" aria-hidden="true" />
         <div className="relative z-10 flex min-h-[19rem] max-w-3xl flex-col justify-end p-[clamp(1.25rem,5vw,3rem)] text-white">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--green)]">Voice Lounge show</p>
