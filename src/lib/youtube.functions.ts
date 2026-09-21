@@ -132,12 +132,21 @@ interface YouTubeVideosResponse {
 const DEFAULT_CHANNEL_TITLE = "The Voice Lounge";
 const DEFAULT_CHANNEL_URL = "https://www.youtube.com/@THEVOICELOUNGE";
 const READY_CACHE_MS = 5 * 60 * 1000;
+const COMMENTS_CACHE_MS = 5 * 60 * 1000;
 
 let readyCache:
   | {
       channelId: string;
       expiresAt: number;
       value: YouTubeFeedResult;
+    }
+  | null = null;
+
+let commentsCache:
+  | {
+      channelId: string;
+      expiresAt: number;
+      value: YouTubeComment[];
     }
   | null = null;
 
@@ -296,6 +305,46 @@ async function fetchRecentChannelComments(apiKey: string, channelId: string): Pr
   }
 }
 
+export const getYouTubeComments = createServerFn({ method: "GET" }).handler(async (): Promise<YouTubeComment[]> => {
+  const apiKey = process.env["YOUTUBE_DATA_API_KEY"]?.trim() ?? "";
+  const configuredChannel = process.env["CHANNEL_ID"]?.trim() ?? "";
+  if (!apiKey || !configuredChannel) return [];
+
+  if (
+    commentsCache
+    && commentsCache.channelId === configuredChannel
+    && commentsCache.expiresAt > Date.now()
+  ) {
+    return commentsCache.value;
+  }
+
+  try {
+    let resolvedChannelId = configuredChannel;
+    if (!configuredChannel.startsWith("UC")) {
+      const channelUrl = new URL("https://www.googleapis.com/youtube/v3/channels");
+      channelUrl.searchParams.set("part", "snippet");
+      channelUrl.searchParams.set(configuredChannel.startsWith("@") ? "forHandle" : "id", configuredChannel);
+      channelUrl.searchParams.set("key", apiKey);
+      const response = await fetch(channelUrl, { headers: { Accept: "application/json" } });
+      if (!response.ok) return [];
+      const data = (await response.json()) as YouTubeChannelResponse;
+      resolvedChannelId = data.items?.[0]?.id ?? configuredChannel;
+    }
+
+    if (!resolvedChannelId.startsWith("UC")) return [];
+    const comments = await fetchRecentChannelComments(apiKey, resolvedChannelId);
+    commentsCache = {
+      channelId: configuredChannel,
+      expiresAt: Date.now() + COMMENTS_CACHE_MS,
+      value: comments,
+    };
+    return comments;
+  } catch (error) {
+    console.warn("[youtube-comments] lazy comment load failed", error);
+    return [];
+  }
+});
+
 export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async (): Promise<YouTubeFeedResult> => {
   const apiKey = process.env["YOUTUBE_DATA_API_KEY"]?.trim() ?? "";
   const channelId = process.env["CHANNEL_ID"]?.trim() ?? "";
@@ -332,10 +381,7 @@ export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async ()
       return emptyResult("error", channelId, "No YouTube channel was found for the configured CHANNEL_ID.");
     }
 
-    const [playlistData, comments] = await Promise.all([
-      fetchAllUploads(apiKey, uploadsPlaylistId),
-      fetchRecentChannelComments(apiKey, channel.id ?? channelId),
-    ]);
+    const playlistData = await fetchAllUploads(apiKey, uploadsPlaylistId);
     const baseVideos = playlistData.items
       .map((item) => {
         const videoId = item.contentDetails?.videoId ?? item.snippet?.resourceId?.videoId;
@@ -377,7 +423,7 @@ export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async ()
       channelThumbnail: bestThumbnail(channel.snippet?.thumbnails),
       totalResults: playlistData.totalResults,
       videos,
-      comments,
+      comments: [],
       message: null,
     };
 
