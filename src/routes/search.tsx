@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PlatformPage, routeHead } from "@/components/pages/PlatformPage";
 import type { SearchFilter } from "@/lib/voice-lounge/page-data";
 
-const FILTERS = new Set<SearchFilter>(["all", "videos", "podcasts", "episodes", "creators", "news", "live"]);
+const FILTERS = new Set<SearchFilter>(["all", "videos", "podcasts", "episodes", "creators", "guests", "news", "live"]);
 
 export const Route = createFileRoute("/search")({
   validateSearch: (search: Record<string, unknown>) => {
