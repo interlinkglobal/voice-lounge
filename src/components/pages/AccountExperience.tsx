@@ -31,6 +31,7 @@ import {
 import { createMembershipCardViewModel } from "@/lib/membership/card";
 import type { MembershipPlan } from "@/lib/auth/supabase";
 import { cn } from "@/lib/utils";
+import { TiltSurface } from "@/components/system/TiltSurface";
 
 type AccountView = "overview" | "membership" | "library" | "activity" | "language" | "contact";
 
@@ -449,7 +450,9 @@ export function AccountExperience() {
 
               <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(18rem,.75fr)]">
                 <div className="mx-auto w-full max-w-3xl xl:mx-0">
-                  <EditableMembershipCard model={card} className="w-full" />
+                  <TiltSurface maxTilt={4}>
+                    <EditableMembershipCard model={card} className="w-full" />
+                  </TiltSurface>
                 </div>
                 <div className="grid content-start gap-3">
                   <button type="button" onClick={() => selectView("membership")} className="press border border-hairline bg-card p-4 text-left">
