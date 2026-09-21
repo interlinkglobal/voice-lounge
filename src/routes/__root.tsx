@@ -158,6 +158,8 @@ function RootComponent() {
   const { user } = Route.useLoaderData();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const cmsMode = pathname === CMS_BASE || pathname.startsWith(`${CMS_BASE}/`);
+  const accountMode = pathname === "/account";
+  const workspaceMode = cmsMode || accountMode;
   const youtubeEnabled =
     pathname === "/" ||
     ["/youtube", "/watch", "/live", "/podcasts", "/shows", "/episodes", "/discover", "/guests", "/search", "/creators"]
@@ -174,7 +176,7 @@ function RootComponent() {
           <LibraryProvider>
             <PlayerProvider>
               <YouTubePlayerProvider>
-                {cmsMode ? (
+                {workspaceMode ? (
                   <div key={pathname}>
                     <Outlet />
                     <Toaster />
