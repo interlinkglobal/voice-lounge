@@ -16,6 +16,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider, initialThemeClass, themeBootstrapScript } from "@/components/system/theme";
 import { TranslationProvider } from "@/components/system/TranslationProvider";
 import { MediaFallbackProvider } from "@/components/system/MediaFallbackProvider";
+import { RouteTransitionSkeleton } from "@/components/system/RouteTransitionSkeleton";
+import { ManagedRouteVideos } from "@/components/youtube/ManagedRouteVideos";
 import { LibraryProvider } from "@/components/system/library";
 import { PlayerProvider } from "@/components/player/PlayerProvider";
 import { PlayerDock } from "@/components/player/PlayerDock";
@@ -157,6 +159,7 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const { user } = Route.useLoaderData();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
+  const routePending = useRouterState({ select: (state) => state.status === "pending" });
   const cmsMode = pathname === CMS_BASE || pathname.startsWith(`${CMS_BASE}/`);
   const accountMode = pathname === "/account";
   const workspaceMode = cmsMode || accountMode;
@@ -178,16 +181,23 @@ function RootComponent() {
               <YouTubePlayerProvider>
                 {workspaceMode ? (
                   <div key={pathname}>
-                    <Outlet />
+                    {routePending ? <RouteTransitionSkeleton workspace /> : <Outlet />}
                     <Toaster />
                   </div>
                 ) : (
                   <>
                     <Header />
                     <main id="main" className="min-h-[60vh] pb-8">
-                      <div key={pathname} className={pathname === "/youtube" ? undefined : "vl-page-enter"}>
-                        <Outlet />
-                      </div>
+                      {routePending ? (
+                        <RouteTransitionSkeleton />
+                      ) : (
+                        <>
+                          <div key={pathname} className={pathname === "/youtube" ? undefined : "vl-page-enter"}>
+                            <Outlet />
+                          </div>
+                          <ManagedRouteVideos routePath={pathname} />
+                        </>
+                      )}
                     </main>
                     <Footer />
                     <PlayerDock />
