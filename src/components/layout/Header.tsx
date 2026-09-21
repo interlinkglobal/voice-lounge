@@ -313,7 +313,7 @@ export function Header() {
                   id="menu-search"
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
-                  placeholder="Search titles and descriptions"
+                  placeholder="Videos, guests, shows, creators…"
                   className="w-full bg-transparent text-sm outline-none"
                 />
               </div>
