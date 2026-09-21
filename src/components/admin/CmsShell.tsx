@@ -1,59 +1,148 @@
 import { Outlet, useRouterState } from "@tanstack/react-router";
-import { BarChart3, Home, ImagePlus, LayoutGrid, Menu, Newspaper, Podcast, Search, Tv2, X } from "lucide-react";
+import {
+  BarChart3,
+  BookOpen,
+  Database,
+  ExternalLink,
+  Home,
+  ImagePlus,
+  LayoutGrid,
+  LogOut,
+  Menu,
+  Newspaper,
+  Podcast,
+  Search,
+  Tv2,
+} from "lucide-react";
 import { useState } from "react";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { CMS_BASE, CMS_NAV } from "@/lib/cms/routes";
-import { cn } from "@/lib/utils";
 
-const ICONS = { dashboard: BarChart3, home: Home, discover: Search, podcasts: Podcast, shows: LayoutGrid, watch: Tv2, news: Newspaper, uploads: ImagePlus } as const;
+import { useAuth } from "@/components/auth/AuthProvider";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { CMS_BASE, CMS_NAV } from "@/lib/cms/routes";
+
+const ICONS = {
+  dashboard: BarChart3,
+  home: Home,
+  discover: Search,
+  podcasts: Podcast,
+  shows: LayoutGrid,
+  watch: Tv2,
+  news: Newspaper,
+  uploads: ImagePlus,
+} as const;
 
 export function CmsShell() {
   const user = useAuth();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [navOpen, setNavOpen] = useState(false);
 
   if (!user) {
     return (
-      <main className="grid min-h-screen place-items-center bg-background px-5 py-12">
-        <div className="w-full max-w-lg rounded-[2rem] border border-hairline bg-card p-[clamp(1.5rem,4vw,2.5rem)]">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--gold)]">Voice Lounge CMS</p>
-          <h1 className="mt-3 font-display text-4xl font-black tracking-[-0.045em]">Media team access</h1>
-          <p className="mt-3 text-sm leading-6 text-muted-foreground">Sign in before entering the content workspace. Role enforcement and persistent CMS writes will be connected during the backend implementation.</p>
-          <a href={`/login?returnTo=${encodeURIComponent(`${CMS_BASE}/dashboard`)}`} className="press mt-6 inline-flex min-h-11 items-center rounded-full bg-[var(--green-action)] px-5 font-semibold text-white">Sign in to continue</a>
+      <main className="mx-auto grid min-h-screen max-w-lg place-items-center px-6 py-24 text-center">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-[var(--green)]">Voice Lounge Control</p>
+          <h1 className="mt-3 font-display text-3xl font-black">Administrator sign-in required</h1>
+          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+            Sign in before entering the Voice Lounge content console.
+          </p>
+          <Button asChild className="mt-6 bg-[var(--green-action)] text-white hover:brightness-110">
+            <a href={`/login?returnTo=${encodeURIComponent(`${CMS_BASE}/dashboard`)}`}>Sign in</a>
+          </Button>
         </div>
       </main>
     );
   }
 
-  const nav = (
-    <nav className="grid gap-1" aria-label="CMS">
+  const current = CMS_NAV.find((item) => pathname === `${CMS_BASE}/${item.slug}`) ?? CMS_NAV[0];
+
+  const sidebar = (
+    <nav className="flex h-full flex-col gap-1 p-3" aria-label="Voice Lounge administration">
+      <div className="mb-3 flex items-center gap-2 rounded-md bg-surface-2 px-3 py-2">
+        <Database className="size-4 text-[var(--green)]" aria-hidden="true" />
+        <div className="text-xs font-semibold uppercase tracking-wider">Voice Lounge Control</div>
+      </div>
+
       {CMS_NAV.map((item) => {
         const Icon = ICONS[item.slug];
         const href = `${CMS_BASE}/${item.slug}`;
         const active = pathname === href;
         return (
-          <a key={item.slug} href={href} onClick={() => setMobileOpen(false)} className={cn("press flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold", active ? "bg-[color-mix(in_oklab,var(--green)_14%,transparent)] text-[var(--green)]" : "text-muted-foreground hover:bg-surface-2 hover:text-foreground")}>
-            <Icon className="size-4" aria-hidden="true" />{item.label}
+          <a
+            key={item.slug}
+            href={href}
+            onClick={() => setNavOpen(false)}
+            className={[
+              "press flex items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors",
+              active
+                ? "bg-[var(--green-action)] font-semibold text-white"
+                : "text-foreground hover:bg-surface-2",
+            ].join(" ")}
+          >
+            <Icon className="size-4" aria-hidden="true" />
+            <span>{item.label}</span>
           </a>
         );
       })}
+
+      <div className="mt-auto space-y-2 pt-4">
+        <Separator />
+        <Button asChild variant="secondary" size="sm" className="w-full justify-start">
+          <a href="/" target="_blank" rel="noreferrer">
+            <ExternalLink className="mr-2 size-4" aria-hidden="true" />
+            View website
+          </a>
+        </Button>
+        <div className="truncate px-3 text-xs text-muted-foreground">{user.email}</div>
+        <form action="/auth/logout" method="post">
+          <Button variant="outline" size="sm" type="submit" className="w-full justify-start">
+            <LogOut className="mr-2 size-4" aria-hidden="true" />
+            Sign out
+          </Button>
+        </form>
+      </div>
     </nav>
   );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-40 flex min-h-16 items-center justify-between border-b border-hairline bg-background/92 px-4 backdrop-blur-xl lg:hidden">
-        <div><p className="font-display font-black">Voice Lounge CMS</p><p className="text-xs text-muted-foreground">UI workspace</p></div>
-        <button type="button" onClick={() => setMobileOpen((value) => !value)} className="press grid size-10 place-items-center rounded-full border border-hairline">{mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}</button>
-      </header>
-      {mobileOpen && <div className="fixed inset-x-3 top-20 z-50 rounded-3xl border border-hairline bg-background p-3 shadow-lift lg:hidden">{nav}</div>}
-      <div className="grid min-h-screen lg:grid-cols-[17rem_minmax(0,1fr)]">
-        <aside className="hidden border-r border-hairline bg-[#050806] p-5 lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
-          <div><p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--green)]">The Voice Lounge</p><h1 className="mt-1 font-display text-2xl font-black">Content Studio</h1><p className="mt-2 text-xs leading-5 text-muted-foreground">No-index media operations workspace.</p></div>
-          <div className="mt-7 flex-1">{nav}</div>
-          <div className="rounded-2xl border border-hairline bg-surface-2 p-3"><p className="truncate text-sm font-semibold">{user.name}</p><p className="truncate text-xs text-muted-foreground">{user.email}</p><p className="mt-2 text-[0.65rem] font-black uppercase tracking-[0.15em] text-[var(--gold)]">UI-only mode</p></div>
+      <div className="mx-auto flex w-full max-w-[1400px] gap-0 px-0 lg:px-6 lg:py-6">
+        <aside className="sticky top-6 hidden h-[calc(100vh-3rem)] w-60 shrink-0 overflow-y-auto rounded-lg border border-hairline bg-card lg:block">
+          {sidebar}
         </aside>
-        <main className="min-w-0 px-[clamp(1rem,3vw,2.5rem)] py-[clamp(1.5rem,4vw,3rem)]"><Outlet /></main>
+
+        <div className="flex w-full min-w-0 flex-col lg:ml-6 lg:flex-1">
+          <div className="flex items-center justify-between gap-2 border-b border-hairline bg-card px-4 py-3 lg:rounded-t-lg lg:border">
+            <div className="flex min-w-0 items-center gap-2">
+              <Sheet open={navOpen} onOpenChange={setNavOpen}>
+                <SheetTrigger asChild className="lg:hidden">
+                  <Button size="icon" variant="ghost" aria-label="Open admin navigation">
+                    <Menu className="size-5" aria-hidden="true" />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="left" className="w-72 p-0">
+                  {sidebar}
+                </SheetContent>
+              </Sheet>
+
+              <div className="min-w-0">
+                <div className="text-xs uppercase tracking-wider text-muted-foreground">Admin</div>
+                <div className="truncate text-base font-semibold">{current?.label ?? "Overview"}</div>
+              </div>
+            </div>
+
+            <Badge variant="outline" className="gap-1 text-[var(--green)]">
+              <Database className="size-3" aria-hidden="true" />
+              Workspace
+            </Badge>
+          </div>
+
+          <main className="min-w-0 flex-1 bg-background p-4 lg:rounded-b-lg lg:border lg:border-t-0 lg:p-6">
+            <Outlet />
+          </main>
+        </div>
       </div>
     </div>
   );
