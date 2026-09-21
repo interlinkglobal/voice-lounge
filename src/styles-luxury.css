@@ -572,3 +572,37 @@ header .press,
     display: none;
   }
 }
+
+
+/* Translation-length resilience: prevent longer localized copy from escaping controls. */
+.tvl-nav-label {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+header a,
+header button,
+header input,
+#main button,
+#main [role="button"] {
+  min-width: 0;
+}
+
+#main .press,
+header .press {
+  max-width: 100%;
+}
+
+#main button,
+#main [role="button"] {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1799px) {
+  header [role="search"] input::placeholder {
+    text-overflow: ellipsis;
+  }
+}
