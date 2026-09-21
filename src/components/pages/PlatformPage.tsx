@@ -247,13 +247,22 @@ function PlatformHero({
             </form>
           ) : page === "home" ? (
             <div className="mt-7 flex flex-wrap gap-2.5">
-              <Link to="/login" search={{ auth: undefined, returnTo: "/account" }} preload="intent" className="press inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--green-action)] px-6 font-bold text-white shadow-glow">
+              <Link to="/login" search={{ auth: undefined, returnTo: "/account" }} preload="intent" className="press inline-flex min-h-12 max-w-full items-center gap-2 rounded-full bg-[var(--green-action)] px-6 text-center font-bold text-white shadow-glow">
                 <LogIn className="size-4" aria-hidden="true" />
                 Sign In
               </Link>
-              <Link to="/youtube" preload="intent" className="press hyper-glass inline-flex min-h-12 items-center gap-2 rounded-full px-6 font-semibold">
-                <Headphones className="size-4" aria-hidden="true" />
-                Watch Now
+              <Link to="/youtube" preload="intent" className="press hyper-glass inline-flex min-h-12 max-w-full items-center gap-2 rounded-full px-6 text-center font-semibold">
+                <Headphones className="size-4 shrink-0" aria-hidden="true" />
+                <span className="min-w-0 break-words">Watch Now</span>
+              </Link>
+              <Link
+                to="/premium"
+                search={{ payment_reference: undefined }}
+                preload="intent"
+                className="press inline-flex min-h-12 max-w-full items-center gap-2 rounded-full border border-[color-mix(in_oklab,var(--gold)_55%,transparent)] bg-[color-mix(in_oklab,var(--gold)_10%,transparent)] px-6 text-center font-bold text-[var(--gold)] shadow-gold"
+              >
+                <Crown className="size-4 shrink-0" aria-hidden="true" />
+                <span className="min-w-0 break-words">Premium</span>
               </Link>
             </div>
           ) : (
