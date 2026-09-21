@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { CheckCircle2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import { Logo } from "@/components/layout/Logo";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { EditableMembershipCard } from "@/components/premium/EditableMembershipCard";
 import type { MembershipCardViewModel } from "@/lib/membership/card";
@@ -20,7 +19,6 @@ const AUTH_MESSAGES: Record<string, string> = {
 const LOGIN_TIERS: Array<{
   id: "premium" | "guest";
   model: MembershipCardViewModel;
-  features: string[];
 }> = [
   {
     id: "premium",
@@ -39,7 +37,6 @@ const LOGIN_TIERS: Array<{
       statusLabel: "",
       statusValue: "",
     },
-    features: ["Invite only", "No ads", "More languages", "Exclusive content", "Priority access"],
   },
   {
     id: "guest",
@@ -58,7 +55,6 @@ const LOGIN_TIERS: Array<{
       statusLabel: "",
       statusValue: "",
     },
-    features: ["Create profile", "Write blog", "Guest access", "Community voice", "Submit stories"],
   },
 ];
 
@@ -109,13 +105,12 @@ function LoginCardShowcase() {
   const tier = LOGIN_TIERS[active] ?? LOGIN_TIERS[0];
 
   return (
-    <div className="relative mt-8 min-h-[16rem] sm:min-h-[21rem] lg:min-h-[28rem]" style={{ perspective: "1200px" }}>
+    <div className="relative min-h-[16rem] sm:min-h-[21rem] lg:min-h-[28rem]" style={{ perspective: "1200px" }}>
       <div className="absolute inset-[12%_4%_4%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_18%,transparent),color-mix(in_oklab,var(--gold)_10%,transparent)_48%,transparent_70%)] blur-3xl" />
       <div className="absolute inset-0 grid place-items-center">
         <EditableMembershipCard
           key={tier.id}
           model={tier.model}
-          promotionalFeatures={tier.features}
           className="vl-login-card-flip block w-[96%] max-w-[48rem] select-none drop-shadow-[0_30px_45px_rgba(0,0,0,.45)]"
         />
       </div>
@@ -183,14 +178,18 @@ function LoginPage() {
 
       <div className="shell grid min-h-[calc(100vh-8rem)] items-center gap-8 py-[clamp(2.5rem,7vw,6rem)] lg:grid-cols-[minmax(0,1.15fr)_minmax(20rem,.65fr)] lg:gap-[clamp(3rem,7vw,7rem)]">
         <div className="min-w-0">
-          <Link to="/" aria-label="The Voice Lounge home" className="inline-flex">
-            <Logo />
-          </Link>
-          <h1 className="sr-only">Voice Lounge sign in</h1>
           <LoginCardShowcase />
         </div>
 
-        <div className="hyper-glass relative overflow-hidden rounded-[2rem] border border-hairline p-[clamp(1.25rem,4vw,2rem)] shadow-[0_30px_80px_-52px_rgba(0,0,0,.9)]">
+        <div className="min-w-0">
+          <h1
+            className="mb-5 text-[clamp(2rem,4.1vw,4.4rem)] font-bold leading-[0.98] tracking-[-0.045em] text-white"
+            style={{ fontFamily: '"Josefin Sans", "Inter Tight", system-ui, sans-serif' }}
+          >
+            Sign in to <span className="text-[var(--green)]">The Voice Lounge</span>
+          </h1>
+
+          <div className="hyper-glass relative overflow-hidden rounded-[2rem] border border-hairline p-[clamp(1.25rem,4vw,2rem)] shadow-[0_30px_80px_-52px_rgba(0,0,0,.9)]">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,var(--gold),var(--green),transparent)] opacity-80" />
 
           {message && (
@@ -251,6 +250,7 @@ function LoginPage() {
               </button>
             </div>
           </form>
+          </div>
         </div>
       </div>
     </section>
