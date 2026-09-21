@@ -1,11 +1,11 @@
 import { Outlet, useRouterState } from "@tanstack/react-router";
-import { BarChart3, Home, LayoutGrid, Menu, Newspaper, Podcast, Search, Tv2, X } from "lucide-react";
+import { BarChart3, Home, ImagePlus, LayoutGrid, Menu, Newspaper, Podcast, Search, Tv2, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { CMS_BASE, CMS_NAV } from "@/lib/cms/routes";
 import { cn } from "@/lib/utils";
 
-const ICONS = { dashboard: BarChart3, home: Home, discover: Search, podcasts: Podcast, shows: LayoutGrid, watch: Tv2, news: Newspaper } as const;
+const ICONS = { dashboard: BarChart3, home: Home, discover: Search, podcasts: Podcast, shows: LayoutGrid, watch: Tv2, news: Newspaper, uploads: ImagePlus } as const;
 
 export function CmsShell() {
   const user = useAuth();
