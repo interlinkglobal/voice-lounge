@@ -153,6 +153,10 @@ function ProgrammeVideoGrid({
   const feed = useYouTubeFeed();
   const videos = feed?.status === "ready" ? programmeVideos(feed.videos, slug, title) : [];
 
+  if (feed?.status === "loading") {
+    return <div className="h-40 animate-pulse border border-hairline bg-surface-2" aria-label="Loading programme videos" />;
+  }
+
   if (feed?.status !== "ready") {
     return (
       <div className="border border-hairline p-6 text-sm text-muted-foreground">
