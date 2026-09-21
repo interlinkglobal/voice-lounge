@@ -160,7 +160,7 @@ function RootComponent() {
   const cmsMode = pathname === CMS_BASE || pathname.startsWith(`${CMS_BASE}/`);
   const youtubeEnabled =
     pathname === "/" ||
-    ["/youtube", "/watch", "/live", "/podcasts", "/shows", "/episodes", "/discover", "/guests", "/community", "/search", "/creators"]
+    ["/youtube", "/watch", "/live", "/podcasts", "/shows", "/episodes", "/discover", "/guests", "/search", "/creators"]
       .some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 
   return (
