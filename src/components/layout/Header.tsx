@@ -378,7 +378,7 @@ export function Header() {
                 window.clearTimeout(logoClickTimer.current);
                 logoClickTimer.current = null;
               }
-              navigate({ to: `${CMS_BASE}/dashboard` });
+              window.location.assign(`${CMS_BASE}/dashboard`);
             }}
             title={user ? "Double-click for admin dashboard" : "The Voice Lounge home"}
           >
