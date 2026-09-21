@@ -118,6 +118,7 @@ function AccountControl() {
 
 export function Header() {
   const user = useAuth();
+  const { language } = useTranslationLanguage();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [term, setTerm] = useState("");
@@ -128,6 +129,9 @@ export function Header() {
     () => term.trim().length >= 2 ? universalSearch(term).slice(0, 6) : [],
     [term],
   );
+  const translated = language !== "en";
+  const visiblePrimary = translated ? PRIMARY_NAV.slice(0, 4) : PRIMARY_NAV;
+  const overflowPrimary = translated ? PRIMARY_NAV.slice(4) : [];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -165,13 +169,17 @@ export function Header() {
         </a>
       )}
       <header
+        data-translated-nav={translated ? "true" : "false"}
         className={cn(
           "sticky top-0 z-[var(--z-header)] transition-[background-color,box-shadow,border-color] duration-200",
           scrolled ? "glass-panel border-x-0 border-t-0 shadow-card" : "border-b border-transparent bg-transparent",
         )}
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
-        <div className="shell grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 py-2.5 2xl:py-4">
+        <div className={cn(
+          "shell grid grid-cols-[auto_minmax(0,1fr)_auto] items-center py-2.5 2xl:py-4",
+          translated ? "gap-1.5 2xl:gap-2" : "gap-3",
+        )}>
           <Link to="/" aria-label="The Voice Lounge home" className="press shrink-0">
             <span className="hidden sm:block"><Logo /></span>
             <span className="sm:hidden"><Logo compact /></span>
@@ -179,7 +187,7 @@ export function Header() {
 
           <nav aria-label="Primary" className="hidden min-w-0 justify-center xl:flex">
             <ul className="flex items-center gap-0.5">
-              {PRIMARY_NAV.map((n) => (
+              {visiblePrimary.map((n) => (
                 <li key={n.to}>
                   <Link
                     to={n.to}
@@ -187,9 +195,13 @@ export function Header() {
                     activeOptions={{ exact: n.to === "/" }}
                     activeProps={{ className: "text-foreground bg-surface-2" }}
                     inactiveProps={{ className: "text-muted-foreground" }}
-                    className="rounded-full px-3 py-2 text-sm font-medium transition-colors hover:text-foreground 2xl:text-base"
+                    className={cn(
+                      "header-primary-link min-w-0 rounded-full py-2 text-sm font-medium transition-colors hover:text-foreground 2xl:text-base",
+                      translated ? "max-w-[7rem] truncate px-2 2xl:max-w-[8.5rem] 2xl:px-2.5" : "px-3",
+                    )}
+                    title={n.label}
                   >
-                    {n.label}
+                    <span className="block min-w-0 truncate">{n.label}</span>
                   </Link>
                 </li>
               ))}
@@ -198,9 +210,31 @@ export function Header() {
                   More
                 </button>
                 <ul className="invisible absolute left-0 top-full z-10 w-56 rounded-2xl border border-hairline bg-popover p-2 opacity-0 shadow-lift transition-[opacity,transform] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                  {overflowPrimary.length > 0 && (
+                    <>
+                      {overflowPrimary.map((n) => (
+                        <li key={n.to}>
+                          <Link
+                            to={n.to}
+                            preload="intent"
+                            className="block min-w-0 whitespace-normal break-words rounded-xl px-3 py-2 text-sm leading-5 hover:bg-surface-2"
+                          >
+                            {n.label}
+                          </Link>
+                        </li>
+                      ))}
+                      <li className="my-1 border-t border-hairline" aria-hidden="true" />
+                    </>
+                  )}
                   {SECONDARY_NAV.map((n) => (
                     <li key={n.to}>
-                      <Link to={n.to} preload="intent" className="block rounded-xl px-3 py-2 text-sm hover:bg-surface-2">{n.label}</Link>
+                      <Link
+                        to={n.to}
+                        preload="intent"
+                        className="block min-w-0 whitespace-normal break-words rounded-xl px-3 py-2 text-sm leading-5 hover:bg-surface-2"
+                      >
+                        {n.label}
+                      </Link>
                     </li>
                   ))}
                   <li className="mt-2 border-t border-hairline pt-2 2xl:hidden">
@@ -213,67 +247,70 @@ export function Header() {
           <span className="xl:hidden" />
 
           <div className="flex shrink-0 items-center gap-1.5">
-            <div className="relative hidden lg:block">
-              <form onSubmit={submit} role="search" className="flex items-center">
-                <label htmlFor="global-search" className="sr-only">Search The Voice Lounge</label>
-                <div className="flex items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 py-1.5">
-                  <Search className="size-4 text-muted-foreground" aria-hidden="true" />
-                  <input
-                    id="global-search"
-                    value={term}
-                    onFocus={() => setSearchFocused(true)}
-                    onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}
-                    onChange={(e) => setTerm(e.target.value)}
-                    placeholder="Videos, guests, shows, creators…"
-                    className="w-44 bg-transparent text-sm outline-none placeholder:text-muted-foreground xl:w-56"
-                  />
-                </div>
-              </form>
-              {searchFocused && term.trim().length >= 2 && (
-                <div className="absolute right-0 top-[calc(100%+.55rem)] z-50 w-[min(28rem,78vw)] overflow-hidden rounded-2xl border border-hairline bg-popover p-2 shadow-lift">
-                  {suggestions.map((hit) => (
-                    <Link
-                      key={`${hit.type}-${hit.card.id}`}
-                      to={hit.card.href}
+            {translated ? (
+              <Link
+                to="/search"
+                search={{ q: "", type: undefined }}
+                aria-label="Search The Voice Lounge"
+                title="Search"
+                className="press grid size-10 shrink-0 place-items-center rounded-full border border-hairline bg-surface-2 text-muted-foreground hover:text-foreground"
+              >
+                <Search className="size-4" aria-hidden="true" />
+              </Link>
+            ) : (
+              <div className="relative hidden lg:block">
+                <form onSubmit={submit} role="search" className="flex items-center">
+                  <label htmlFor="global-search" className="sr-only">Search The Voice Lounge</label>
+                  <div className="flex items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 py-1.5">
+                    <Search className="size-4 text-muted-foreground" aria-hidden="true" />
+                    <input
+                      id="global-search"
+                      value={term}
+                      onFocus={() => setSearchFocused(true)}
+                      onBlur={() => window.setTimeout(() => setSearchFocused(false), 120)}
+                      onChange={(e) => setTerm(e.target.value)}
+                      placeholder="Videos, guests, shows, creators…"
+                      className="min-w-0 w-44 bg-transparent text-sm outline-none placeholder:text-muted-foreground xl:w-56"
+                    />
+                  </div>
+                </form>
+                {searchFocused && term.trim().length >= 2 && (
+                  <div className="absolute right-0 top-[calc(100%+.55rem)] z-50 w-[min(28rem,78vw)] overflow-hidden rounded-2xl border border-hairline bg-popover p-2 shadow-lift">
+                    {suggestions.map((hit) => (
+                      <Link
+                        key={`${hit.type}-${hit.card.id}`}
+                        to={hit.card.href}
+                        onMouseDown={(event) => event.preventDefault()}
+                        className="press flex items-start justify-between gap-3 rounded-xl px-3 py-2.5 hover:bg-surface-2"
+                      >
+                        <span className="min-w-0">
+                          <span className="block truncate text-sm font-semibold">{hit.card.title}</span>
+                          <span className="mt-0.5 block truncate text-xs text-muted-foreground">{hit.type} · {hit.card.subtitle || hit.card.meta || "The Voice Lounge"}</span>
+                        </span>
+                        <span className="shrink-0 text-[0.62rem] font-black uppercase tracking-[0.12em] text-[var(--green)]">{hit.type}</span>
+                      </Link>
+                    ))}
+                    {!suggestions.length && (
+                      <p className="px-3 py-3 text-sm text-muted-foreground">No local match yet. Search the full YouTube catalogue.</p>
+                    )}
+                    <button
+                      type="button"
                       onMouseDown={(event) => event.preventDefault()}
-                      className="press flex items-start justify-between gap-3 rounded-xl px-3 py-2.5 hover:bg-surface-2"
+                      onClick={goToSearch}
+                      className="press mt-1 flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-[var(--green-action)] px-4 text-sm font-bold text-white"
                     >
-                      <span className="min-w-0">
-                        <span className="block truncate text-sm font-semibold">{hit.card.title}</span>
-                        <span className="mt-0.5 block truncate text-xs text-muted-foreground">{hit.type} · {hit.card.subtitle || hit.card.meta || "The Voice Lounge"}</span>
-                      </span>
-                      <span className="shrink-0 text-[0.62rem] font-black uppercase tracking-[0.12em] text-[var(--green)]">{hit.type}</span>
-                    </Link>
-                  ))}
-                  {!suggestions.length && (
-                    <p className="px-3 py-3 text-sm text-muted-foreground">No local match yet. Search the full YouTube catalogue.</p>
-                  )}
-                  <button
-                    type="button"
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={goToSearch}
-                    className="press mt-1 flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-[var(--green-action)] px-4 text-sm font-bold text-white"
-                  >
-                    <Search className="size-4" aria-hidden="true" /> Search all results
-                  </button>
-                </div>
+                      <Search className="size-4" aria-hidden="true" /> Search all results
+                    </button>
+                  </div>
+                )}
+              </div>
               )}
-            </div>
             <Link to="/search" search={{ q: "", type: undefined }} aria-label="Search" className="press grid size-10 place-items-center rounded-full text-muted-foreground hover:text-foreground lg:hidden">
               <Search className="size-5" aria-hidden="true" />
             </Link>
             <LanguageSwitcher className="hidden 2xl:block" />
-            <div className="hidden md:block"><ThemeToggle /></div>
-            <InstallPwaButton className="hidden 2xl:inline-flex" />
-            <Link
-              to="/premium"
-              search={{ payment_reference: undefined }}
-              preload="intent"
-              className="press hidden items-center gap-1.5 rounded-full border border-[color-mix(in_oklab,var(--gold)_55%,transparent)] px-3.5 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[color-mix(in_oklab,var(--gold)_12%,transparent)] sm:inline-flex"
-            >
-              <Crown className="size-4" aria-hidden="true" />
-              Premium
-            </Link>
+            <div className={cn("hidden md:block", translated && "xl:hidden")}><ThemeToggle /></div>
+            {!translated && <InstallPwaButton className="hidden 2xl:inline-flex" />}
             <AccountControl />
             <button
               type="button"
@@ -314,7 +351,7 @@ export function Header() {
                   value={term}
                   onChange={(e) => setTerm(e.target.value)}
                   placeholder="Videos, guests, shows, creators…"
-                  className="w-full bg-transparent text-sm outline-none"
+                  className="min-w-0 w-full bg-transparent text-sm outline-none"
                 />
               </div>
             </form>
@@ -329,7 +366,7 @@ export function Header() {
                       onClick={() => setOpen(false)}
                       activeOptions={{ exact: n.to === "/" }}
                       activeProps={{ className: "bg-surface-2 text-foreground" }}
-                      className="block rounded-xl px-3 py-3 text-[0.95rem] font-medium"
+                      className="block min-w-0 whitespace-normal break-words rounded-xl px-3 py-3 text-[0.95rem] font-medium leading-5"
                     >
                       {n.label}
                     </Link>
@@ -341,7 +378,7 @@ export function Header() {
               <ul className="mt-2 grid gap-0.5">
                 {[...SECONDARY_NAV, { to: "/search", label: "Search" }, { to: "/account", label: "Account" }].map((n) => (
                   <li key={n.to}>
-                    <Link to={n.to} onClick={() => setOpen(false)} className="block rounded-xl px-3 py-3 text-[0.95rem] font-medium">
+                    <Link to={n.to} onClick={() => setOpen(false)} className="block min-w-0 whitespace-normal break-words rounded-xl px-3 py-3 text-[0.95rem] font-medium leading-5">
                       {n.label}
                     </Link>
                   </li>
