@@ -253,7 +253,7 @@ function PlatformHero({
         <div className="vl-component-enter relative z-10 max-w-3xl">
           <div className="mb-4 flex flex-wrap items-center gap-2"><span className={cn("hyper-glass rounded-full px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.2em]", premium ? "text-[var(--gold)]" : "text-[var(--green)]")}>{heroBadge}</span>{live && <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--live)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white"><span className="size-1.5 rounded-full bg-white" /> On air</span>}</div>
           <h1 id={`01-${slugify(firstTitle)}-h`} className={cn("font-display text-[var(--step-6)] font-black leading-[0.9] tracking-[-0.055em]", premium && "text-gold-foil")}>{info.title}</h1>
-          <p className="mt-5 max-w-2xl text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed text-muted-foreground">
+          <p className="mt-5 max-w-2xl text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed text-foreground/85">
             {page === "home" ? "Sign in to The Voice Lounge for a customized experience" : info.lede}
           </p>
           {page === "search" ? (
