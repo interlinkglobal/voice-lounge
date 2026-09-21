@@ -33,6 +33,13 @@ export default tseslint.config(
         },
       ],
       "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector: "JSXOpeningElement[name.name='select']",
+          message: "Do not use native <select>. Use the shared AppSelect component for consistent responsive and accessible selection UI.",
+        },
+      ],
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
