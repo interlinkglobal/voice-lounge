@@ -20,11 +20,9 @@ function publishedLabel(value: string) {
 function VideoCardActions({
   video,
   onComment,
-  compact = false,
 }: {
   video: YouTubeFeedVideo;
   onComment: () => void;
-  compact?: boolean;
 }) {
   const user = useAuth();
   const [liked, setLiked] = useState(false);
@@ -42,10 +40,7 @@ function VideoCardActions({
       const response = await fetch("/api/discussion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: next ? "like" : "unlike",
-          videoId: video.id,
-        }),
+        body: JSON.stringify({ action: next ? "like" : "unlike", videoId: video.id }),
       });
       if (!response.ok) setLiked(!next);
     } catch {
@@ -54,13 +49,12 @@ function VideoCardActions({
   };
 
   const share = async () => {
-    const data = {
-      title: video.title,
-      text: `Watch ${video.title} from The Voice Lounge`,
-      url: video.watchUrl,
-    };
-
     try {
+      const data = {
+        title: video.title,
+        text: `Watch ${video.title} from The Voice Lounge`,
+        url: video.watchUrl,
+      };
       if (navigator.share) await navigator.share(data);
       else await navigator.clipboard.writeText(video.watchUrl);
       setShared(true);
@@ -70,23 +64,19 @@ function VideoCardActions({
     }
   };
 
-  const buttonClass = compact
-    ? "press grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-surface-2 hover:text-foreground"
-    : "press inline-flex min-h-9 items-center gap-1.5 rounded-full border border-hairline px-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground";
+  const buttonClass =
+    "press grid size-9 shrink-0 place-items-center rounded-full border border-hairline text-muted-foreground hover:bg-surface-2 hover:text-foreground";
 
   return (
-    <div className={cn("flex items-center gap-1", !compact && "flex-wrap")} aria-label="Video actions">
-      <button type="button" onClick={() => void like()} aria-pressed={liked} className={buttonClass}>
-        <Heart className={cn("size-3.5", liked && "fill-[var(--green)] text-[var(--green)]")} aria-hidden="true" />
-        {!compact && <span>{liked ? "Liked" : "Like"}</span>}
+    <div className="flex items-center gap-1.5" aria-label="Video actions">
+      <button type="button" onClick={() => void like()} aria-label={liked ? "Unlike video" : "Like video"} title={liked ? "Unlike" : "Like"} aria-pressed={liked} className={buttonClass}>
+        <Heart className={cn("size-4", liked && "fill-[var(--green)] text-[var(--green)]")} aria-hidden="true" />
       </button>
-      <button type="button" onClick={onComment} className={buttonClass}>
-        <MessageCircle className="size-3.5" aria-hidden="true" />
-        {!compact && <span>Comment</span>}
+      <button type="button" onClick={onComment} aria-label="Comment on video" title="Comment" className={buttonClass}>
+        <MessageCircle className="size-4" aria-hidden="true" />
       </button>
-      <button type="button" onClick={() => void share()} className={buttonClass}>
-        <Share2 className="size-3.5" aria-hidden="true" />
-        {!compact && <span>{shared ? "Copied" : "Share"}</span>}
+      <button type="button" onClick={() => void share()} aria-label="Share video" title={shared ? "Link copied" : "Share"} className={buttonClass}>
+        <Share2 className="size-4" aria-hidden="true" />
       </button>
     </div>
   );
@@ -119,7 +109,7 @@ export function YouTubeVideoCard({
   if (compact) {
     return (
       <article className={cn(animate && "vl-component-enter", "group w-full", className)}>
-        <div className="hyper-glass grid grid-cols-[4.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2">
+        <div className="hyper-glass grid grid-cols-[4.5rem_minmax(0,1fr)] items-center gap-3 rounded-xl px-2 py-2">
           <button type="button" onClick={open} aria-label={`Play ${video.title}`} className="media-shine relative aspect-video overflow-hidden rounded-lg bg-black">
             <SmartImage src={video.thumbnail} fallbackRatio="16:9" alt="" loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
             <span className="absolute inset-0 grid place-items-center bg-black/15 text-white" aria-hidden="true"><Play className="size-4 fill-current drop-shadow" /></span>
@@ -128,9 +118,9 @@ export function YouTubeVideoCard({
             <span className="block truncate text-sm font-semibold group-hover:underline">{video.title}</span>
             <span className="block truncate text-xs text-muted-foreground">{publishedLabel(video.publishedAt)} · YouTube</span>
           </button>
-          <div className="flex items-center gap-0.5">
-            <VideoCardActions video={video} onComment={openComments} compact />
-            <a href={video.watchUrl} target="_blank" rel="noreferrer" aria-label={`Open ${video.title} on YouTube`} className="press grid size-8 place-items-center rounded-full text-muted-foreground hover:text-foreground"><ExternalLink className="size-4" aria-hidden="true" /></a>
+          <div className="col-span-2 flex items-center justify-between border-t border-hairline pt-2">
+            <VideoCardActions video={video} onComment={openComments} />
+            <a href={video.watchUrl} target="_blank" rel="noreferrer" aria-label={`Open ${video.title} on YouTube`} title="Open on YouTube" className="press grid size-9 place-items-center rounded-full text-muted-foreground hover:text-foreground"><ExternalLink className="size-4" aria-hidden="true" /></a>
           </div>
         </div>
       </article>
