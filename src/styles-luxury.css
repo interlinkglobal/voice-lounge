@@ -483,3 +483,92 @@ header button {
     animation: none !important;
   }
 }
+
+
+/* Tilt.js-style interaction shared by membership cards. */
+.tiltjs-surface {
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  --tilt-glare-x: 50%;
+  --tilt-glare-y: 50%;
+  position: relative;
+  perspective: 1100px;
+  transform-style: preserve-3d;
+}
+
+.tiltjs-surface-inner {
+  position: relative;
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(1);
+  transform-style: preserve-3d;
+  transition: transform 220ms cubic-bezier(.16,1,.3,1);
+  will-change: transform;
+}
+
+.tiltjs-surface[data-tilt-active="true"] .tiltjs-surface-inner {
+  transform: rotateX(var(--tilt-x)) rotateY(var(--tilt-y)) scale(1.012);
+}
+
+.tiltjs-surface-glare {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--tilt-glare-x) var(--tilt-glare-y),
+    rgba(255, 247, 210, .18),
+    transparent 34%
+  );
+  mix-blend-mode: screen;
+  transition: opacity 180ms ease;
+}
+
+.tiltjs-surface[data-tilt-active="true"] .tiltjs-surface-glare {
+  opacity: .8;
+}
+
+/* Watermelon-inspired micro-patterns: directional light, crisp inset edges, compact elevation. */
+#main .card-lift,
+#main .hyper-glass,
+[data-primary-route="account"] .bg-card {
+  position: relative;
+  isolation: isolate;
+}
+
+#main .card-lift::after,
+[data-primary-route="account"] .bg-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(55% 42% at 12% 0%, color-mix(in oklab, var(--green) 11%, transparent), transparent 72%),
+    radial-gradient(45% 38% at 100% 100%, color-mix(in oklab, var(--gold) 8%, transparent), transparent 74%);
+  transition: opacity 220ms cubic-bezier(.16,1,.3,1);
+}
+
+@media (hover: hover) {
+  #main .card-lift:hover::after,
+  [data-primary-route="account"] .bg-card:hover::after {
+    opacity: 1;
+  }
+}
+
+#main .press,
+header .press,
+[data-primary-route="account"] .press {
+  box-shadow: inset 0 1px 0 color-mix(in oklab, white 8%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tiltjs-surface-inner {
+    transform: none !important;
+    transition: none !important;
+  }
+  .tiltjs-surface-glare {
+    display: none;
+  }
+}
