@@ -15,15 +15,21 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronUp,
+  Bookmark,
   ExternalLink,
+  Heart,
   Maximize2,
+  MessageCircle,
   Play,
+  Send,
   X,
   Youtube,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { track } from "@/lib/analytics";
 import { usePlayer } from "@/components/player/PlayerProvider";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { SmartImage } from "@/components/media/SmartImage";
 import type { YouTubeFeedResult, YouTubeFeedVideo } from "@/lib/youtube.functions";
 
 type YouTubePlayerSurface = "modal" | "dock" | null;
@@ -40,6 +46,205 @@ interface YouTubePlayerContextValue {
 }
 
 const YouTubePlayerContext = createContext<YouTubePlayerContextValue | null>(null);
+
+
+interface WebsiteDiscussionComment {
+  id: string;
+  user_id: string;
+  body: string;
+  author_name: string;
+  avatar_url: string | null;
+  created_at: string;
+}
+
+function VideoDiscussion({
+  video,
+  feed,
+}: {
+  video: YouTubeFeedVideo;
+  feed: YouTubeFeedResult;
+}) {
+  const user = useAuth();
+  const [websiteComments, setWebsiteComments] = useState<WebsiteDiscussionComment[]>([]);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
+  const [draft, setDraft] = useState("");
+  const [notice, setNotice] = useState("");
+  const [saved, setSaved] = useState(false);
+
+  const reload = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/discussion?videoId=${encodeURIComponent(video.id)}`, {
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+      });
+      const payload = (await response.json().catch(() => ({}))) as {
+        comments?: WebsiteDiscussionComment[];
+        liked?: boolean;
+        likeCount?: number;
+      };
+      if (response.ok) {
+        setWebsiteComments(payload.comments ?? []);
+        setLiked(Boolean(payload.liked));
+        setLikeCount(payload.likeCount ?? 0);
+      }
+    } catch {
+      // Discussion failure should never block video playback.
+    }
+  }, [video.id]);
+
+  useEffect(() => {
+    setNotice("");
+    setDraft("");
+    setSaved(false);
+    void reload();
+  }, [reload]);
+
+  const youtubeComments = feed.status === "ready"
+    ? feed.comments.filter((comment) => comment.videoId === video.id)
+    : [];
+
+  const merged = useMemo(
+    () => [
+      ...youtubeComments.map((comment) => ({
+        id: `yt-${comment.id}`,
+        source: "YouTube" as const,
+        author: comment.authorName,
+        avatar: comment.authorImage,
+        body: comment.text,
+        createdAt: comment.publishedAt,
+        likes: comment.likeCount,
+        url: comment.authorChannelUrl,
+      })),
+      ...websiteComments.map((comment) => ({
+        id: `vl-${comment.id}`,
+        source: "Voice Lounge" as const,
+        author: comment.author_name,
+        avatar: comment.avatar_url,
+        body: comment.body,
+        createdAt: comment.created_at,
+        likes: 0,
+        url: null,
+      })),
+    ].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)),
+    [youtubeComments, websiteComments],
+  );
+
+  const requireAuth = () => {
+    if (user) return true;
+    window.location.assign(`/login?returnTo=${encodeURIComponent(window.location.pathname)}`);
+    return false;
+  };
+
+  const toggleLike = async () => {
+    if (!requireAuth()) return;
+    const next = !liked;
+    setLiked(next);
+    setLikeCount((value) => Math.max(0, value + (next ? 1 : -1)));
+    const response = await fetch("/api/discussion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: next ? "like" : "unlike", videoId: video.id }),
+    });
+    if (!response.ok) {
+      setLiked(!next);
+      setLikeCount((value) => Math.max(0, value + (next ? -1 : 1)));
+    }
+  };
+
+  const saveVideo = async () => {
+    if (!requireAuth()) return;
+    const response = await fetch("/api/account", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "save_content",
+        collection: "saved",
+        content_type: "video",
+        content_id: video.id,
+        title: video.title,
+        image_url: video.thumbnail,
+      }),
+    });
+    if (response.ok) {
+      setSaved(true);
+      setNotice("Saved to your account.");
+    }
+  };
+
+  const submit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!requireAuth() || !draft.trim()) return;
+    const response = await fetch("/api/discussion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "comment", videoId: video.id, body: draft }),
+    });
+    const payload = (await response.json().catch(() => ({}))) as { error?: string };
+    if (!response.ok) {
+      setNotice(payload.error || "Comment could not be posted.");
+      return;
+    }
+    setDraft("");
+    setNotice("Comment posted.");
+    await reload();
+  };
+
+  return (
+    <section className="border-t border-white/10 px-[clamp(1rem,2.5vw,2rem)] py-5" aria-labelledby="video-discussion-heading">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[var(--green)]">Conversation</p>
+          <h3 id="video-discussion-heading" className="font-display text-xl font-bold">YouTube + Voice Lounge</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => void toggleLike()} className={cn("press inline-flex min-h-10 items-center gap-2 rounded-full border px-3 text-xs font-bold", liked ? "border-[var(--green)] text-[var(--green)]" : "border-white/15 text-white/75")}>
+            <Heart className={cn("size-4", liked && "fill-current")} aria-hidden="true" /> {likeCount}
+          </button>
+          <button type="button" onClick={() => void saveVideo()} className={cn("press inline-flex min-h-10 items-center gap-2 rounded-full border px-3 text-xs font-bold", saved ? "border-[var(--gold)] text-[var(--gold)]" : "border-white/15 text-white/75")}>
+            <Bookmark className={cn("size-4", saved && "fill-current")} aria-hidden="true" /> {saved ? "Saved" : "Save"}
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={submit} className="mt-4 flex items-start gap-2">
+        <label htmlFor={`video-comment-${video.id}`} className="sr-only">Add a Voice Lounge comment</label>
+        <textarea
+          id={`video-comment-${video.id}`}
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          rows={2}
+          placeholder={user ? "Add a Voice Lounge comment…" : "Sign in to join the conversation…"}
+          className="min-h-12 flex-1 resize-y border border-white/15 bg-white/[0.05] p-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-[var(--green)]"
+        />
+        <button type="submit" className="press grid size-12 shrink-0 place-items-center bg-[var(--green-action)] text-white" aria-label={user ? "Post comment" : "Sign in to comment"}>
+          <Send className="size-4" aria-hidden="true" />
+        </button>
+      </form>
+      {notice && <p role="status" className="mt-2 text-xs text-white/55">{notice}</p>}
+
+      <div className="mt-5 grid gap-3">
+        {merged.slice(0, 12).map((comment) => (
+          <article key={comment.id} className="border border-white/10 bg-white/[0.035] p-3">
+            <div className="flex gap-3">
+              <SmartImage src={comment.avatar} fallbackRatio="1:1" alt="" className="size-9 shrink-0 rounded-full object-cover" loading="lazy" />
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  {comment.url ? <a href={comment.url} target="_blank" rel="noreferrer" className="text-sm font-bold hover:underline">{comment.author}</a> : <span className="text-sm font-bold">{comment.author}</span>}
+                  <span className={cn("text-[0.62rem] font-black uppercase tracking-[0.12em]", comment.source === "YouTube" ? "text-red-300" : "text-[var(--green)]")}>{comment.source}</span>
+                  <span className="text-[0.68rem] text-white/40">{comment.createdAt ? new Date(comment.createdAt).toLocaleDateString("en-ZA") : ""}</span>
+                </div>
+                <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-white/72">{comment.body}</p>
+                {comment.source === "YouTube" && comment.likes > 0 && <p className="mt-1 text-[0.68rem] text-white/40">{comment.likes} YouTube likes</p>}
+              </div>
+            </div>
+          </article>
+        ))}
+        {!merged.length && <p className="text-sm text-white/45">No comments on this video yet.</p>}
+      </div>
+    </section>
+  );
+}
 
 export function YouTubePlayerProvider({
   feed,
@@ -283,6 +488,8 @@ export function YouTubePlayerProvider({
                 </div>
               </div>
 
+              <VideoDiscussion video={current} feed={feed} />
+
               {upNext.length > 0 && (
                 <section
                   className="border-t border-white/10 px-[clamp(1rem,2.5vw,2rem)] pb-[clamp(1rem,2.5vw,2rem)] pt-5"
@@ -323,8 +530,9 @@ export function YouTubePlayerProvider({
                         >
                           <span className="block overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04]">
                             <span className="media-shine relative block aspect-video overflow-hidden bg-black">
-                              <img
+                              <SmartImage
                                 src={video.thumbnail}
+                                fallbackRatio="16:9"
                                 alt=""
                                 className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.045]"
                                 loading="lazy"
@@ -441,8 +649,9 @@ export function YouTubePlayerProvider({
                 aria-label="Expand podcast video player"
                 className="press hidden h-11 w-16 shrink-0 overflow-hidden rounded-none bg-black sm:block"
               >
-                <img
+                <SmartImage
                   src={current.thumbnail}
+                  fallbackRatio="16:9"
                   alt=""
                   className="h-full w-full object-cover"
                   loading="eager"
