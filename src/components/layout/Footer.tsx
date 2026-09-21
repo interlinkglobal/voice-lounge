@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Logo } from "./Logo";
 import { VERIFIED_APPS, VERIFIED_SOCIALS, VOICE_LOUNGE } from "@/lib/voice-lounge/organization";
+import { CMS_BASE } from "@/lib/cms/routes";
 
 const COLUMNS: Array<{ heading: string; links: Array<{ label: string; to: string }> }> = [
   {
@@ -91,7 +92,10 @@ export function Footer() {
       </div>
       <div className="shell flex flex-col gap-2 border-t border-hairline py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
         <p>© 2026 The Voice Lounge. Public information aligned to the 20 September 2026 research baseline.</p>
-        <p>East London · Eastern Cape · South Africa</p>
+        <div className="flex flex-wrap items-center gap-3">
+          <a href={`${CMS_BASE}/dashboard`} className="font-semibold text-muted-foreground hover:text-foreground">Admin</a>
+          <p>East London · Eastern Cape · South Africa</p>
+        </div>
       </div>
       <div aria-hidden="true" className="h-24 md:h-20" />
     </footer>
