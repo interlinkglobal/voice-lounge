@@ -175,7 +175,7 @@ function HomeMembershipCards() {
     <div className="relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]">
       <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
       <div className="absolute inset-0 grid place-items-center">
-        <TiltSurface className="w-[94%] max-w-[32rem] md:max-w-[48rem]" maxTilt={4.5}>
+        <TiltSurface className="w-[94%] max-w-[32rem] rounded-[4.2%] md:max-w-[48rem]" maxTilt={4.5}>
           <Link
             to={user ? "/account" : "/login"}
             aria-label={user ? `Membership card for ${user.name}` : "Free viewer welcome card"}
