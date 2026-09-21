@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import {
+  ArrowDown,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -25,6 +26,7 @@ import {
 } from "@/lib/content/programme-directory";
 import { formatDate } from "@/lib/content/adapters";
 import { getYouTubeLiveStatus, type YouTubeLiveStatus } from "@/lib/youtube.functions";
+import { youtubeEmbedUrl } from "@/lib/youtube-url";
 
 function podcastCategory(categoryId: string) {
   return categories.find((item) => item.id === categoryId)?.name ?? "Voice Lounge";
@@ -487,35 +489,66 @@ export function LiveExperience() {
         }
       : null,
   );
+  const [manualLive, setManualLive] = useState<{
+    id: string;
+    video_id: string;
+    title: string;
+    youtube_url: string;
+  } | null>(null);
 
   useEffect(() => {
     let active = true;
-    let timer: number | undefined;
+    let autoTimer: number | undefined;
+    let manualTimer: number | undefined;
 
-    const checkLive = async () => {
+    const checkAutomaticLive = async () => {
       try {
         const status = await getYouTubeLiveStatus();
         if (active) setLiveStatus(status);
       } catch (error) {
-        console.warn("[live-page] live polling failed", error);
+        console.warn("[live-page] automatic live polling failed", error);
       }
     };
 
-    void checkLive();
-    timer = window.setInterval(checkLive, 60_000);
+    const checkManualLive = async () => {
+      try {
+        const response = await fetch("/api/live-control", {
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        });
+        const payload = (await response.json().catch(() => ({}))) as {
+          live?: { id: string; video_id: string; title: string; youtube_url: string } | null;
+        };
+        if (active && response.ok) setManualLive(payload.live ?? null);
+      } catch (error) {
+        console.warn("[live-page] managed live polling failed", error);
+      }
+    };
+
+    void checkAutomaticLive();
+    void checkManualLive();
+    autoTimer = window.setInterval(checkAutomaticLive, 60_000);
+    manualTimer = window.setInterval(checkManualLive, 30_000);
+
     return () => {
       active = false;
-      if (timer) window.clearInterval(timer);
+      if (autoTimer) window.clearInterval(autoTimer);
+      if (manualTimer) window.clearInterval(manualTimer);
     };
   }, []);
 
+  const activeVideoId = manualLive?.video_id ?? liveStatus?.videoId ?? null;
   const previousLives = videos
-    .filter((video) => video.id !== liveStatus?.videoId && video.wasLive)
+    .filter((video) => video.id !== activeVideoId && video.wasLive)
     .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
 
-  const liveEmbed = liveStatus?.isLive
-    ? (liveStatus.permanentEmbedUrl ?? liveStatus.videoEmbedUrl)
-    : null;
+  // Exact video IDs are more reliable than the channel-level permanent embed.
+  const liveEmbed = manualLive
+    ? youtubeEmbedUrl(manualLive.video_id)
+    : liveStatus?.isLive
+      ? (liveStatus.videoEmbedUrl ?? liveStatus.permanentEmbedUrl)
+      : null;
+  const liveTitle = manualLive?.title ?? liveStatus?.title ?? "The Voice Lounge Live";
 
   return (
     <div className="shell pb-[var(--section-gap)] pt-[clamp(1rem,3vw,2rem)]" data-primary-route="live">
@@ -524,7 +557,7 @@ export function LiveExperience() {
           <div className="aspect-video">
             <iframe
               src={`${liveEmbed}${liveEmbed.includes("?") ? "&" : "?"}autoplay=1&rel=0&playsinline=1&modestbranding=1`}
-              title={liveStatus?.title ?? "The Voice Lounge live"}
+              title={liveTitle}
               className="h-full w-full"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               referrerPolicy="strict-origin-when-cross-origin"
@@ -533,21 +566,26 @@ export function LiveExperience() {
           </div>
           <div className="p-5 sm:p-6">
             <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-[var(--live)]"><Radio className="size-4" aria-hidden="true" /> Live now</p>
-            <h1 className="mt-2 font-display text-[clamp(1.5rem,4vw,2.75rem)] font-black">{liveStatus?.title ?? "The Voice Lounge Live"}</h1>
-            <p className="mt-2 text-xs text-white/55">Live status refreshes automatically every minute from the YouTube Data API.</p>
+            <h1 className="mt-2 font-display text-[clamp(1.5rem,4vw,2.75rem)] font-black">{liveTitle}</h1>
+            <p className="mt-2 text-xs text-white/55">
+              {manualLive ? "Served by the Voice Lounge live control." : "Live status refreshes automatically from the official YouTube channel."}
+            </p>
           </div>
         </section>
       ) : (
-        <section className="hero-wash grain grid min-h-[52vh] place-items-center border border-hairline p-6 text-center">
-          <div className="max-w-2xl">
-            <span className="mx-auto grid size-16 place-items-center border border-hairline bg-background/35"><WifiOff className="size-7 text-muted-foreground" aria-hidden="true" /></span>
+        <section className="live-offline-panel hero-wash grain grid min-h-[52vh] place-items-center overflow-hidden border border-hairline p-6 text-center">
+          <div className="live-offline-content max-w-2xl">
+            <span className="live-offline-icon mx-auto grid size-16 place-items-center rounded-full border border-hairline bg-background/35"><WifiOff className="size-7 text-muted-foreground" aria-hidden="true" /></span>
             <h1 className="mt-5 font-display text-[clamp(2rem,6vw,4.5rem)] font-black tracking-[-0.05em]">There isn’t a live broadcast right now.</h1>
-            <p className="mt-4 text-base leading-7 text-muted-foreground">This page checks the channel automatically. Scroll below to watch previous Voice Lounge live broadcasts and event streams.</p>
+            <p className="mt-4 text-base leading-7 text-muted-foreground">This page checks the official channel and the Voice Lounge live control automatically.</p>
+            <a href="#previous-lives" className="press mt-6 inline-flex min-h-11 items-center gap-2 rounded-full bg-[var(--green-action)] px-5 font-bold text-white">
+              Watch Past Lives <ArrowDown className="size-4" aria-hidden="true" />
+            </a>
           </div>
         </section>
       )}
 
-      <section className="mt-[clamp(2rem,5vw,4rem)]">
+      <section id="previous-lives" className="mt-[clamp(2rem,5vw,4rem)] scroll-mt-24">
         <div className="mb-4 flex items-end justify-between border-b border-hairline pb-3">
           <h2 className="font-display text-2xl font-black">Previous lives</h2>
           <span className="text-xs text-muted-foreground">{previousLives.length} broadcasts</span>
