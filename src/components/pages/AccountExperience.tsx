@@ -377,7 +377,7 @@ export function AccountExperience() {
   );
 
   return (
-    <div className="min-h-[calc(100vh-5rem)] bg-background text-foreground" data-primary-route="account">
+    <div className="min-h-screen bg-background text-foreground" data-primary-route="account">
       <header className="sticky top-0 z-30 flex min-h-16 items-center justify-between border-b border-hairline bg-background/95 px-4 backdrop-blur-xl lg:hidden">
         <div className="min-w-0">
           <p className="truncate font-display font-black">{cardUser.name}</p>
@@ -400,8 +400,8 @@ export function AccountExperience() {
         </div>
       )}
 
-      <div className="grid min-h-[calc(100vh-5rem)] lg:grid-cols-[17rem_minmax(0,1fr)]">
-        <aside className="hidden border-r border-hairline bg-[#050806] p-5 text-white lg:sticky lg:top-[5rem] lg:flex lg:h-[calc(100vh-5rem)] lg:flex-col">
+      <div className="grid min-h-screen lg:grid-cols-[17rem_minmax(0,1fr)]">
+        <aside className="hidden border-r border-hairline bg-[#050806] p-5 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:flex-col">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.2em] text-[var(--green)]">The Voice Lounge</p>
             <h2 className="mt-1 font-display text-2xl font-black">My account</h2>
