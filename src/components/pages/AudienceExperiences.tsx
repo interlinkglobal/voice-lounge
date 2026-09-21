@@ -75,7 +75,7 @@ const DISCOVER_OPTIONS: Record<DiscoverTab, string[]> = {
   programme: podcasts.map((item) => item.title),
   person: PEOPLE_OPTIONS,
   format: ["Video", "Hybrid", "Audio"],
-  language: ["English", "Afrikaans", "isiNdebele", "isiXhosa", "isiZulu", "siSwati", "Sepedi", "Setswana", "Sesotho", "itsonga", "Tshivenda", "South African Sign Language"],
+  language: ["English", "Afrikaans", "isiNdebele", "isiXhosa", "isiZulu", "siSwati", "Sepedi", "Setswana", "Sesotho", "XiTsonga", "Tshivenda", "South African Sign Language"],
   province: ["Eastern Cape", "Gauteng", "Western Cape", "KwaZulu-Natal", "Free State", "Limpopo", "Mpumalanga", "North West", "Northern Cape"],
   mood: ["Current affairs", "Deep dive", "Community", "Music", "Faith", "Culture", "Sport", "Lifestyle"],
   duration: ["Under 10 min", "10–30 min", "30–60 min", "60+ min"],
@@ -552,7 +552,7 @@ export function CommunityExperience() {
                 }}
                 rows={3}
                 placeholder={user ? "Share your thoughts…" : "Sign in to prepare a website comment…"}
-                className="mt-2 w-full resize-y rounded-none border border-hairline bg-background p-3 text-sm outline-none focus:border-[var(--green)]"
+                className="mt-2 w-full resize-none rounded-none border border-hairline bg-background p-3 text-sm outline-none focus:border-[var(--green)]"
               />
               <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
                 <p className="text-xs text-muted-foreground">Website persistence is intentionally not connected yet.</p>
