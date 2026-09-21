@@ -31,6 +31,15 @@ function formatDate(value: Date | string) {
   return CARD_DATE.format(date).toUpperCase();
 }
 
+export function compactMembershipName(name: string) {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length <= 1) return parts[0] ?? name;
+  const first = parts[0] ?? "";
+  const last = parts[parts.length - 1] ?? "";
+  const initial = last.charAt(0).toUpperCase();
+  return initial ? `${first} ${initial}.` : first;
+}
+
 function authenticatedModel(
   user: AuthUser,
   plan: MembershipPlan,
