@@ -15,6 +15,7 @@ import luxuryCss from "../styles-luxury.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ThemeProvider, themeBootstrapScript } from "@/components/system/theme";
 import { TranslationProvider } from "@/components/system/TranslationProvider";
+import { MediaFallbackProvider } from "@/components/system/MediaFallbackProvider";
 import { LibraryProvider } from "@/components/system/library";
 import { PlayerProvider } from "@/components/player/PlayerProvider";
 import { PlayerDock } from "@/components/player/PlayerDock";
@@ -165,6 +166,7 @@ function RootComponent() {
       <PwaLifecycle />
       <AuthProvider user={user}>
         <YouTubeFeedProvider feed={youtubeFeed}>
+          <MediaFallbackProvider>
           <TranslationProvider>
           <ThemeProvider>
           <LibraryProvider>
@@ -194,6 +196,7 @@ function RootComponent() {
           </LibraryProvider>
           </ThemeProvider>
           </TranslationProvider>
+          </MediaFallbackProvider>
         </YouTubeFeedProvider>
       </AuthProvider>
     </QueryClientProvider>
