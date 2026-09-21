@@ -439,3 +439,35 @@
 @utility rise-in {
   animation: vl-rise 260ms var(--ease-out-quick) both;
 }
+
+
+/* Translation expansion safety: translated copy may be materially longer than English. */
+html:not([lang^="en"]) #main :where(h1, h2, h3, h4, p, dt, dd, li),
+html:not([lang^="en"]) footer :where(p, li, a),
+html:not([lang^="en"]) [role="dialog"] :where(p, li, a, button) {
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+html:not([lang^="en"]) #main :where(a, button),
+html:not([lang^="en"]) header :where(a, button, form, input),
+html:not([lang^="en"]) footer :where(a, button) {
+  min-width: 0;
+  max-width: 100%;
+}
+
+header[data-translated-nav="true"] nav > ul {
+  min-width: 0;
+  max-width: 100%;
+}
+
+header[data-translated-nav="true"] .header-primary-link {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+header[data-translated-nav="true"] input {
+  min-width: 0;
+  text-overflow: ellipsis;
+}
