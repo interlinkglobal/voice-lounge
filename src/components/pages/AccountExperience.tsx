@@ -28,7 +28,7 @@ import {
   useTranslationLanguage,
   type SiteLanguage,
 } from "@/components/system/TranslationProvider";
-import { createMembershipCardViewModel } from "@/lib/membership/card";
+import { compactMembershipName, createMembershipCardViewModel } from "@/lib/membership/card";
 import type { MembershipPlan } from "@/lib/auth/supabase";
 import { cn } from "@/lib/utils";
 import { TiltSurface } from "@/components/system/TiltSurface";
@@ -256,6 +256,7 @@ export function AccountExperience() {
     cardMessage: data.profile?.card_message || user.cardMessage,
   };
   const card = createMembershipCardViewModel(cardUser, "000000");
+  const accountCard = { ...card, name: compactMembershipName(card.name) };
   const nextBilling =
     data.profile?.next_billing_at ?? data.billing[0]?.next_billing_at ?? user.nextBillingAt;
 
@@ -462,7 +463,7 @@ export function AccountExperience() {
               <section className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.25fr)_minmax(18rem,.75fr)]">
                 <div className="mx-auto w-full max-w-3xl xl:mx-0">
                   <TiltSurface maxTilt={4} className="rounded-[4.8%]">
-                    <EditableMembershipCard model={card} className="w-full" />
+                    <EditableMembershipCard model={accountCard} className="account-membership-card w-full" />
                   </TiltSurface>
                 </div>
                 <div className="grid content-start gap-3">
