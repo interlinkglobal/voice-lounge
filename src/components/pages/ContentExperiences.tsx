@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import {
-  Bookmark,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -12,6 +11,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import { useAuth } from "@/components/auth/AuthProvider";
+import { AccountSaveButton } from "@/components/account/AccountSaveButton";
 import { Artwork } from "@/components/media/Artwork";
 import { SmartImage } from "@/components/media/SmartImage";
 import { YouTubeVideoCard } from "@/components/youtube/YouTubeFeedGrid";
@@ -103,15 +103,25 @@ export function PodcastsDirectoryExperience() {
                       {podcast.language} · {podcast.format}
                     </p>
                   </Link>
-                  <div className="flex items-center justify-between gap-3 border-t border-hairline pt-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-hairline pt-3">
                     <span className="truncate text-xs text-muted-foreground">Programme page</span>
-                    <Link
-                      to="/podcasts/$slug"
-                      params={{ slug: podcast.slug }}
-                      className="press inline-flex h-10 shrink-0 items-center gap-2 rounded-none bg-[var(--green-action)] px-4 text-sm font-semibold text-white shadow-[0_6px_18px_-8px_var(--green-deep)]"
-                    >
-                      View
-                    </Link>
+                    <div className="flex gap-2">
+                      <AccountSaveButton
+                        contentType="podcast"
+                        contentId={podcast.id}
+                        title={podcast.title}
+                        imageUrl={image}
+                        collection="listen_later"
+                        className="h-10 min-h-10 px-3"
+                      />
+                      <Link
+                        to="/podcasts/$slug"
+                        params={{ slug: podcast.slug }}
+                        className="press inline-flex h-10 shrink-0 items-center gap-2 rounded-none bg-[var(--green-action)] px-4 text-sm font-semibold text-white shadow-[0_6px_18px_-8px_var(--green-deep)]"
+                      >
+                        View
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </article>
@@ -201,6 +211,16 @@ export function PodcastDetailExperience({ slug }: { slug: string }) {
             {schedule && <span>{schedule.time}</span>}
             {schedule && <span>{schedule.host}</span>}
             <span>{podcast.language}</span>
+          </div>
+          <div className="mt-5">
+            <AccountSaveButton
+              contentType="podcast"
+              contentId={podcast.id}
+              title={podcast.title}
+              imageUrl={image}
+              collection="listen_later"
+              label="Save podcast"
+            />
           </div>
         </div>
       </section>
@@ -309,15 +329,6 @@ export function ShowDetailExperience({ slug }: { slug: string }) {
 }
 
 export function NewsExperience() {
-  const user = useAuth();
-  const [notice, setNotice] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!notice) return;
-    const timer = window.setTimeout(() => setNotice(null), 1800);
-    return () => window.clearTimeout(timer);
-  }, [notice]);
-
   const sorted = [...news].sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt));
 
   return (
@@ -341,31 +352,18 @@ export function NewsExperience() {
                 >
                   Read
                 </Link>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!user) {
-                      window.location.assign(`/login?returnTo=${encodeURIComponent(`/news/${article.slug}`)}`);
-                      return;
-                    }
-                    setNotice(`Saved: ${article.headline}`);
-                  }}
-                  className="press inline-flex min-h-10 items-center justify-center gap-2 border border-hairline px-4 text-sm font-bold"
-                >
-                  <Bookmark className="size-4" aria-hidden="true" />
-                  Save
-                </button>
+                <AccountSaveButton
+                  contentType="article"
+                  contentId={article.id}
+                  title={article.headline}
+                  imageUrl={article.artwork.src}
+                  className="min-h-10"
+                />
               </div>
             </div>
           </article>
         ))}
       </div>
-
-      {notice && (
-        <div role="status" className="fixed bottom-6 left-1/2 z-[180] w-[min(92vw,28rem)] -translate-x-1/2 border border-[color-mix(in_oklab,var(--green)_50%,var(--hairline))] bg-background/95 px-5 py-4 text-sm font-semibold shadow-lift backdrop-blur-xl">
-          {notice}
-        </div>
-      )}
     </div>
   );
 }
