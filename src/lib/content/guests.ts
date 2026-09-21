@@ -11,9 +11,9 @@ export interface GuestProfile {
   slug: string;
   name: string;
   description: string;
-  aliases?: string[];
-  image?: string | null;
-  links?: GuestLink[];
+  aliases?: string[] | undefined;
+  image?: string | null | undefined;
+  links?: GuestLink[] | undefined;
   source: "research" | "legacy" | "youtube";
 }
 

@@ -235,8 +235,8 @@ function PlatformHero({
   searchFilter = "all",
 }: {
   page: PageKey;
-  query?: string;
-  searchFilter?: SearchFilter;
+  query?: string | undefined;
+  searchFilter?: SearchFilter | undefined;
 }) {
   const info = PAGE_INFO[page];
   const youtubeFeed = useYouTubeFeed();
@@ -253,7 +253,7 @@ function PlatformHero({
         <div className="vl-component-enter relative z-10 max-w-3xl">
           <div className="mb-4 flex flex-wrap items-center gap-2"><span className={cn("hyper-glass rounded-full px-3 py-1 text-[0.68rem] font-black uppercase tracking-[0.2em]", premium ? "text-[var(--gold)]" : "text-[var(--green)]")}>{heroBadge}</span>{live && <span className="inline-flex items-center gap-1.5 rounded-full bg-[var(--live)] px-3 py-1 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-white"><span className="size-1.5 rounded-full bg-white" /> On air</span>}</div>
           <h1 id={`01-${slugify(firstTitle)}-h`} className={cn("font-display text-[var(--step-6)] font-black leading-[0.9] tracking-[-0.055em]", premium && "text-gold-foil")}>{info.title}</h1>
-          <p className={cn("mt-5 max-w-2xl text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed", page === "home" ? "text-white" : "text-muted-foreground")}>
+          <p className="mt-5 max-w-2xl text-[clamp(1rem,1.4vw,1.3rem)] leading-relaxed text-muted-foreground">
             {page === "home" ? "Sign in to The Voice Lounge for a customized experience" : info.lede}
           </p>
           {page === "search" ? (
@@ -274,7 +274,7 @@ function PlatformHero({
             </form>
           ) : page === "home" ? (
             <div className="mt-7 flex flex-wrap gap-2.5">
-              <Link to="/login" preload="intent" className="press inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--green-action)] px-6 font-bold text-white shadow-glow">
+              <Link to="/login" search={{ auth: undefined, returnTo: "/account" }} preload="intent" className="press inline-flex min-h-12 items-center gap-2 rounded-full bg-[var(--green-action)] px-6 font-bold text-white shadow-glow">
                 <LogIn className="size-4" aria-hidden="true" />
                 Sign In
               </Link>
@@ -314,7 +314,7 @@ function AccountIntro() {
     return (
       <div className="shell mt-5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground vl-component-enter">
         <span className="hyper-glass rounded-full px-3 py-1.5">Signed out</span>
-        <Link to="/login" search={{ returnTo: "/account" }} className="press rounded-full bg-[var(--green-action)] px-3.5 py-1.5 font-semibold text-white">
+        <Link to="/login" search={{ auth: undefined, returnTo: "/account" }} className="press rounded-full bg-[var(--green-action)] px-3.5 py-1.5 font-semibold text-white">
           Sign in
         </Link>
         <span className="hyper-glass rounded-full px-3 py-1.5">{saved.length} saved locally</span>
@@ -338,8 +338,8 @@ export function PlatformPage({
   searchFilter = "all",
 }: {
   page: PageKey;
-  query?: string;
-  searchFilter?: SearchFilter;
+  query?: string | undefined;
+  searchFilter?: SearchFilter | undefined;
 }) {
   const youtubeFeed = useYouTubeFeed();
   const youtubeVideos = youtubeFeed?.status === "ready" ? youtubeFeed.videos : [];

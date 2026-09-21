@@ -166,7 +166,7 @@ export const q = {
   byLanguage: (lang: string, n = 12) => podcasts.filter((p) => p.language === lang).slice(0, n),
   byProvince: (prov: string, n = 12) => podcasts.filter((p) => p.province === prov).slice(0, n),
   byFormat: (fmt: string, n = 12) => podcasts.filter((p) => p.format === fmt).slice(0, n),
-  continueItems: () => [],
+  continueItems: (_n = 10) => [],
   liveNow: () => liveEvents.filter((l) => l.status === "live"),
   liveSoon: () => liveEvents.filter((l) => l.status === "soon"),
   liveScheduled: () => liveEvents.filter((l) => l.status === "scheduled"),

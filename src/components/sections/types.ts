@@ -19,23 +19,28 @@ export type SectionLayout =
   | "steps"
   | "mosaic";
 
+/**
+ * A single content band. Optional fields carry `| undefined` explicitly so
+ * that builders can pass `undefined` through under
+ * `exactOptionalPropertyTypes`.
+ */
 export interface SectionSpec {
   id: string;
-  eyebrow?: string;
+  eyebrow?: string | undefined;
   title: string;
-  blurb?: string;
+  blurb?: string | undefined;
   layout: SectionLayout;
-  items?: MediaCardModel[];
-  variant?: CardVariant;
-  columns?: 2 | 3 | 4 | 5 | 6;
-  chips?: Array<{ label: string; to?: string; meta?: string }>;
-  faq?: Array<{ q: string; a: string }>;
-  stats?: Array<{ k: string; v: string }>;
-  steps?: Array<{ k: string; v: string }>;
-  quote?: { text: string; who: string; role?: string };
-  tone?: "default" | "gold" | "ink" | "green";
-  action?: { label: string; to: string };
-  body?: ReactNode;
+  items?: MediaCardModel[] | undefined;
+  variant?: CardVariant | undefined;
+  columns?: 2 | 3 | 4 | 5 | 6 | undefined;
+  chips?: Array<{ label: string; to?: string | undefined; meta?: string | undefined }> | undefined;
+  faq?: Array<{ q: string; a: string }> | undefined;
+  stats?: Array<{ k: string; v: string }> | undefined;
+  steps?: Array<{ k: string; v: string }> | undefined;
+  quote?: { text: string; who: string; role?: string | undefined } | undefined;
+  tone?: "default" | "gold" | "ink" | "green" | undefined;
+  action?: { label: string; to: string } | undefined;
+  body?: ReactNode | undefined;
   /** Sections above the fold render eagerly; the rest stream in on approach. */
-  priority?: boolean;
+  priority?: boolean | undefined;
 }

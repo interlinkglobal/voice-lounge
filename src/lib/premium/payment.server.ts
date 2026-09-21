@@ -17,14 +17,14 @@ export const PREMIUM_REFERENCE_COOKIE = "__Host-tvl-premium-ref";
 export const PREMIUM_DEV_COOKIE = "__Host-tvl-premium-dev";
 
 type InterlinkVerification = {
-  status?: string;
-  reference?: string;
-  amountMinor?: number | null;
-  currency?: string;
-  email?: string | null;
-  product?: string | null;
-  productName?: string | null;
-  customerReference?: string | null;
+  status?: string | undefined;
+  reference?: string | undefined;
+  amountMinor?: number | null | undefined;
+  currency?: string | undefined;
+  email?: string | null | undefined;
+  product?: string | null | undefined;
+  productName?: string | null | undefined;
+  customerReference?: string | null | undefined;
 };
 
 export type PremiumVerification =

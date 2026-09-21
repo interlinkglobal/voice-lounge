@@ -36,15 +36,15 @@ interface DetailModel {
   eyebrow: string;
   description: string;
   meta: string[];
-  artwork: { seed: string; src?: string; alt: string; ratio?: "16/9" | "1/1" | "4/5" | "3/2" };
-  watchId?: string;
+  artwork: { seed: string; src?: string | undefined; alt: string; ratio?: "16/9" | "1/1" | "4/5" | "3/2" | undefined };
+  watchId?: string | undefined;
   relatedTitle: string;
   related: MediaCardModel[];
-  body?: string[];
-  creatorId?: string;
-  live?: boolean;
-  sourceLabel?: string;
-  sourceUrl?: string;
+  body?: string[] | undefined;
+  creatorId?: string | undefined;
+  live?: boolean | undefined;
+  sourceLabel?: string | undefined;
+  sourceUrl?: string | undefined;
 }
 
 function resolveDetail(kind: DetailKind, slug: string): DetailModel | null {

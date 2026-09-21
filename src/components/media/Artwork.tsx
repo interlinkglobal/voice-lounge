@@ -16,9 +16,9 @@ export function Artwork({
   label,
 }: {
   artwork: ArtworkModel;
-  className?: string;
-  priority?: boolean;
-  label?: string;
+  className?: string | undefined;
+  priority?: boolean | undefined;
+  label?: string | undefined;
 }) {
   const ratio = RATIO[artwork.ratio ?? "16/9"];
   const fallbackRatio: FallbackRatio =

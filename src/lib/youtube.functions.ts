@@ -42,23 +42,23 @@ export interface YouTubeFeedResult {
 }
 
 interface YouTubeThumbnail {
-  url?: string;
-  width?: number;
-  height?: number;
+  url?: string | undefined;
+  width?: number | undefined;
+  height?: number | undefined;
 }
 
 type YouTubeThumbnailSet = Partial<Record<"default" | "medium" | "high" | "standard" | "maxres", YouTubeThumbnail>>;
 
 interface YouTubeChannelResponse {
   items?: Array<{
-    id?: string;
+    id?: string | undefined;
     snippet?: {
-      title?: string;
-      thumbnails?: YouTubeThumbnailSet;
+      title?: string | undefined;
+      thumbnails?: YouTubeThumbnailSet | undefined;
     };
     contentDetails?: {
       relatedPlaylists?: {
-        uploads?: string;
+        uploads?: string | undefined;
       };
     };
   }>;
@@ -66,42 +66,42 @@ interface YouTubeChannelResponse {
 
 interface YouTubePlaylistItem {
   snippet?: {
-    title?: string;
-    description?: string;
-    publishedAt?: string;
-    thumbnails?: YouTubeThumbnailSet;
+    title?: string | undefined;
+    description?: string | undefined;
+    publishedAt?: string | undefined;
+    thumbnails?: YouTubeThumbnailSet | undefined;
     resourceId?: {
-      videoId?: string;
+      videoId?: string | undefined;
     };
   };
   contentDetails?: {
-    videoId?: string;
+    videoId?: string | undefined;
   };
 }
 
 interface YouTubePlaylistResponse {
-  nextPageToken?: string;
+  nextPageToken?: string | undefined;
   pageInfo?: {
-    totalResults?: number;
+    totalResults?: number | undefined;
   };
-  items?: YouTubePlaylistItem[];
+  items?: YouTubePlaylistItem[] | undefined;
 }
 
 
 interface YouTubeCommentThreadsResponse {
   items?: Array<{
-    id?: string;
+    id?: string | undefined;
     snippet?: {
-      videoId?: string;
+      videoId?: string | undefined;
       topLevelComment?: {
-        id?: string;
+        id?: string | undefined;
         snippet?: {
-          authorDisplayName?: string;
-          authorProfileImageUrl?: string;
-          authorChannelUrl?: string;
-          textOriginal?: string;
-          likeCount?: number;
-          publishedAt?: string;
+          authorDisplayName?: string | undefined;
+          authorProfileImageUrl?: string | undefined;
+          authorChannelUrl?: string | undefined;
+          textOriginal?: string | undefined;
+          likeCount?: number | undefined;
+          publishedAt?: string | undefined;
         };
       };
     };
@@ -110,21 +110,21 @@ interface YouTubeCommentThreadsResponse {
 
 interface YouTubeVideosResponse {
   items?: Array<{
-    id?: string;
+    id?: string | undefined;
     snippet?: {
-      liveBroadcastContent?: "live" | "upcoming" | "none";
+      liveBroadcastContent?: "live" | "upcoming" | "none" | undefined;
     };
     contentDetails?: {
-      duration?: string;
+      duration?: string | undefined;
     };
     statistics?: {
-      viewCount?: string;
-      likeCount?: string;
+      viewCount?: string | undefined;
+      likeCount?: string | undefined;
     };
     liveStreamingDetails?: {
-      actualStartTime?: string;
-      actualEndTime?: string;
-      scheduledStartTime?: string;
+      actualStartTime?: string | undefined;
+      actualEndTime?: string | undefined;
+      scheduledStartTime?: string | undefined;
     };
   }>;
 }
@@ -276,7 +276,7 @@ async function fetchRecentChannelComments(apiKey: string, channelId: string): Pr
         const id = comment?.id ?? item.id;
         const authorName = snippet?.authorDisplayName?.trim();
         const text = snippet?.textOriginal?.trim();
-        if (!id || !authorName || !text) return null;
+        if (!id || !snippet || !authorName || !text) return null;
         return {
           id,
           authorName,
@@ -297,8 +297,8 @@ async function fetchRecentChannelComments(apiKey: string, channelId: string): Pr
 }
 
 export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async (): Promise<YouTubeFeedResult> => {
-  const apiKey = process.env.YOUTUBE_DATA_API_KEY?.trim() ?? "";
-  const channelId = process.env.CHANNEL_ID?.trim() ?? "";
+  const apiKey = process.env["YOUTUBE_DATA_API_KEY"]?.trim() ?? "";
+  const channelId = process.env["CHANNEL_ID"]?.trim() ?? "";
 
   if (!apiKey || !channelId) {
     return emptyResult(
@@ -402,8 +402,8 @@ export interface YouTubeLiveStatus {
 }
 
 export const getYouTubeLiveStatus = createServerFn({ method: "GET" }).handler(async (): Promise<YouTubeLiveStatus> => {
-  const apiKey = process.env.YOUTUBE_DATA_API_KEY?.trim() ?? "";
-  const configuredChannel = process.env.CHANNEL_ID?.trim() ?? "";
+  const apiKey = process.env["YOUTUBE_DATA_API_KEY"]?.trim() ?? "";
+  const configuredChannel = process.env["CHANNEL_ID"]?.trim() ?? "";
   const checkedAt = new Date().toISOString();
 
   const empty = (configured: boolean, channelId = configuredChannel): YouTubeLiveStatus => ({
@@ -480,7 +480,7 @@ export const getYouTubeLiveStatus = createServerFn({ method: "GET" }).handler(as
 
     const videosData = (await videosResponse.json()) as {
       items?: Array<{
-        id?: string;
+        id?: string | undefined;
         snippet?: { title?: string; liveBroadcastContent?: "live" | "upcoming" | "none" };
         liveStreamingDetails?: { actualStartTime?: string; actualEndTime?: string };
       }>;

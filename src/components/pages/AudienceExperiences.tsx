@@ -405,7 +405,7 @@ export function EpisodesDirectoryExperience() {
 interface GuestProfile {
   name: string;
   description: string;
-  aliases?: string[];
+  aliases?: string[] | undefined;
   links?: Array<{ label: string; url: string; kind: "website" | "linkedin" }>;
 }
 

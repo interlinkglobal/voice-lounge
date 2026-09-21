@@ -14,7 +14,23 @@ interface ThemeCtx {
 const Ctx = createContext<ThemeCtx>({ choice: "system", resolved: "dark", setChoice: () => {} });
 
 /** Runs before hydration to prevent a theme flash. */
-export const themeBootstrapScript = `(function(){try{var c=localStorage.getItem("${KEY}")||"system";var m=window.matchMedia("(prefers-color-scheme: dark)").matches;var d=c==="dark"||(c==="system"&&m);document.documentElement.classList.toggle("dark",d);document.documentElement.style.colorScheme=d?"dark":"light";}catch(e){document.documentElement.classList.add("dark");}})();`;
+export const themeBootstrapScript = `(function(){try{var c=localStorage.getItem("${KEY}")||"system";var m=window.matchMedia("(prefers-color-scheme: dark)").matches;var d=c==="dark"||(c==="system"&&m);document.documentElement.classList.toggle("dark",d);}catch(e){document.documentElement.classList.add("dark");}})();`;
+
+/**
+ * Resolves the theme exactly as the bootstrap script does, so the client's
+ * first render agrees with the DOM the script already prepared. Without this
+ * React hydrates against a class it did not render and warns.
+ */
+export function initialThemeClass(): string {
+  if (typeof window === "undefined") return "dark";
+  try {
+    const choice = window.localStorage.getItem(KEY) || "system";
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return choice === "dark" || (choice === "system" && prefersDark) ? "dark" : "";
+  } catch {
+    return "dark";
+  }
+}
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [choice, setChoiceState] = useState<ThemeChoice>("system");
@@ -24,7 +40,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     const dark = c === "dark" || (c === "system" && prefersDark);
     document.documentElement.classList.toggle("dark", dark);
-    document.documentElement.style.colorScheme = dark ? "dark" : "light";
     setResolved(dark ? "dark" : "light");
   }, []);
 

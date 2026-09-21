@@ -24,11 +24,11 @@ export function YouTubeVideoCard({
   animate = true,
 }: {
   video: YouTubeFeedVideo;
-  priority?: boolean;
-  className?: string;
-  compact?: boolean;
-  featured?: boolean;
-  animate?: boolean;
+  priority?: boolean | undefined;
+  className?: string | undefined;
+  compact?: boolean | undefined;
+  featured?: boolean | undefined;
+  animate?: boolean | undefined;
 }) {
   const player = useYouTubePlayer();
   const open = () => player.open(video);

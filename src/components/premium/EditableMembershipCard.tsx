@@ -11,14 +11,14 @@ export interface MembershipCardChanges {
 }
 
 export interface EditableMembershipCardProps {
-  model?: MembershipCardViewModel;
-  change?: Partial<MembershipCardChanges>;
-  memberId?: string;
-  role?: string;
-  country?: string;
-  access?: string;
-  tagline?: string;
-  className?: string;
+  model?: MembershipCardViewModel | undefined;
+  change?: Partial<MembershipCardChanges> | undefined;
+  memberId?: string | undefined;
+  role?: string | undefined;
+  country?: string | undefined;
+  access?: string | undefined;
+  tagline?: string | undefined;
+  className?: string | undefined;
 }
 
 export const MEMBERSHIP_CARD_ASSETS = {

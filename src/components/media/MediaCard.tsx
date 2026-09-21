@@ -90,10 +90,10 @@ export function MediaCard({
   className,
 }: {
   item: MediaCardModel;
-  variant?: CardVariant;
-  priority?: boolean;
-  showWatch?: boolean;
-  className?: string;
+  variant?: CardVariant | undefined;
+  priority?: boolean | undefined;
+  showWatch?: boolean | undefined;
+  className?: string | undefined;
 }) {
   const [showMore, setShowMore] = useState(false);
   const youtubeVideo = useYouTubeVideoForKey(item.id);

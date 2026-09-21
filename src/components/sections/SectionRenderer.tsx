@@ -384,12 +384,12 @@ export function Band({
   bare,
 }: {
   id: string;
-  eyebrow?: string;
+  eyebrow?: string | undefined;
   title: string;
-  blurb?: string;
-  tone?: "default" | "gold";
-  children?: React.ReactNode;
-  bare?: boolean;
+  blurb?: string | undefined;
+  tone?: "default" | "gold" | undefined;
+  children?: React.ReactNode | undefined;
+  bare?: boolean | undefined;
 }) {
   return (
     <section

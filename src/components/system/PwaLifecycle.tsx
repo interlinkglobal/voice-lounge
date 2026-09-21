@@ -10,7 +10,7 @@ export interface VoiceLoungeInstallPrompt extends Event {
 
 declare global {
   interface Window {
-    __voiceLoungeInstallPrompt?: VoiceLoungeInstallPrompt | null;
+    __voiceLoungeInstallPrompt?: VoiceLoungeInstallPrompt | null | undefined;
   }
 }
 
@@ -22,12 +22,12 @@ function isStandalone() {
 }
 
 function setNetworkState(online: boolean) {
-  document.documentElement.dataset.network = online ? "online" : "offline";
+  document.documentElement.dataset["network"] = online ? "online" : "offline";
   window.dispatchEvent(new CustomEvent("voice-lounge:network", { detail: { online } }));
 }
 
 function setInstallState(installed: boolean) {
-  document.documentElement.dataset.pwaInstalled = installed ? "true" : "false";
+  document.documentElement.dataset["pwaInstalled"] = installed ? "true" : "false";
   window.dispatchEvent(
     new CustomEvent("voice-lounge:pwa-install-state", {
       detail: {

@@ -10,7 +10,7 @@ import {
 export interface AppSelectOption {
   value: string;
   label: string;
-  disabled?: boolean;
+  disabled?: boolean | undefined;
 }
 
 export function AppSelect({
@@ -22,16 +22,16 @@ export function AppSelect({
   className,
   contentClassName,
 }: {
-  value?: string;
+  value?: string | undefined;
   onValueChange: (value: string) => void;
   options: AppSelectOption[];
-  placeholder?: string;
+  placeholder?: string | undefined;
   ariaLabel: string;
-  className?: string;
-  contentClassName?: string;
+  className?: string | undefined;
+  contentClassName?: string | undefined;
 }) {
   return (
-    <Select value={value} onValueChange={onValueChange}>
+    <Select {...(value === undefined ? {} : { value })} onValueChange={onValueChange}>
       <SelectTrigger
         aria-label={ariaLabel}
         className={cn(
@@ -52,7 +52,7 @@ export function AppSelect({
           <SelectItem
             key={option.value}
             value={option.value}
-            disabled={option.disabled}
+            disabled={option.disabled ?? false}
             className="min-h-10 rounded-lg px-3 pr-8 text-sm"
           >
             {option.label}

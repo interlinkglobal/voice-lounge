@@ -2,7 +2,7 @@ import { useEffect, type ReactNode } from "react";
 import { FALLBACK_IMAGES, type FallbackRatio } from "@/components/media/SmartImage";
 
 function inferFallback(image: HTMLImageElement): FallbackRatio {
-  const declared = image.dataset.fallbackRatio as FallbackRatio | undefined;
+  const declared = image.dataset["fallbackRatio"] as FallbackRatio | undefined;
   if (declared && declared in FALLBACK_IMAGES) return declared;
 
   const rect = image.getBoundingClientRect();
@@ -23,13 +23,13 @@ export function MediaFallbackProvider({ children }: { children: ReactNode }) {
     const onError = (event: Event) => {
       const image = event.target;
       if (!(image instanceof HTMLImageElement)) return;
-      if (image.dataset.fallbackApplied === "true") return;
+      if (image.dataset["fallbackApplied"] === "true") return;
 
       const ratio = inferFallback(image);
       const fallback = FALLBACK_IMAGES[ratio];
       if (image.src.endsWith(fallback)) return;
 
-      image.dataset.fallbackApplied = "true";
+      image.dataset["fallbackApplied"] = "true";
       image.src = fallback;
     };
 

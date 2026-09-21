@@ -38,10 +38,10 @@ declare global {
         TranslateElement?: new (
           options: Record<string, unknown>,
           elementId: string,
-        ) => unknown;
+        ) => unknown | undefined;
       };
     };
-    tvlGoogleTranslateInit?: () => void;
+    tvlGoogleTranslateInit?: () => void | undefined;
   }
 }
 

@@ -6,6 +6,7 @@ export type AnalyticsEvent =
   | "impression"
   | "card_click"
   | "watch_click"
+  | "watch_unavailable"
   | "play"
   | "pause"
   | "progress_25"

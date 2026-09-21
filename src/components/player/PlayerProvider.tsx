@@ -89,11 +89,11 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(STATE_KEY);
       if (!raw) return;
       const s = JSON.parse(raw) as {
-        trackId?: string;
-        time?: number;
-        volume?: number;
-        rate?: number;
-        queueIds?: string[];
+        trackId?: string | undefined;
+        time?: number | undefined;
+        volume?: number | undefined;
+        rate?: number | undefined;
+        queueIds?: string[] | undefined;
       };
       if (typeof s.volume === "number") setVolumeState(s.volume);
       if (typeof s.rate === "number") setRateState(s.rate);
@@ -206,6 +206,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setQueue((qq) => {
       if (!qq.length) return qq;
       const [head, ...rest] = qq;
+      if (!head) return qq;
       setCurrent(head);
       setTime(0);
       setPlaying(true);

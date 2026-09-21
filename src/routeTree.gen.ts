@@ -10,33 +10,626 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as CreatorsRouteImport } from './routes/creators'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f'
+import { Route as DiscoverRouteImport } from './routes/discover'
+import { Route as EpisodesRouteImport } from './routes/episodes'
+import { Route as GuestsRouteImport } from './routes/guests'
+import { Route as InstallRouteImport } from './routes/install'
+import { Route as LiveRouteImport } from './routes/live'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as PodcastsRouteImport } from './routes/podcasts'
+import { Route as PremiumRouteImport } from './routes/premium'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as ShowsRouteImport } from './routes/shows'
+import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
+import { Route as WatchRouteImport } from './routes/watch'
+import { Route as YoutubeRouteImport } from './routes/youtube'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
+import { Route as AuthEmailRouteImport } from './routes/auth.email'
+import { Route as AuthGoogleRouteImport } from './routes/auth.google'
+import { Route as AuthLogoutRouteImport } from './routes/auth.logout'
+import { Route as CreatorsIndexRouteImport } from './routes/creators.index'
+import { Route as CreatorsSlugRouteImport } from './routes/creators.$slug'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.index'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.dashboard'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.discover'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.home'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.news'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.podcasts'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.shows'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.uploads'
+import { Route as Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRouteImport } from './routes/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f.watch'
+import { Route as GuestsIndexRouteImport } from './routes/guests.index'
+import { Route as GuestsSlugRouteImport } from './routes/guests.$slug'
+import { Route as LiveSlugRouteImport } from './routes/live.$slug'
+import { Route as NewsIndexRouteImport } from './routes/news.index'
+import { Route as NewsSlugRouteImport } from './routes/news.$slug'
+import { Route as PodcastsIndexRouteImport } from './routes/podcasts.index'
+import { Route as PodcastsSlugRouteImport } from './routes/podcasts.$slug'
+import { Route as ShowsIndexRouteImport } from './routes/shows.index'
+import { Route as ShowsSlugRouteImport } from './routes/shows.$slug'
+import { Route as ApiPremiumConfirmRouteImport } from './routes/api.premium.confirm'
+import { Route as ApiPremiumDevUnlockRouteImport } from './routes/api.premium.dev-unlock'
+import { Route as ApiPremiumStatusRouteImport } from './routes/api.premium.status'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsRoute = CreatorsRouteImport.update({
+  id: '/creators',
+  path: '/creators',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteImport.update({
+    id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f',
+    path: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const DiscoverRoute = DiscoverRouteImport.update({
+  id: '/discover',
+  path: '/discover',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EpisodesRoute = EpisodesRouteImport.update({
+  id: '/episodes',
+  path: '/episodes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuestsRoute = GuestsRouteImport.update({
+  id: '/guests',
+  path: '/guests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LiveRoute = LiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PodcastsRoute = PodcastsRouteImport.update({
+  id: '/podcasts',
+  path: '/podcasts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PremiumRoute = PremiumRouteImport.update({
+  id: '/premium',
+  path: '/premium',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
+  id: '/privacy-policy',
+  path: '/privacy-policy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ShowsRoute = ShowsRouteImport.update({
+  id: '/shows',
+  path: '/shows',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
+  id: '/terms-of-service',
+  path: '/terms-of-service',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const WatchRoute = WatchRouteImport.update({
+  id: '/watch',
+  path: '/watch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const YoutubeRoute = YoutubeRouteImport.update({
+  id: '/youtube',
+  path: '/youtube',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthEmailRoute = AuthEmailRouteImport.update({
+  id: '/auth/email',
+  path: '/auth/email',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthGoogleRoute = AuthGoogleRouteImport.update({
+  id: '/auth/google',
+  path: '/auth/google',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLogoutRoute = AuthLogoutRouteImport.update({
+  id: '/auth/logout',
+  path: '/auth/logout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreatorsIndexRoute = CreatorsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CreatorsRoute,
+} as any)
+const CreatorsSlugRoute = CreatorsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => CreatorsRoute,
+} as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRouteImport.update({
+    id: '/discover',
+    path: '/discover',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRouteImport.update({
+    id: '/home',
+    path: '/home',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRouteImport.update({
+    id: '/news',
+    path: '/news',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRouteImport.update({
+    id: '/podcasts',
+    path: '/podcasts',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRouteImport.update({
+    id: '/shows',
+    path: '/shows',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRouteImport.update({
+    id: '/uploads',
+    path: '/uploads',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRoute =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRouteImport.update({
+    id: '/watch',
+    path: '/watch',
+    getParentRoute: () => Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute,
+  } as any)
+const GuestsIndexRoute = GuestsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GuestsRoute,
+} as any)
+const GuestsSlugRoute = GuestsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => GuestsRoute,
+} as any)
+const LiveSlugRoute = LiveSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => LiveRoute,
+} as any)
+const NewsIndexRoute = NewsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => NewsRoute,
+} as any)
+const NewsSlugRoute = NewsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => NewsRoute,
+} as any)
+const PodcastsIndexRoute = PodcastsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PodcastsRoute,
+} as any)
+const PodcastsSlugRoute = PodcastsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => PodcastsRoute,
+} as any)
+const ShowsIndexRoute = ShowsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ShowsRoute,
+} as any)
+const ShowsSlugRoute = ShowsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ShowsRoute,
+} as any)
+const ApiPremiumConfirmRoute = ApiPremiumConfirmRouteImport.update({
+  id: '/api/premium/confirm',
+  path: '/api/premium/confirm',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPremiumDevUnlockRoute = ApiPremiumDevUnlockRouteImport.update({
+  id: '/api/premium/dev-unlock',
+  path: '/api/premium/dev-unlock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPremiumStatusRoute = ApiPremiumStatusRouteImport.update({
+  id: '/api/premium/status',
+  path: '/api/premium/status',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
+  '/community': typeof CommunityRoute
+  '/creators': typeof CreatorsRouteWithChildren
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteWithChildren
+  '/discover': typeof DiscoverRoute
+  '/episodes': typeof EpisodesRoute
+  '/guests': typeof GuestsRouteWithChildren
+  '/install': typeof InstallRoute
+  '/live': typeof LiveRouteWithChildren
+  '/login': typeof LoginRoute
+  '/news': typeof NewsRouteWithChildren
+  '/podcasts': typeof PodcastsRouteWithChildren
+  '/premium': typeof PremiumRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/search': typeof SearchRoute
+  '/shows': typeof ShowsRouteWithChildren
+  '/terms-of-service': typeof TermsOfServiceRoute
+  '/watch': typeof WatchRoute
+  '/youtube': typeof YoutubeRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth/email': typeof AuthEmailRoute
+  '/auth/google': typeof AuthGoogleRoute
+  '/auth/logout': typeof AuthLogoutRoute
+  '/creators/$slug': typeof CreatorsSlugRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRoute
+  '/guests/$slug': typeof GuestsSlugRoute
+  '/live/$slug': typeof LiveSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/podcasts/$slug': typeof PodcastsSlugRoute
+  '/shows/$slug': typeof ShowsSlugRoute
+  '/creators/': typeof CreatorsIndexRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRoute
+  '/guests/': typeof GuestsIndexRoute
+  '/news/': typeof NewsIndexRoute
+  '/podcasts/': typeof PodcastsIndexRoute
+  '/shows/': typeof ShowsIndexRoute
+  '/api/premium/confirm': typeof ApiPremiumConfirmRoute
+  '/api/premium/dev-unlock': typeof ApiPremiumDevUnlockRoute
+  '/api/premium/status': typeof ApiPremiumStatusRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
+  '/community': typeof CommunityRoute
+  '/discover': typeof DiscoverRoute
+  '/episodes': typeof EpisodesRoute
+  '/install': typeof InstallRoute
+  '/live': typeof LiveRouteWithChildren
+  '/login': typeof LoginRoute
+  '/premium': typeof PremiumRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/search': typeof SearchRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
+  '/watch': typeof WatchRoute
+  '/youtube': typeof YoutubeRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth/email': typeof AuthEmailRoute
+  '/auth/google': typeof AuthGoogleRoute
+  '/auth/logout': typeof AuthLogoutRoute
+  '/creators/$slug': typeof CreatorsSlugRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRoute
+  '/guests/$slug': typeof GuestsSlugRoute
+  '/live/$slug': typeof LiveSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/podcasts/$slug': typeof PodcastsSlugRoute
+  '/shows/$slug': typeof ShowsSlugRoute
+  '/creators': typeof CreatorsIndexRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRoute
+  '/guests': typeof GuestsIndexRoute
+  '/news': typeof NewsIndexRoute
+  '/podcasts': typeof PodcastsIndexRoute
+  '/shows': typeof ShowsIndexRoute
+  '/api/premium/confirm': typeof ApiPremiumConfirmRoute
+  '/api/premium/dev-unlock': typeof ApiPremiumDevUnlockRoute
+  '/api/premium/status': typeof ApiPremiumStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
+  '/community': typeof CommunityRoute
+  '/creators': typeof CreatorsRouteWithChildren
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteWithChildren
+  '/discover': typeof DiscoverRoute
+  '/episodes': typeof EpisodesRoute
+  '/guests': typeof GuestsRouteWithChildren
+  '/install': typeof InstallRoute
+  '/live': typeof LiveRouteWithChildren
+  '/login': typeof LoginRoute
+  '/news': typeof NewsRouteWithChildren
+  '/podcasts': typeof PodcastsRouteWithChildren
+  '/premium': typeof PremiumRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/search': typeof SearchRoute
+  '/shows': typeof ShowsRouteWithChildren
+  '/terms-of-service': typeof TermsOfServiceRoute
+  '/watch': typeof WatchRoute
+  '/youtube': typeof YoutubeRoute
+  '/auth/callback': typeof AuthCallbackRoute
+  '/auth/email': typeof AuthEmailRoute
+  '/auth/google': typeof AuthGoogleRoute
+  '/auth/logout': typeof AuthLogoutRoute
+  '/creators/$slug': typeof CreatorsSlugRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRoute
+  '/guests/$slug': typeof GuestsSlugRoute
+  '/live/$slug': typeof LiveSlugRoute
+  '/news/$slug': typeof NewsSlugRoute
+  '/podcasts/$slug': typeof PodcastsSlugRoute
+  '/shows/$slug': typeof ShowsSlugRoute
+  '/creators/': typeof CreatorsIndexRoute
+  '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/': typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRoute
+  '/guests/': typeof GuestsIndexRoute
+  '/news/': typeof NewsIndexRoute
+  '/podcasts/': typeof PodcastsIndexRoute
+  '/shows/': typeof ShowsIndexRoute
+  '/api/premium/confirm': typeof ApiPremiumConfirmRoute
+  '/api/premium/dev-unlock': typeof ApiPremiumDevUnlockRoute
+  '/api/premium/status': typeof ApiPremiumStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/account'
+    | '/community'
+    | '/creators'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f'
+    | '/discover'
+    | '/episodes'
+    | '/guests'
+    | '/install'
+    | '/live'
+    | '/login'
+    | '/news'
+    | '/podcasts'
+    | '/premium'
+    | '/privacy-policy'
+    | '/search'
+    | '/shows'
+    | '/terms-of-service'
+    | '/watch'
+    | '/youtube'
+    | '/auth/callback'
+    | '/auth/email'
+    | '/auth/google'
+    | '/auth/logout'
+    | '/creators/$slug'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch'
+    | '/guests/$slug'
+    | '/live/$slug'
+    | '/news/$slug'
+    | '/podcasts/$slug'
+    | '/shows/$slug'
+    | '/creators/'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/'
+    | '/guests/'
+    | '/news/'
+    | '/podcasts/'
+    | '/shows/'
+    | '/api/premium/confirm'
+    | '/api/premium/dev-unlock'
+    | '/api/premium/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/account'
+    | '/community'
+    | '/discover'
+    | '/episodes'
+    | '/install'
+    | '/live'
+    | '/login'
+    | '/premium'
+    | '/privacy-policy'
+    | '/search'
+    | '/terms-of-service'
+    | '/watch'
+    | '/youtube'
+    | '/auth/callback'
+    | '/auth/email'
+    | '/auth/google'
+    | '/auth/logout'
+    | '/creators/$slug'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch'
+    | '/guests/$slug'
+    | '/live/$slug'
+    | '/news/$slug'
+    | '/podcasts/$slug'
+    | '/shows/$slug'
+    | '/creators'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f'
+    | '/guests'
+    | '/news'
+    | '/podcasts'
+    | '/shows'
+    | '/api/premium/confirm'
+    | '/api/premium/dev-unlock'
+    | '/api/premium/status'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/account'
+    | '/community'
+    | '/creators'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f'
+    | '/discover'
+    | '/episodes'
+    | '/guests'
+    | '/install'
+    | '/live'
+    | '/login'
+    | '/news'
+    | '/podcasts'
+    | '/premium'
+    | '/privacy-policy'
+    | '/search'
+    | '/shows'
+    | '/terms-of-service'
+    | '/watch'
+    | '/youtube'
+    | '/auth/callback'
+    | '/auth/email'
+    | '/auth/google'
+    | '/auth/logout'
+    | '/creators/$slug'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch'
+    | '/guests/$slug'
+    | '/live/$slug'
+    | '/news/$slug'
+    | '/podcasts/$slug'
+    | '/shows/$slug'
+    | '/creators/'
+    | '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/'
+    | '/guests/'
+    | '/news/'
+    | '/podcasts/'
+    | '/shows/'
+    | '/api/premium/confirm'
+    | '/api/premium/dev-unlock'
+    | '/api/premium/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AccountRoute: typeof AccountRoute
+  CommunityRoute: typeof CommunityRoute
+  CreatorsRoute: typeof CreatorsRouteWithChildren
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteWithChildren
+  DiscoverRoute: typeof DiscoverRoute
+  EpisodesRoute: typeof EpisodesRoute
+  GuestsRoute: typeof GuestsRouteWithChildren
+  InstallRoute: typeof InstallRoute
+  LiveRoute: typeof LiveRouteWithChildren
+  LoginRoute: typeof LoginRoute
+  NewsRoute: typeof NewsRouteWithChildren
+  PodcastsRoute: typeof PodcastsRouteWithChildren
+  PremiumRoute: typeof PremiumRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  SearchRoute: typeof SearchRoute
+  ShowsRoute: typeof ShowsRouteWithChildren
+  TermsOfServiceRoute: typeof TermsOfServiceRoute
+  WatchRoute: typeof WatchRoute
+  YoutubeRoute: typeof YoutubeRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
+  AuthEmailRoute: typeof AuthEmailRoute
+  AuthGoogleRoute: typeof AuthGoogleRoute
+  AuthLogoutRoute: typeof AuthLogoutRoute
+  ApiPremiumConfirmRoute: typeof ApiPremiumConfirmRoute
+  ApiPremiumDevUnlockRoute: typeof ApiPremiumDevUnlockRoute
+  ApiPremiumStatusRoute: typeof ApiPremiumStatusRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +641,482 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creators': {
+      id: '/creators'
+      path: '/creators'
+      fullPath: '/creators'
+      preLoaderRoute: typeof CreatorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f'
+      path: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/discover': {
+      id: '/discover'
+      path: '/discover'
+      fullPath: '/discover'
+      preLoaderRoute: typeof DiscoverRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/episodes': {
+      id: '/episodes'
+      path: '/episodes'
+      fullPath: '/episodes'
+      preLoaderRoute: typeof EpisodesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guests': {
+      id: '/guests'
+      path: '/guests'
+      fullPath: '/guests'
+      preLoaderRoute: typeof GuestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/live': {
+      id: '/live'
+      path: '/live'
+      fullPath: '/live'
+      preLoaderRoute: typeof LiveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/podcasts': {
+      id: '/podcasts'
+      path: '/podcasts'
+      fullPath: '/podcasts'
+      preLoaderRoute: typeof PodcastsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/premium': {
+      id: '/premium'
+      path: '/premium'
+      fullPath: '/premium'
+      preLoaderRoute: typeof PremiumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/shows': {
+      id: '/shows'
+      path: '/shows'
+      fullPath: '/shows'
+      preLoaderRoute: typeof ShowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/terms-of-service': {
+      id: '/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/terms-of-service'
+      preLoaderRoute: typeof TermsOfServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/watch': {
+      id: '/watch'
+      path: '/watch'
+      fullPath: '/watch'
+      preLoaderRoute: typeof WatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/youtube': {
+      id: '/youtube'
+      path: '/youtube'
+      fullPath: '/youtube'
+      preLoaderRoute: typeof YoutubeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/email': {
+      id: '/auth/email'
+      path: '/auth/email'
+      fullPath: '/auth/email'
+      preLoaderRoute: typeof AuthEmailRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/google': {
+      id: '/auth/google'
+      path: '/auth/google'
+      fullPath: '/auth/google'
+      preLoaderRoute: typeof AuthGoogleRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/logout': {
+      id: '/auth/logout'
+      path: '/auth/logout'
+      fullPath: '/auth/logout'
+      preLoaderRoute: typeof AuthLogoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/creators/': {
+      id: '/creators/'
+      path: '/'
+      fullPath: '/creators/'
+      preLoaderRoute: typeof CreatorsIndexRouteImport
+      parentRoute: typeof CreatorsRoute
+    }
+    '/creators/$slug': {
+      id: '/creators/$slug'
+      path: '/$slug'
+      fullPath: '/creators/$slug'
+      preLoaderRoute: typeof CreatorsSlugRouteImport
+      parentRoute: typeof CreatorsRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/'
+      path: '/'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard'
+      path: '/dashboard'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/dashboard'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover'
+      path: '/discover'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/discover'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home'
+      path: '/home'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/home'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news'
+      path: '/news'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/news'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts'
+      path: '/podcasts'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/podcasts'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows'
+      path: '/shows'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/shows'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads'
+      path: '/uploads'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/uploads'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch': {
+      id: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch'
+      path: '/watch'
+      fullPath: '/degsrc3k9m2v8q4p7x1n6t5r0b3h9w2f/watch'
+      preLoaderRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRouteImport
+      parentRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute
+    }
+    '/guests/': {
+      id: '/guests/'
+      path: '/'
+      fullPath: '/guests/'
+      preLoaderRoute: typeof GuestsIndexRouteImport
+      parentRoute: typeof GuestsRoute
+    }
+    '/guests/$slug': {
+      id: '/guests/$slug'
+      path: '/$slug'
+      fullPath: '/guests/$slug'
+      preLoaderRoute: typeof GuestsSlugRouteImport
+      parentRoute: typeof GuestsRoute
+    }
+    '/live/$slug': {
+      id: '/live/$slug'
+      path: '/$slug'
+      fullPath: '/live/$slug'
+      preLoaderRoute: typeof LiveSlugRouteImport
+      parentRoute: typeof LiveRoute
+    }
+    '/news/': {
+      id: '/news/'
+      path: '/'
+      fullPath: '/news/'
+      preLoaderRoute: typeof NewsIndexRouteImport
+      parentRoute: typeof NewsRoute
+    }
+    '/news/$slug': {
+      id: '/news/$slug'
+      path: '/$slug'
+      fullPath: '/news/$slug'
+      preLoaderRoute: typeof NewsSlugRouteImport
+      parentRoute: typeof NewsRoute
+    }
+    '/podcasts/': {
+      id: '/podcasts/'
+      path: '/'
+      fullPath: '/podcasts/'
+      preLoaderRoute: typeof PodcastsIndexRouteImport
+      parentRoute: typeof PodcastsRoute
+    }
+    '/podcasts/$slug': {
+      id: '/podcasts/$slug'
+      path: '/$slug'
+      fullPath: '/podcasts/$slug'
+      preLoaderRoute: typeof PodcastsSlugRouteImport
+      parentRoute: typeof PodcastsRoute
+    }
+    '/shows/': {
+      id: '/shows/'
+      path: '/'
+      fullPath: '/shows/'
+      preLoaderRoute: typeof ShowsIndexRouteImport
+      parentRoute: typeof ShowsRoute
+    }
+    '/shows/$slug': {
+      id: '/shows/$slug'
+      path: '/$slug'
+      fullPath: '/shows/$slug'
+      preLoaderRoute: typeof ShowsSlugRouteImport
+      parentRoute: typeof ShowsRoute
+    }
+    '/api/premium/confirm': {
+      id: '/api/premium/confirm'
+      path: '/api/premium/confirm'
+      fullPath: '/api/premium/confirm'
+      preLoaderRoute: typeof ApiPremiumConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/premium/dev-unlock': {
+      id: '/api/premium/dev-unlock'
+      path: '/api/premium/dev-unlock'
+      fullPath: '/api/premium/dev-unlock'
+      preLoaderRoute: typeof ApiPremiumDevUnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/premium/status': {
+      id: '/api/premium/status'
+      path: '/api/premium/status'
+      fullPath: '/api/premium/status'
+      preLoaderRoute: typeof ApiPremiumStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
+interface CreatorsRouteChildren {
+  CreatorsSlugRoute: typeof CreatorsSlugRoute
+  CreatorsIndexRoute: typeof CreatorsIndexRoute
+}
+
+const CreatorsRouteChildren: CreatorsRouteChildren = {
+  CreatorsSlugRoute: CreatorsSlugRoute,
+  CreatorsIndexRoute: CreatorsIndexRoute,
+}
+
+const CreatorsRouteWithChildren = CreatorsRoute._addFileChildren(
+  CreatorsRouteChildren,
+)
+
+interface Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteChildren {
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRoute
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRoute
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRoute
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRoute
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRoute
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRoute
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRoute
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRoute
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRoute: typeof Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRoute
+}
+
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteChildren: Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteChildren =
+  {
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDashboardRoute,
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fDiscoverRoute,
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fHomeRoute,
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fNewsRoute,
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fPodcastsRoute,
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fShowsRoute,
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fUploadsRoute,
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fWatchRoute,
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRoute:
+      Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fIndexRoute,
+  }
+
+const Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteWithChildren =
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute._addFileChildren(
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteChildren,
+  )
+
+interface GuestsRouteChildren {
+  GuestsSlugRoute: typeof GuestsSlugRoute
+  GuestsIndexRoute: typeof GuestsIndexRoute
+}
+
+const GuestsRouteChildren: GuestsRouteChildren = {
+  GuestsSlugRoute: GuestsSlugRoute,
+  GuestsIndexRoute: GuestsIndexRoute,
+}
+
+const GuestsRouteWithChildren =
+  GuestsRoute._addFileChildren(GuestsRouteChildren)
+
+interface LiveRouteChildren {
+  LiveSlugRoute: typeof LiveSlugRoute
+}
+
+const LiveRouteChildren: LiveRouteChildren = {
+  LiveSlugRoute: LiveSlugRoute,
+}
+
+const LiveRouteWithChildren = LiveRoute._addFileChildren(LiveRouteChildren)
+
+interface NewsRouteChildren {
+  NewsSlugRoute: typeof NewsSlugRoute
+  NewsIndexRoute: typeof NewsIndexRoute
+}
+
+const NewsRouteChildren: NewsRouteChildren = {
+  NewsSlugRoute: NewsSlugRoute,
+  NewsIndexRoute: NewsIndexRoute,
+}
+
+const NewsRouteWithChildren = NewsRoute._addFileChildren(NewsRouteChildren)
+
+interface PodcastsRouteChildren {
+  PodcastsSlugRoute: typeof PodcastsSlugRoute
+  PodcastsIndexRoute: typeof PodcastsIndexRoute
+}
+
+const PodcastsRouteChildren: PodcastsRouteChildren = {
+  PodcastsSlugRoute: PodcastsSlugRoute,
+  PodcastsIndexRoute: PodcastsIndexRoute,
+}
+
+const PodcastsRouteWithChildren = PodcastsRoute._addFileChildren(
+  PodcastsRouteChildren,
+)
+
+interface ShowsRouteChildren {
+  ShowsSlugRoute: typeof ShowsSlugRoute
+  ShowsIndexRoute: typeof ShowsIndexRoute
+}
+
+const ShowsRouteChildren: ShowsRouteChildren = {
+  ShowsSlugRoute: ShowsSlugRoute,
+  ShowsIndexRoute: ShowsIndexRoute,
+}
+
+const ShowsRouteWithChildren = ShowsRoute._addFileChildren(ShowsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AccountRoute: AccountRoute,
+  CommunityRoute: CommunityRoute,
+  CreatorsRoute: CreatorsRouteWithChildren,
+  Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRoute:
+    Degsrc3k9m2v8q4p7x1n6t5r0b3h9w2fRouteWithChildren,
+  DiscoverRoute: DiscoverRoute,
+  EpisodesRoute: EpisodesRoute,
+  GuestsRoute: GuestsRouteWithChildren,
+  InstallRoute: InstallRoute,
+  LiveRoute: LiveRouteWithChildren,
+  LoginRoute: LoginRoute,
+  NewsRoute: NewsRouteWithChildren,
+  PodcastsRoute: PodcastsRouteWithChildren,
+  PremiumRoute: PremiumRoute,
+  PrivacyPolicyRoute: PrivacyPolicyRoute,
+  SearchRoute: SearchRoute,
+  ShowsRoute: ShowsRouteWithChildren,
+  TermsOfServiceRoute: TermsOfServiceRoute,
+  WatchRoute: WatchRoute,
+  YoutubeRoute: YoutubeRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
+  AuthEmailRoute: AuthEmailRoute,
+  AuthGoogleRoute: AuthGoogleRoute,
+  AuthLogoutRoute: AuthLogoutRoute,
+  ApiPremiumConfirmRoute: ApiPremiumConfirmRoute,
+  ApiPremiumDevUnlockRoute: ApiPremiumDevUnlockRoute,
+  ApiPremiumStatusRoute: ApiPremiumStatusRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

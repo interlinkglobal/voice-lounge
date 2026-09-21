@@ -6,10 +6,10 @@ const FILTERS = new Set<SearchFilter>(["all", "videos", "podcasts", "episodes", 
 
 export const Route = createFileRoute("/search")({
   validateSearch: (search: Record<string, unknown>) => {
-    const rawType = typeof search.type === "string" ? search.type : "all";
+    const rawType = typeof search["type"] === "string" ? search["type"] : "all";
     const filter = FILTERS.has(rawType as SearchFilter) ? (rawType as SearchFilter) : "all";
     return {
-      q: typeof search.q === "string" ? search.q.slice(0, 160) : "",
+      q: typeof search["q"] === "string" ? search["q"].slice(0, 160) : "",
       type: filter === "all" ? undefined : filter,
     };
   },

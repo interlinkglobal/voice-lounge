@@ -16,8 +16,8 @@ export function SmartImage({
   alt,
   ...props
 }: Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> & {
-  src?: string | null;
-  fallbackRatio?: FallbackRatio;
+  src?: string | null | undefined;
+  fallbackRatio?: FallbackRatio | undefined;
 }) {
   const fallback = FALLBACK_IMAGES[fallbackRatio];
   const [resolvedSrc, setResolvedSrc] = useState(src?.trim() || fallback);
