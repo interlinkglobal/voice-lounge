@@ -30,7 +30,8 @@ import { track } from "@/lib/analytics";
 import { usePlayer } from "@/components/player/PlayerProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { SmartImage } from "@/components/media/SmartImage";
-import type { YouTubeFeedResult, YouTubeFeedVideo } from "@/lib/youtube.functions";
+import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
+import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 
 type YouTubePlayerSurface = "modal" | "dock" | null;
 
@@ -247,12 +248,11 @@ function VideoDiscussion({
 }
 
 export function YouTubePlayerProvider({
-  feed,
   children,
 }: {
-  feed: YouTubeFeedResult;
   children: ReactNode;
 }) {
+  const feed = useYouTubeFeed();
   const videos = feed.status === "ready" ? feed.videos : [];
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const previousPathname = useRef(pathname);
