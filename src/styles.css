@@ -212,6 +212,10 @@
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
   }
+  textarea {
+    resize: none;
+  }
+
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
