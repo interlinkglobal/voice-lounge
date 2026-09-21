@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PlatformPage, routeHead } from "@/components/pages/PlatformPage";
+import { routeHead } from "@/components/pages/PlatformPage";
+import { SearchExperience } from "@/components/pages/SearchExperience";
 import type { SearchFilter } from "@/lib/voice-lounge/page-data";
 
 const FILTERS = new Set<SearchFilter>(["all", "videos", "podcasts", "episodes", "creators", "guests", "news", "live"]);
@@ -19,5 +20,5 @@ export const Route = createFileRoute("/search")({
 
 function SearchPage() {
   const { q, type } = Route.useSearch();
-  return <PlatformPage page="search" query={q} searchFilter={type ?? "all"} />;
+  return <SearchExperience query={q} filter={type ?? "all"} />;
 }
