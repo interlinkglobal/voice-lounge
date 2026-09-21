@@ -29,11 +29,6 @@ import { cn } from "@/lib/utils";
 export type { PageKey } from "@/lib/voice-lounge/routes";
 
 const VISITOR_NUMBER_KEY = "tvl-view-number";
-const CASEY_REFERENCE_CARD = {
-  src: "https://res.cloudinary.com/dlokees9a/image/upload/v1789548231/card_2_wcrvmy.png",
-  alt: "The Voice Lounge premium special viewer reference card for Casey T.",
-} as const;
-
 function randomVisitorNumber() {
   const minimum = 100000;
   const range = 900000;
@@ -163,36 +158,22 @@ function HomeMembershipCards() {
   const user = useAuth();
   const visitorNumber = useVisitorNumber();
   const card = createMembershipCardViewModel(user, visitorNumber);
-  const [active, setActive] = useState<"dynamic" | "casey">("dynamic");
   const [interacting, setInteracting] = useState(false);
 
   useEffect(() => {
-    [MEMBERSHIP_CARD_ASSETS.logo, MEMBERSHIP_CARD_ASSETS.badge, CASEY_REFERENCE_CARD.src].forEach((src) => {
+    [MEMBERSHIP_CARD_ASSETS.logo, MEMBERSHIP_CARD_ASSETS.badge].forEach((src) => {
       const image = new Image();
       image.decoding = "async";
       image.src = src;
     });
   }, []);
 
-  useEffect(() => {
-    if (interacting) return;
-    const timer = window.setInterval(
-      () => setActive((current) => (current === "dynamic" ? "casey" : "dynamic")),
-      2800,
-    );
-    return () => window.clearInterval(timer);
-  }, [interacting]);
-
-  const isDynamic = active === "dynamic";
-
   function updateTilt(event: ReactPointerEvent<HTMLAnchorElement>) {
     const rect = event.currentTarget.getBoundingClientRect();
     const px = (event.clientX - rect.left) / rect.width;
     const py = (event.clientY - rect.top) / rect.height;
-    const tiltY = (px - 0.5) * 7;
-    const tiltX = (0.5 - py) * 5;
-    event.currentTarget.style.setProperty("--tilt-x", `${tiltX.toFixed(2)}deg`);
-    event.currentTarget.style.setProperty("--tilt-y", `${tiltY.toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--tilt-x", `${((0.5 - py) * 3.2).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--tilt-y", `${((px - 0.5) * 4.5).toFixed(2)}deg`);
   }
 
   function resetTilt(target: HTMLAnchorElement) {
@@ -205,10 +186,9 @@ function HomeMembershipCards() {
       <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
       <div className="absolute inset-0 grid place-items-center">
         <Link
-          key={active}
-          to={isDynamic ? (user ? "/account" : "/login") : "/watch"}
-          aria-label={isDynamic ? (user ? `Membership card for ${user.name}` : "Free viewer welcome card") : CASEY_REFERENCE_CARD.alt}
-          className="hero-card-tilt media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] md:max-w-[48rem]"
+          to={user ? "/account" : "/login"}
+          aria-label={user ? `Membership card for ${user.name}` : "Free viewer welcome card"}
+          className="hero-card-tilt hero-card-shimmer media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] md:max-w-[48rem]"
           data-interacting={interacting ? "true" : "false"}
           onPointerEnter={() => setInteracting(true)}
           onPointerMove={updateTilt}
@@ -229,23 +209,10 @@ function HomeMembershipCards() {
             setInteracting(false);
           }}
         >
-          {isDynamic ? (
-            <EditableMembershipCard
-              model={card}
-              className="vl-hero-card-flip block w-full select-none"
-            />
-          ) : (
-            <img
-              src={CASEY_REFERENCE_CARD.src}
-              alt={CASEY_REFERENCE_CARD.alt}
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-              draggable={false}
-              className="vl-hero-card-flip block h-auto w-full select-none"
-            />
-          )}
-
+          <EditableMembershipCard
+            model={card}
+            className="block w-full select-none"
+          />
         </Link>
       </div>
     </div>
