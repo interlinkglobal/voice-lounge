@@ -12,9 +12,9 @@ import type { MediaCardModel } from "@/lib/content/types";
 import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
 import type { PageKey } from "@/lib/voice-lounge/routes";
 
-export type SearchFilter = "all" | "videos" | "podcasts" | "episodes" | "creators" | "news" | "live";
+export type SearchFilter = "all" | "videos" | "podcasts" | "episodes" | "creators" | "guests" | "news" | "live";
 
-const LANGUAGES = ["English"];
+const LANGUAGES = ["English","Afrikaans","isiNdebele","isiXhosa","isiZulu","siSwati","Sepedi","Setswana","Sesotho","itsonga","Tshivenda","South African Sign Language"];
 const PROVINCES = ["Eastern Cape"];
 const FORMATS = ["Audio", "Video", "Hybrid"];
 const MOODS = ["Quick hit", "Deep dive", "Laugh", "Learn", "Debate", "Unwind"];
@@ -170,6 +170,7 @@ function matchesFilter(item: MediaCardModel, filter: SearchFilter) {
   if (filter === "podcasts") return item.kind === "podcast";
   if (filter === "episodes") return item.kind === "episode";
   if (filter === "creators") return item.kind === "creator";
+  if (filter === "guests") return item.kind === "guest";
   if (filter === "news") return item.kind === "news";
   if (filter === "live") return item.kind === "live";
   return true;
@@ -183,6 +184,7 @@ function sectionMatchesFilter(title: string, filter: SearchFilter) {
   if (t.includes("podcast") || t.includes("show")) return filter === "podcasts";
   if (t.includes("episode")) return filter === "episodes";
   if (t.includes("creator")) return filter === "creators";
+  if (t.includes("guest")) return filter === "guests";
   if (t.includes("news")) return filter === "news";
   if (t.includes("live")) return filter === "live";
   return true;
@@ -211,6 +213,7 @@ export function pageCards(
     if (t.includes("podcast") || t.includes("show")) return localHits.filter((x) => x.kind === "podcast").slice(0, 12);
     if (t.includes("episode")) return localHits.filter((x) => x.kind === "episode").slice(0, 12);
     if (t.includes("creator")) return localHits.filter((x) => x.kind === "creator").slice(0, 12);
+    if (t.includes("guest")) return localHits.filter((x) => x.kind === "guest").slice(0, 12);
     if (t.includes("news")) return localHits.filter((x) => x.kind === "news").slice(0, 12);
     if (t.includes("live")) return localHits.filter((x) => x.kind === "live").slice(0, 12);
     if (t.includes("top result")) return combined.slice(0, 4);
