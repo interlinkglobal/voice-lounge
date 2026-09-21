@@ -77,7 +77,7 @@ export const Route = createFileRoute("/api/account")({
           rest(token, "playlist_items?select=*&order=position.asc,created_at.desc"),
           rest(token, "saved_content?select=*&order=created_at.desc"),
           rest(token, "content_likes?select=*&order=created_at.desc"),
-          rest(token, "website_comments?select=*&order=created_at.desc"),
+          rest(token, "website_comments?select=id,content_type,content_id,body,author_name,avatar_url,status,created_at,updated_at&order=created_at.desc"),
           rest(token, "contact_requests?select=*&order=created_at.desc"),
           rest(token, "billing_payments?select=*&order=created_at.desc"),
         ];
