@@ -7,6 +7,7 @@ export const CMS_NAV = [
   { slug: "podcasts", label: "Podcasts" },
   { slug: "shows", label: "Shows" },
   { slug: "watch", label: "Watch" },
+  { slug: "live", label: "Live" },
   { slug: "news", label: "News" },
   { slug: "uploads", label: "Uploads & media" },
 ] as const;
