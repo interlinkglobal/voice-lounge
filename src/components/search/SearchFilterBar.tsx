@@ -7,6 +7,7 @@ const FILTERS: Array<{ value: SearchFilter; label: string }> = [
   { value: "podcasts", label: "Podcasts" },
   { value: "episodes", label: "Episodes" },
   { value: "creators", label: "Creators" },
+  { value: "guests", label: "Guests" },
   { value: "news", label: "News" },
   { value: "live", label: "Live" },
 ];
