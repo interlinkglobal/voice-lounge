@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState, type PointerEvent as ReactPointerEvent } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Crown, Headphones, LogIn, Search } from "lucide-react";
 import { Section } from "@/components/sections/SectionRenderer";
 import type { SectionSpec } from "@/components/sections/types";
@@ -9,7 +9,7 @@ import { SearchFilterBar } from "@/components/search/SearchFilterBar";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { episodes, podcasts } from "@/lib/content/catalog";
-import { createMembershipCardViewModel } from "@/lib/membership/card";
+import { compactMembershipName, createMembershipCardViewModel } from "@/lib/membership/card";
 import { pageCards, chipsFor, type SearchFilter } from "@/lib/voice-lounge/page-data";
 import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
 import { PAGE_INFO, SECTION_TITLES, routeName, type PageKey } from "@/lib/voice-lounge/routes";
@@ -25,6 +25,7 @@ import {
   variantFor,
 } from "./RoutePanels";
 import { cn } from "@/lib/utils";
+import { TiltSurface } from "@/components/system/TiltSurface";
 
 export type { PageKey } from "@/lib/voice-lounge/routes";
 
@@ -158,7 +159,9 @@ function HomeMembershipCards() {
   const user = useAuth();
   const visitorNumber = useVisitorNumber();
   const card = createMembershipCardViewModel(user, visitorNumber);
-  const [interacting, setInteracting] = useState(false);
+  const homepageCard = user
+    ? { ...card, name: compactMembershipName(card.name) }
+    : card;
 
   useEffect(() => {
     [MEMBERSHIP_CARD_ASSETS.logo, MEMBERSHIP_CARD_ASSETS.badge].forEach((src) => {
@@ -168,52 +171,22 @@ function HomeMembershipCards() {
     });
   }, []);
 
-  function updateTilt(event: ReactPointerEvent<HTMLAnchorElement>) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const px = (event.clientX - rect.left) / rect.width;
-    const py = (event.clientY - rect.top) / rect.height;
-    event.currentTarget.style.setProperty("--tilt-x", `${((0.5 - py) * 3.2).toFixed(2)}deg`);
-    event.currentTarget.style.setProperty("--tilt-y", `${((px - 0.5) * 4.5).toFixed(2)}deg`);
-  }
-
-  function resetTilt(target: HTMLAnchorElement) {
-    target.style.setProperty("--tilt-x", "0deg");
-    target.style.setProperty("--tilt-y", "0deg");
-  }
-
   return (
-    <div className="relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]" style={{ perspective: "1200px" }}>
+    <div className="relative min-h-[15rem] sm:min-h-[18rem] md:min-h-[25rem]">
       <div className="absolute inset-[8%_2%_0_8%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_20%,transparent),transparent_58%)] blur-2xl" />
       <div className="absolute inset-0 grid place-items-center">
-        <Link
-          to={user ? "/account" : "/login"}
-          aria-label={user ? `Membership card for ${user.name}` : "Free viewer welcome card"}
-          className="hero-card-tilt hero-card-shimmer media-shine block w-[94%] max-w-[32rem] overflow-hidden rounded-[4.2%] md:max-w-[48rem]"
-          data-interacting={interacting ? "true" : "false"}
-          onPointerEnter={() => setInteracting(true)}
-          onPointerMove={updateTilt}
-          onPointerLeave={(event) => {
-            resetTilt(event.currentTarget);
-            setInteracting(false);
-          }}
-          onPointerDown={(event) => {
-            setInteracting(true);
-            updateTilt(event);
-          }}
-          onPointerUp={(event) => {
-            resetTilt(event.currentTarget);
-            setInteracting(false);
-          }}
-          onPointerCancel={(event) => {
-            resetTilt(event.currentTarget);
-            setInteracting(false);
-          }}
-        >
-          <EditableMembershipCard
-            model={card}
-            className="block w-full select-none"
-          />
-        </Link>
+        <TiltSurface className="w-[94%] max-w-[32rem] md:max-w-[48rem]" maxTilt={4.5}>
+          <Link
+            to={user ? "/account" : "/login"}
+            aria-label={user ? `Membership card for ${user.name}` : "Free viewer welcome card"}
+            className="hero-card-shimmer media-shine block overflow-hidden rounded-[4.2%]"
+          >
+            <EditableMembershipCard
+              model={homepageCard}
+              className="block w-full select-none"
+            />
+          </Link>
+        </TiltSurface>
       </div>
     </div>
   );
