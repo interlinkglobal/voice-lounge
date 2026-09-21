@@ -261,7 +261,7 @@ export const SECTION_TITLES: Record<PageKey, readonly [string, ...string[]]> = {
   ],
   search: [
     "Search Hero/Input",
-    "Intelligent Suggestions",
+    "Guest Results",
     "Recent Searches",
     "Trending Searches",
     "Top Result",
