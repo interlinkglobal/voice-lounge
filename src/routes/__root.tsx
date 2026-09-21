@@ -25,7 +25,6 @@ import { CookieBar } from "@/components/layout/CookieBar";
 import { Toaster } from "@/components/ui/sonner";
 import { YouTubeFeedProvider } from "@/components/youtube/YouTubeFeedProvider";
 import { YouTubePlayerProvider } from "@/components/youtube/YouTubePlayerProvider";
-import { getYouTubeFeed } from "@/lib/youtube.functions";
 import { PwaLifecycle } from "@/components/system/PwaLifecycle";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { getCurrentUser } from "@/lib/auth/auth.functions";
@@ -82,8 +81,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   headers: () => ({ "Cache-Control": "private, no-store" }),
   loader: async () => {
-    const [youtubeFeed, user] = await Promise.all([getYouTubeFeed(), getCurrentUser()]);
-    return { youtubeFeed, user };
+    const user = await getCurrentUser();
+    return { user };
   },
   head: () => ({
     meta: [
@@ -156,21 +155,25 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
-  const { youtubeFeed, user } = Route.useLoaderData();
+  const { user } = Route.useLoaderData();
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const cmsMode = pathname === CMS_BASE || pathname.startsWith(`${CMS_BASE}/`);
+  const youtubeEnabled =
+    pathname === "/" ||
+    ["/youtube", "/watch", "/live", "/podcasts", "/shows", "/episodes", "/discover", "/guests", "/community", "/search", "/creators"]
+      .some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 
   return (
     <QueryClientProvider client={queryClient}>
       <PwaLifecycle />
       <AuthProvider user={user}>
-        <YouTubeFeedProvider feed={youtubeFeed}>
+        <YouTubeFeedProvider enabled={youtubeEnabled}>
           <MediaFallbackProvider>
           <TranslationProvider>
           <ThemeProvider>
           <LibraryProvider>
             <PlayerProvider>
-              <YouTubePlayerProvider feed={youtubeFeed}>
+              <YouTubePlayerProvider>
                 {cmsMode ? (
                   <div key={pathname}>
                     <Outlet />
