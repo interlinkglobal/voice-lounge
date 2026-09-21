@@ -18,6 +18,7 @@ export interface EditableMembershipCardProps {
   country?: string | undefined;
   access?: string | undefined;
   tagline?: string | undefined;
+  promotionalFeatures?: string[] | undefined;
   className?: string | undefined;
 }
 
@@ -85,6 +86,7 @@ export function EditableMembershipCard({
   country,
   access,
   tagline,
+  promotionalFeatures,
   className,
 }: EditableMembershipCardProps) {
   const base = model ?? DEFAULT_CARD;
@@ -149,7 +151,7 @@ export function EditableMembershipCard({
               The Voice Lounge
             </p>
             <p className="mt-[2.4%] whitespace-nowrap text-[clamp(.5rem,1.5cqw,1.22rem)] font-semibold tracking-[0.29em] text-[var(--member-metal)]">
-              SOUTH AFRICA
+              South Africa
             </p>
             <p className="mt-[4.1%] whitespace-nowrap text-[clamp(.27rem,.72cqw,.6rem)] uppercase tracking-[0.39em] text-white/70">
               Podcasts <span className="text-[var(--member-accent)]">•</span> Shows <span className="text-[var(--member-accent)]">•</span> Culture <span className="text-[var(--member-accent)]">•</span> You
@@ -167,9 +169,11 @@ export function EditableMembershipCard({
             {resolved.plan}
           </p>
           <p className="mt-[2.3%] whitespace-nowrap text-[clamp(.3rem,.68cqw,.56rem)] tracking-[0.45em] text-white/74">{resolved.access}</p>
-          <p className="mt-[3.6%] whitespace-nowrap text-[clamp(.23rem,.52cqw,.45rem)] uppercase tracking-[0.23em] text-white/46">
-            {resolved.dateLabel} <span className="text-[var(--member-metal)]">{resolved.dateValue}</span>
-          </p>
+          {(resolved.dateLabel || resolved.dateValue) && (
+            <p className="mt-[3.6%] whitespace-nowrap text-[clamp(.23rem,.52cqw,.45rem)] tracking-[0.23em] text-white/46">
+              {resolved.dateLabel} <span className="text-[var(--member-metal)]">{resolved.dateValue}</span>
+            </p>
+          )}
         </div>
 
         <div className="absolute left-[5.35%] top-[37.3%] z-10 w-[49%]">
@@ -183,7 +187,9 @@ export function EditableMembershipCard({
           >
             {resolved.name}
           </p>
-          <p className="mt-[2.7%] text-[clamp(.42rem,1.16cqw,.95rem)] tracking-[0.28em] text-white/88">{resolved.country}</p>
+          {resolved.country && (
+            <p className="mt-[2.7%] text-[clamp(.42rem,1.16cqw,.95rem)] tracking-[0.12em] text-white/88">{resolved.country}</p>
+          )}
 
           <div className="member-card-pill member-card-metal-line mt-[5.2%] inline-flex min-w-[84%] items-center justify-center rounded-full border border-[var(--member-metal)] bg-black/38 px-[5%] py-[2.35%]">
             <span className="whitespace-nowrap text-[clamp(.48rem,1.08cqw,.86rem)] tracking-[0.28em] text-[#f8e8ad]">{resolved.tagline}</span>
@@ -213,27 +219,46 @@ export function EditableMembershipCard({
           />
         </div>
 
-        <div className="member-card-footer absolute bottom-[5%] left-[5.3%] z-20 grid w-[66%] grid-cols-[0.94fr_1.24fr] items-end gap-[5%] border-t border-white/10 pt-[2.35%]">
+        {promotionalFeatures?.length ? (
+          <div className="absolute bottom-[4.4%] left-[5%] z-30 grid w-[90%] border-t border-white/12 pt-[2.2%]" style={{ gridTemplateColumns: `repeat(${promotionalFeatures.length}, minmax(0, 1fr))` }}>
+            {promotionalFeatures.map((feature, index) => (
+              <div
+                key={feature}
+                className={cn(
+                  "min-w-0 px-[4%] text-center",
+                  index > 0 && "border-l border-[color-mix(in_oklab,var(--member-metal)_46%,transparent)]",
+                )}
+              >
+                <span className="mx-auto mb-[5%] block size-[0.48cqw] min-h-[2px] min-w-[2px] rounded-full bg-[var(--member-accent)] shadow-[0_0_8px_var(--member-accent)]" />
+                <p className="text-[clamp(.28rem,.61cqw,.52rem)] font-semibold leading-[1.2] tracking-[0.08em] text-white/78">
+                  {feature}
+                </p>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="member-card-footer absolute bottom-[5%] left-[5.3%] z-20 grid w-[66%] grid-cols-[0.94fr_1.24fr] items-end gap-[5%] border-t border-white/10 pt-[2.35%]">
           <div className="member-card-footer-id min-w-0">
-            <p className="text-[clamp(.42rem,.92cqw,.76rem)] uppercase tracking-[0.38em] text-white/62">{resolved.memberIdLabel}</p>
-            <p
-              className={cn(
-                "mt-[1.8%] whitespace-nowrap font-medium text-[var(--member-metal)]",
-                memberIdIsEmail
-                  ? "text-[clamp(.4rem,.82cqw,.7rem)] tracking-[0.06em]"
-                  : "text-[clamp(.5rem,1.18cqw,.96rem)] tracking-[0.28em]",
-              )}
-            >
-              {resolved.memberId}
-            </p>
+          <p className="text-[clamp(.42rem,.92cqw,.76rem)] uppercase tracking-[0.38em] text-white/62">{resolved.memberIdLabel}</p>
+          <p
+          className={cn(
+          "mt-[1.8%] whitespace-nowrap font-medium text-[var(--member-metal)]",
+          memberIdIsEmail
+          ? "text-[clamp(.4rem,.82cqw,.7rem)] tracking-[0.06em]"
+          : "text-[clamp(.5rem,1.18cqw,.96rem)] tracking-[0.28em]",
+          )}
+          >
+          {resolved.memberId}
+          </p>
           </div>
           <div className="member-card-footer-status min-w-0 border-l border-[color-mix(in_oklab,var(--member-metal)_58%,transparent)] pl-[7%]">
-            <p className="text-[clamp(.43rem,.96cqw,.8rem)] uppercase tracking-[0.33em] text-[var(--member-metal)]">{resolved.statusLabel}</p>
-            <p className="mt-[1.9%] whitespace-nowrap text-[clamp(.33rem,.64cqw,.55rem)] uppercase tracking-[0.17em] text-white/58">
-              {resolved.statusValue}
-            </p>
+          <p className="text-[clamp(.43rem,.96cqw,.8rem)] uppercase tracking-[0.33em] text-[var(--member-metal)]">{resolved.statusLabel}</p>
+          <p className="mt-[1.9%] whitespace-nowrap text-[clamp(.33rem,.64cqw,.55rem)] uppercase tracking-[0.17em] text-white/58">
+          {resolved.statusValue}
+          </p>
           </div>
-        </div>
+          </div>
+        )}
 
         <div className="pointer-events-none absolute inset-[0.7%] z-40 rounded-[4.2%] border border-white/10" />
         <div className="member-card-edge-glint pointer-events-none absolute inset-0 z-50 rounded-[inherit]" aria-hidden="true" />

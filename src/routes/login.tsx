@@ -4,23 +4,63 @@ import { useEffect, useState } from "react";
 
 import { Logo } from "@/components/layout/Logo";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { EditableMembershipCard } from "@/components/premium/EditableMembershipCard";
+import type { MembershipCardViewModel } from "@/lib/membership/card";
 
 const AUTH_MESSAGES: Record<string, string> = {
+  "invalid-input": "Enter a valid email address and a password with at least 8 characters.",
+  "invalid-credentials": "That email and password combination was not accepted.",
+  "signup-failed": "We could not create that account. Check the details and try again.",
+  "check-email": "Check your email to confirm your account, then return here to sign in.",
   "cancelled": "Google sign-in was cancelled.",
   "invalid": "The sign-in request could not be verified. Please try again.",
   "error": "Sign-in could not be completed. Please try again.",
 };
 
-const LOGIN_CARDS = [
+const LOGIN_TIERS: Array<{
+  id: "premium" | "guest";
+  model: MembershipCardViewModel;
+  features: string[];
+}> = [
   {
-    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1790017709/premium_tier_elqpg7.png",
-    alt: "Voice Lounge premium membership card",
+    id: "premium",
+    model: {
+      theme: "paid",
+      name: "Premium Tier",
+      plan: "Premium Member",
+      role: "Upgrade for Premium Access",
+      country: "",
+      access: "Viewer Access",
+      tagline: "Unlock Premium",
+      memberIdLabel: "",
+      memberId: "",
+      dateLabel: "",
+      dateValue: "",
+      statusLabel: "",
+      statusValue: "",
+    },
+    features: ["Invite only", "No ads", "More languages", "Exclusive content", "Priority access"],
   },
   {
-    src: "https://res.cloudinary.com/dlokees9a/image/upload/v1790017712/guest-tier_dsjvjc.png",
-    alt: "Voice Lounge guest membership card",
+    id: "guest",
+    model: {
+      theme: "guest",
+      name: "Guest Tier",
+      plan: "Guest Access",
+      role: "Discover guest access and community features",
+      country: "",
+      access: "All are welcome",
+      tagline: "Contact Voice Lounge",
+      memberIdLabel: "",
+      memberId: "",
+      dateLabel: "",
+      dateValue: "",
+      statusLabel: "",
+      statusValue: "",
+    },
+    features: ["Create profile", "Write blog", "Guest access", "Community voice", "Submit stories"],
   },
-] as const;
+];
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -35,7 +75,7 @@ export const Route = createFileRoute("/login")({
       { title: "Sign In | The Voice Lounge" },
       {
         name: "description",
-        content: "Sign in to The Voice Lounge with Google.",
+        content: "Sign in to The Voice Lounge with Google or email and password.",
       },
       { property: "og:title", content: "Sign In | The Voice Lounge" },
       { property: "og:type", content: "website" },
@@ -59,34 +99,24 @@ function LoginCardShowcase() {
   const [active, setActive] = useState(0);
 
   useEffect(() => {
-    LOGIN_CARDS.forEach(({ src }) => {
-      const image = new Image();
-      image.decoding = "async";
-      image.src = src;
-    });
-
     const timer = window.setInterval(
-      () => setActive((current) => (current + 1) % LOGIN_CARDS.length),
+      () => setActive((current) => (current + 1) % LOGIN_TIERS.length),
       2800,
     );
     return () => window.clearInterval(timer);
   }, []);
 
-  const card = LOGIN_CARDS[active] ?? LOGIN_CARDS[0];
+  const tier = LOGIN_TIERS[active] ?? LOGIN_TIERS[0];
 
   return (
     <div className="relative mt-8 min-h-[16rem] sm:min-h-[21rem] lg:min-h-[28rem]" style={{ perspective: "1200px" }}>
-      <div className="absolute inset-[12%_4%_4%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_18%,transparent),color-mix(in_oklab,var(--gold)_8%,transparent)_48%,transparent_70%)] blur-3xl" />
+      <div className="absolute inset-[12%_4%_4%] rounded-[3rem] bg-[radial-gradient(circle_at_50%_45%,color-mix(in_oklab,var(--green)_18%,transparent),color-mix(in_oklab,var(--gold)_10%,transparent)_48%,transparent_70%)] blur-3xl" />
       <div className="absolute inset-0 grid place-items-center">
-        <img
-          key={card.src}
-          src={card.src}
-          alt={card.alt}
-          loading="eager"
-          decoding="async"
-          fetchPriority="high"
-          draggable={false}
-          className="vl-login-card-flip block h-auto w-[96%] max-w-[48rem] select-none rounded-[4.2%] drop-shadow-[0_30px_45px_rgba(0,0,0,.45)]"
+        <EditableMembershipCard
+          key={tier.id}
+          model={tier.model}
+          promotionalFeatures={tier.features}
+          className="vl-login-card-flip block w-[96%] max-w-[48rem] select-none drop-shadow-[0_30px_45px_rgba(0,0,0,.45)]"
         />
       </div>
     </div>
@@ -114,16 +144,10 @@ function LoginPage() {
               Signed in as <strong className="text-foreground">{user.email}</strong>.
             </p>
             <div className="mt-7 flex flex-wrap justify-center gap-2">
-              <Link
-                to="/account"
-                className="press rounded-full bg-[var(--green-action)] px-6 py-3 font-semibold text-white"
-              >
+              <Link to="/account" className="press rounded-full bg-[var(--green-action)] px-6 py-3 font-semibold text-white">
                 Open account
               </Link>
-              <Link
-                to="/"
-                className="press rounded-full border border-hairline bg-surface-2 px-6 py-3 font-semibold"
-              >
+              <Link to="/" className="press rounded-full border border-hairline bg-surface-2 px-6 py-3 font-semibold">
                 Go home
               </Link>
             </div>
@@ -185,6 +209,48 @@ function LoginPage() {
             <GoogleIcon />
             Sign in with Google
           </a>
+
+          <form action="/auth/email" method="post" className="mt-4 grid gap-3">
+            <input type="hidden" name="returnTo" value={returnTo} />
+            <input
+              name="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              required
+              placeholder="Email"
+              aria-label="Email"
+              className="min-h-12 w-full rounded-full border border-hairline bg-background/65 px-5 outline-none transition-colors placeholder:text-muted-foreground focus:border-[var(--green)]"
+            />
+            <input
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              minLength={8}
+              required
+              placeholder="Password"
+              aria-label="Password"
+              className="min-h-12 w-full rounded-full border border-hairline bg-background/65 px-5 outline-none transition-colors placeholder:text-muted-foreground focus:border-[var(--green)]"
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="submit"
+                name="intent"
+                value="signin"
+                className="press min-h-12 rounded-full bg-[var(--green-action)] px-5 font-bold text-white"
+              >
+                Login
+              </button>
+              <button
+                type="submit"
+                name="intent"
+                value="signup"
+                className="press min-h-12 rounded-full border border-hairline bg-surface-2 px-5 font-semibold"
+              >
+                Sign up
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </section>
