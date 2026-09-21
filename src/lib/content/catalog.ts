@@ -362,6 +362,8 @@ export const plans: SubscriptionPlan[] = [
     summary: "The publicly advertised Voice Lounge premium price after a seven-day trial.",
     perks: [
       "7-day trial",
+      "Access to all supported South African language translations",
+      "Ad-free Voice Lounge experience",
       "Uninterrupted live streaming",
       "Studio audio",
       "Exclusive podcasts",
