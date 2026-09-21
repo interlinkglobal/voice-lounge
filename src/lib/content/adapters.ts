@@ -11,6 +11,7 @@ import {
   podcasts,
 } from "./catalog";
 import type { Creator, Episode, LiveEvent, NewsArticle, Podcast, MediaCardModel } from "./types";
+import { VERIFIED_GUESTS } from "./guests";
 
 export function formatDuration(sec: number): string {
   if (!Number.isFinite(sec) || sec <= 0) return "";
@@ -97,6 +98,25 @@ export function creatorCard(c: Creator): MediaCardModel {
     stat: c.followers > 0 ? `${formatCount(c.followers)} followers` : undefined,
     artwork: c.artwork,
     href: `/creators/${c.slug}`,
+  };
+}
+
+export function guestCard(guest: (typeof VERIFIED_GUESTS)[number]): MediaCardModel {
+  return {
+    id: `guest-${guest.slug}`,
+    kind: "guest",
+    title: guest.name,
+    description: guest.description,
+    subtitle: "Voice Lounge guest",
+    meta: guest.source === "youtube" ? "Official YouTube catalogue" : "Voice Lounge public record",
+    artwork: {
+      seed: `person-guest-${guest.slug}`,
+      ...(guest.image ? { src: guest.image } : {}),
+      alt: guest.image ? `Portrait of ${guest.name}` : `Voice Lounge guest placeholder for ${guest.name}`,
+      ratio: "1/1",
+    },
+    href: `/guests/${guest.slug}`,
+    badge: "Guest",
   };
 }
 
@@ -206,6 +226,11 @@ export function universalSearch(term: string): SearchHit[] {
     const s = score(c.name, 1.3) + score(c.role, 0.5) + score(c.bio, 0.25);
     if (s) hits.push({ card: creatorCard(c), score: s, type: "Presenter" });
   });
+  VERIFIED_GUESTS.forEach((guest) => {
+    const aliases = (guest.aliases ?? []).join(" ");
+    const s = score(guest.name, 1.45) + score(aliases, 0.8) + score(guest.description, 0.3);
+    if (s) hits.push({ card: guestCard(guest), score: s, type: "Guest" });
+  });
   news.forEach((n) => {
     const s = score(n.headline, 1.2) + score(n.standfirst, 0.4);
     if (s) hits.push({ card: newsCard(n), score: s, type: "Press" });
@@ -220,7 +245,7 @@ export function universalSearch(term: string): SearchHit[] {
         description: c.blurb,
         meta: `${c.count} programmes`,
         artwork: { seed: `show-category-${c.slug}`, alt: c.name, ratio: "16/9" },
-        href: `/categories/${c.slug}`,
+        href: "/discover",
       },
       score: s,
       type: "Category",
