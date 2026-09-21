@@ -388,3 +388,87 @@ export const getYouTubeFeed = createServerFn({ method: "GET" }).handler(async ()
     return emptyResult("error", channelId, "The Voice Lounge YouTube feed is temporarily unavailable.");
   }
 });
+
+
+export interface YouTubeLiveStatus {
+  configured: boolean;
+  isLive: boolean;
+  channelId: string;
+  videoId: string | null;
+  title: string | null;
+  permanentEmbedUrl: string | null;
+  videoEmbedUrl: string | null;
+  checkedAt: string;
+}
+
+export const getYouTubeLiveStatus = createServerFn({ method: "GET" }).handler(async (): Promise<YouTubeLiveStatus> => {
+  const apiKey = process.env.YOUTUBE_DATA_API_KEY?.trim() ?? "";
+  const configuredChannel = process.env.CHANNEL_ID?.trim() ?? "";
+  const checkedAt = new Date().toISOString();
+
+  if (!apiKey || !configuredChannel) {
+    return {
+      configured: false,
+      isLive: false,
+      channelId: configuredChannel,
+      videoId: null,
+      title: null,
+      permanentEmbedUrl: null,
+      videoEmbedUrl: null,
+      checkedAt,
+    };
+  }
+
+  try {
+    const channelUrl = new URL("https://www.googleapis.com/youtube/v3/channels");
+    channelUrl.searchParams.set("part", "snippet");
+    channelUrl.searchParams.set(configuredChannel.startsWith("@") ? "forHandle" : "id", configuredChannel);
+    channelUrl.searchParams.set("key", apiKey);
+    const channelResponse = await fetch(channelUrl, { headers: { Accept: "application/json" }, cache: "no-store" });
+    const channelData = (await channelResponse.json()) as YouTubeChannelResponse;
+    const resolvedChannelId = channelData.items?.[0]?.id ?? configuredChannel;
+
+    const permanentEmbedUrl = resolvedChannelId.startsWith("UC")
+      ? `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(resolvedChannelId)}`
+      : null;
+
+    const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
+    searchUrl.searchParams.set("part", "snippet");
+    searchUrl.searchParams.set("channelId", resolvedChannelId);
+    searchUrl.searchParams.set("eventType", "live");
+    searchUrl.searchParams.set("type", "video");
+    searchUrl.searchParams.set("maxResults", "1");
+    searchUrl.searchParams.set("key", apiKey);
+
+    const response = await fetch(searchUrl, { headers: { Accept: "application/json" }, cache: "no-store" });
+    if (!response.ok) throw new Error(`search.list failed with HTTP ${response.status}`);
+    const data = (await response.json()) as {
+      items?: Array<{ id?: { videoId?: string }; snippet?: { title?: string } }>;
+    };
+    const item = data.items?.[0];
+    const videoId = item?.id?.videoId ?? null;
+
+    return {
+      configured: true,
+      isLive: Boolean(videoId),
+      channelId: resolvedChannelId,
+      videoId,
+      title: item?.snippet?.title?.trim() ?? null,
+      permanentEmbedUrl,
+      videoEmbedUrl: videoId ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}` : null,
+      checkedAt,
+    };
+  } catch (error) {
+    console.warn("[youtube-live] live status check failed", error);
+    return {
+      configured: true,
+      isLive: false,
+      channelId: configuredChannel,
+      videoId: null,
+      title: null,
+      permanentEmbedUrl: null,
+      videoEmbedUrl: null,
+      checkedAt,
+    };
+  }
+});
