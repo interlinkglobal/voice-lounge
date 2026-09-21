@@ -75,7 +75,7 @@ const DISCOVER_OPTIONS: Record<DiscoverTab, string[]> = {
   programme: podcasts.map((item) => item.title),
   person: PEOPLE_OPTIONS,
   format: ["Video", "Hybrid", "Audio"],
-  language: ["English", "isiXhosa", "isiZulu", "Afrikaans", "Sesotho", "Setswana"],
+  language: ["English", "Afrikaans", "isiNdebele", "isiXhosa", "isiZulu", "siSwati", "Sepedi", "Setswana", "Sesotho", "itsonga", "Tshivenda", "South African Sign Language"],
   province: ["Eastern Cape", "Gauteng", "Western Cape", "KwaZulu-Natal", "Free State", "Limpopo", "Mpumalanga", "North West", "Northern Cape"],
   mood: ["Current affairs", "Deep dive", "Community", "Music", "Faith", "Culture", "Sport", "Lifestyle"],
   duration: ["Under 10 min", "10–30 min", "30–60 min", "60+ min"],
@@ -844,6 +844,61 @@ export function AboutResearchExperience() {
             <p>
               Daily Dispatch and The Herald have documented station growth, management, artist development and Voice Lounge-associated music activity. The site's own news archive now preserves sourced summaries of relevant public reporting while linking readers back to original publishers where available.
             </p>
+          </div>
+        </section>
+
+        <section className="border-t border-hairline py-[clamp(2.5rem,6vw,5rem)]">
+          <div className="grid gap-8 lg:grid-cols-3">
+            <div className="prose prose-neutral max-w-none dark:prose-invert">
+              <h2>How the network fits together</h2>
+              <p>
+                The Voice Lounge website is designed around several connected layers rather than one continuous feed. Programmes provide the recurring identities, the official YouTube channel provides much of the public video catalogue, the newsroom adds editorial context, and member accounts add first-party features such as saves, playlists, comments and language preferences.
+              </p>
+              <p>
+                That model lets a viewer move from a programme to its host, from a guest to all known appearances, or from a video into a mixed conversation containing both public YouTube discussion and first-party Voice Lounge comments.
+              </p>
+            </div>
+            <div className="prose prose-neutral max-w-none dark:prose-invert">
+              <h2>Language and accessibility</h2>
+              <p>
+                South Africa has 12 official languages. The Voice Lounge language selector now represents the full official-language set and supports automatic text translation for the spoken languages available through the current translation provider.
+              </p>
+              <p>
+                South African Sign Language is represented as an official language but is not presented as machine text translation. The interface also uses semantic landmarks, keyboard focus states, reduced-motion handling, responsive layouts and descriptive controls as part of the accessibility baseline.
+              </p>
+            </div>
+            <div className="prose prose-neutral max-w-none dark:prose-invert">
+              <h2>Participation</h2>
+              <p>
+                Signed-in viewers can build playlists, save content, manage first-party comments and likes, choose a preferred reading language and contact the organisation from their account. Guest requests, studio enquiries, partnerships, press enquiries and technical-support requests are routed through the same account workspace.
+              </p>
+              <p>
+                This creates a clearer distinction between passive audience reach on third-party platforms and a direct relationship with viewers through Voice Lounge-owned services.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="border-t border-hairline py-[clamp(2.5rem,6vw,5rem)]">
+          <div className="grid gap-8 lg:grid-cols-2">
+            <div className="prose prose-neutral max-w-none dark:prose-invert">
+              <h2>Editorial approach</h2>
+              <p>
+                The site separates first-party Voice Lounge information from sourced public reporting. News migrated from the legacy site is preserved as a sourced summary rather than reproduced as an unattributed article, and guest or leadership profiles avoid inventing biographies when the public record is incomplete.
+              </p>
+              <p>
+                YouTube metadata remains tied to the official channel, while website comments, likes, saves and playlists are clearly treated as Voice Lounge first-party activity. This distinction is important for both provenance and moderation.
+              </p>
+            </div>
+            <div className="prose prose-neutral max-w-none dark:prose-invert">
+              <h2>For guests, creators and partners</h2>
+              <p>
+                The network's public format supports interviews, current-affairs discussions, faith programming, music, sport, culture, community-development conversations and commercial media. Prospective guests can submit a request through their account, while organisations can use the same contact surface for advertising, partnership, studio and press enquiries.
+              </p>
+              <p>
+                Creator and guest directories are deliberately connected to programme and video appearances so that profiles function as useful discovery surfaces rather than isolated biographies.
+              </p>
+            </div>
           </div>
         </section>
 
