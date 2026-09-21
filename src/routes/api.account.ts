@@ -135,7 +135,7 @@ export const Route = createFileRoute("/api/account")({
         const update: Record<string, string | null> = {};
         if (typeof body?.display_name === "string") update.display_name = body.display_name.trim().slice(0, 120);
         if (typeof body?.picture_url === "string") update.picture_url = body.picture_url.trim().slice(0, 1000) || null;
-        if (typeof body?.preferred_language === "string" && ["en", "xh", "zu", "af"].includes(body.preferred_language)) {
+        if (typeof body?.preferred_language === "string" && ["en","af","nr","xh","zu","ss","nso","tn","st","ts","ve","sasl"].includes(body.preferred_language)) {
           update.preferred_language = body.preferred_language;
         }
         if (!Object.keys(update).length) {
