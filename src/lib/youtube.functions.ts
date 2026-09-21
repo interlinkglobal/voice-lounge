@@ -1,6 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 
-export type YouTubeFeedStatus = "ready" | "unconfigured" | "error";
+export type YouTubeFeedStatus = "loading" | "ready" | "unconfigured" | "error";
 
 export interface YouTubeFeedVideo {
   id: string;
