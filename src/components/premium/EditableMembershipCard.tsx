@@ -212,8 +212,8 @@ export function EditableMembershipCard({
           />
         </div>
 
-        <div className="absolute bottom-[5%] left-[5.3%] z-20 grid w-[66%] grid-cols-[0.94fr_1.24fr] items-end gap-[5%] border-t border-white/10 pt-[2.35%]">
-          <div className="min-w-0">
+        <div className="member-card-footer absolute bottom-[5%] left-[5.3%] z-20 grid w-[66%] grid-cols-[0.94fr_1.24fr] items-end gap-[5%] border-t border-white/10 pt-[2.35%]">
+          <div className="member-card-footer-id min-w-0">
             <p className="text-[clamp(.42rem,.92cqw,.76rem)] uppercase tracking-[0.38em] text-white/62">{resolved.memberIdLabel}</p>
             <p
               className={cn(
@@ -226,7 +226,7 @@ export function EditableMembershipCard({
               {resolved.memberId}
             </p>
           </div>
-          <div className="min-w-0 border-l border-[color-mix(in_oklab,var(--member-metal)_58%,transparent)] pl-[7%]">
+          <div className="member-card-footer-status min-w-0 border-l border-[color-mix(in_oklab,var(--member-metal)_58%,transparent)] pl-[7%]">
             <p className="text-[clamp(.43rem,.96cqw,.8rem)] uppercase tracking-[0.33em] text-[var(--member-metal)]">{resolved.statusLabel}</p>
             <p className="mt-[1.9%] whitespace-nowrap text-[clamp(.33rem,.64cqw,.55rem)] uppercase tracking-[0.17em] text-white/58">
               {resolved.statusValue}
