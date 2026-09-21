@@ -406,69 +406,106 @@ export const getYouTubeLiveStatus = createServerFn({ method: "GET" }).handler(as
   const configuredChannel = process.env.CHANNEL_ID?.trim() ?? "";
   const checkedAt = new Date().toISOString();
 
-  if (!apiKey || !configuredChannel) {
-    return {
-      configured: false,
-      isLive: false,
-      channelId: configuredChannel,
-      videoId: null,
-      title: null,
-      permanentEmbedUrl: null,
-      videoEmbedUrl: null,
-      checkedAt,
-    };
-  }
+  const empty = (configured: boolean, channelId = configuredChannel): YouTubeLiveStatus => ({
+    configured,
+    isLive: false,
+    channelId,
+    videoId: null,
+    title: null,
+    permanentEmbedUrl: channelId.startsWith("UC")
+      ? `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(channelId)}`
+      : null,
+    videoEmbedUrl: null,
+    checkedAt,
+  });
+
+  if (!apiKey || !configuredChannel) return empty(false);
 
   try {
+    // Avoid search.list (100 quota units/call). Resolve the channel once per poll,
+    // inspect only the newest uploads (playlistItems.list = 1 unit), then enrich
+    // those IDs with videos.list (1 unit) to detect liveBroadcastContent.
     const channelUrl = new URL("https://www.googleapis.com/youtube/v3/channels");
-    channelUrl.searchParams.set("part", "snippet");
+    channelUrl.searchParams.set("part", "snippet,contentDetails");
     channelUrl.searchParams.set(configuredChannel.startsWith("@") ? "forHandle" : "id", configuredChannel);
     channelUrl.searchParams.set("key", apiKey);
-    const channelResponse = await fetch(channelUrl, { headers: { Accept: "application/json" }, cache: "no-store" });
+
+    const channelResponse = await fetch(channelUrl, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!channelResponse.ok) throw new Error(`channels.list failed with HTTP ${channelResponse.status}`);
+
     const channelData = (await channelResponse.json()) as YouTubeChannelResponse;
-    const resolvedChannelId = channelData.items?.[0]?.id ?? configuredChannel;
+    const channel = channelData.items?.[0];
+    const resolvedChannelId = channel?.id ?? configuredChannel;
+    const uploadsPlaylistId = channel?.contentDetails?.relatedPlaylists?.uploads;
+    if (!uploadsPlaylistId) return empty(true, resolvedChannelId);
+
+    const playlistUrl = new URL("https://www.googleapis.com/youtube/v3/playlistItems");
+    playlistUrl.searchParams.set("part", "snippet,contentDetails");
+    playlistUrl.searchParams.set("playlistId", uploadsPlaylistId);
+    playlistUrl.searchParams.set("maxResults", "10");
+    playlistUrl.searchParams.set("key", apiKey);
+
+    const playlistResponse = await fetch(playlistUrl, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!playlistResponse.ok) throw new Error(`playlistItems.list failed with HTTP ${playlistResponse.status}`);
+
+    const playlistData = (await playlistResponse.json()) as YouTubePlaylistResponse;
+    const ids = (playlistData.items ?? [])
+      .map((item) => item.contentDetails?.videoId ?? item.snippet?.resourceId?.videoId)
+      .filter((id): id is string => Boolean(id));
 
     const permanentEmbedUrl = resolvedChannelId.startsWith("UC")
       ? `https://www.youtube.com/embed/live_stream?channel=${encodeURIComponent(resolvedChannelId)}`
       : null;
 
-    const searchUrl = new URL("https://www.googleapis.com/youtube/v3/search");
-    searchUrl.searchParams.set("part", "snippet");
-    searchUrl.searchParams.set("channelId", resolvedChannelId);
-    searchUrl.searchParams.set("eventType", "live");
-    searchUrl.searchParams.set("type", "video");
-    searchUrl.searchParams.set("maxResults", "1");
-    searchUrl.searchParams.set("key", apiKey);
+    if (!ids.length) {
+      return { ...empty(true, resolvedChannelId), permanentEmbedUrl };
+    }
 
-    const response = await fetch(searchUrl, { headers: { Accept: "application/json" }, cache: "no-store" });
-    if (!response.ok) throw new Error(`search.list failed with HTTP ${response.status}`);
-    const data = (await response.json()) as {
-      items?: Array<{ id?: { videoId?: string }; snippet?: { title?: string } }>;
+    const videosUrl = new URL("https://www.googleapis.com/youtube/v3/videos");
+    videosUrl.searchParams.set("part", "snippet,liveStreamingDetails");
+    videosUrl.searchParams.set("id", ids.join(","));
+    videosUrl.searchParams.set("key", apiKey);
+
+    const videosResponse = await fetch(videosUrl, {
+      headers: { Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (!videosResponse.ok) throw new Error(`videos.list failed with HTTP ${videosResponse.status}`);
+
+    const videosData = (await videosResponse.json()) as {
+      items?: Array<{
+        id?: string;
+        snippet?: { title?: string; liveBroadcastContent?: "live" | "upcoming" | "none" };
+        liveStreamingDetails?: { actualStartTime?: string; actualEndTime?: string };
+      }>;
     };
-    const item = data.items?.[0];
-    const videoId = item?.id?.videoId ?? null;
+    const live = (videosData.items ?? []).find(
+      (item) =>
+        item.snippet?.liveBroadcastContent === "live"
+        || (Boolean(item.liveStreamingDetails?.actualStartTime) && !item.liveStreamingDetails?.actualEndTime),
+    );
+    const videoId = live?.id ?? null;
 
     return {
       configured: true,
       isLive: Boolean(videoId),
       channelId: resolvedChannelId,
       videoId,
-      title: item?.snippet?.title?.trim() ?? null,
+      title: live?.snippet?.title?.trim() ?? null,
       permanentEmbedUrl,
-      videoEmbedUrl: videoId ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}` : null,
+      videoEmbedUrl: videoId
+        ? `https://www.youtube-nocookie.com/embed/${encodeURIComponent(videoId)}`
+        : null,
       checkedAt,
     };
   } catch (error) {
     console.warn("[youtube-live] live status check failed", error);
-    return {
-      configured: true,
-      isLive: false,
-      channelId: configuredChannel,
-      videoId: null,
-      title: null,
-      permanentEmbedUrl: null,
-      videoEmbedUrl: null,
-      checkedAt,
-    };
+    return empty(true);
   }
 });
