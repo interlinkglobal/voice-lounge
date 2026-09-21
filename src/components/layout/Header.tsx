@@ -143,10 +143,15 @@ export function Header() {
     };
   }, [open]);
 
+  function goToSearch() {
+    setOpen(false);
+    setSearchFocused(false);
+    navigate({ to: "/search", search: { q: term.trim(), type: undefined } });
+  }
+
   function submit(e: React.FormEvent) {
     e.preventDefault();
-    setOpen(false);
-    navigate({ to: "/search", search: { q: term, type: undefined } });
+    goToSearch();
   }
 
   return (
@@ -246,7 +251,7 @@ export function Header() {
                   <button
                     type="button"
                     onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => submit({ preventDefault() {} } as React.FormEvent)}
+                    onClick={goToSearch}
                     className="press mt-1 flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-[var(--green-action)] px-4 text-sm font-bold text-white"
                   >
                     <Search className="size-4" aria-hidden="true" /> Search all results
