@@ -28,7 +28,7 @@ import {
 import { formatDate } from "@/lib/content/adapters";
 import { VOICE_LOUNGE } from "@/lib/voice-lounge/organization";
 import { cn } from "@/lib/utils";
-import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
+import { getYouTubeComments, type YouTubeComment, type YouTubeFeedVideo } from "@/lib/youtube.functions";
 
 type DiscoverTab =
   | "topic"
@@ -485,13 +485,28 @@ export function GuestsExperience() {
 }
 
 export function CommunityExperience() {
-  const feed = useYouTubeFeed();
   const user = useAuth();
-  const comments = feed?.status === "ready" ? feed.comments : [];
+  const [comments, setComments] = useState<YouTubeComment[]>([]);
+  const [commentsLoading, setCommentsLoading] = useState(true);
   const [draft, setDraft] = useState("");
   const [notice, setNotice] = useState("");
   const [visible, setVisible] = useState(12);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void getYouTubeComments()
+      .then((items) => {
+        if (active) setComments(items);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (active) setCommentsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const node = sentinelRef.current;
@@ -604,7 +619,10 @@ export function CommunityExperience() {
         <div ref={sentinelRef} aria-hidden="true" className="h-2" />
         {visible < comments.length && <p className="text-center text-xs text-muted-foreground">Loading more comments…</p>}
 
-        {feed?.status === "ready" && comments.length === 0 && (
+        {commentsLoading && (
+          <div className="border border-hairline p-6 text-sm text-muted-foreground">Loading recent community comments…</div>
+        )}
+        {!commentsLoading && comments.length === 0 && (
           <div className="border border-hairline p-6 text-sm text-muted-foreground">No public YouTube comments were returned by the channel API.</div>
         )}
       </section>
