@@ -9,15 +9,41 @@ import {
   type ReactNode,
 } from "react";
 
-export type SiteLanguage = "en" | "xh" | "zu" | "af";
+export type SiteLanguage =
+  | "en"
+  | "af"
+  | "nr"
+  | "xh"
+  | "zu"
+  | "ss"
+  | "nso"
+  | "tn"
+  | "st"
+  | "ts"
+  | "ve"
+  | "sasl";
 
-export const SITE_LANGUAGES: Array<{ value: SiteLanguage; label: string }> = [
+export const SITE_LANGUAGES: Array<{
+  value: SiteLanguage;
+  label: string;
+  disabled?: boolean;
+}> = [
   { value: "en", label: "English" },
+  { value: "af", label: "Afrikaans" },
+  { value: "nr", label: "isiNdebele" },
   { value: "xh", label: "isiXhosa" },
   { value: "zu", label: "isiZulu" },
-  { value: "af", label: "Afrikaans" },
+  { value: "ss", label: "siSwati" },
+  { value: "nso", label: "Sepedi" },
+  { value: "tn", label: "Setswana" },
+  { value: "st", label: "Sesotho" },
+  { value: "ts", label: "itsonga" },
+  { value: "ve", label: "Tshivenda" },
+  { value: "sasl", label: "South African Sign Language · text translation unavailable", disabled: true },
 ];
 
+const TRANSLATABLE = new Set<SiteLanguage>(["en","af","nr","xh","zu","ss","nso","tn","st","ts","ve"]);
+const GOOGLE_LANGUAGES = "af,nr,xh,zu,ss,nso,tn,st,ts,ve";
 const STORAGE_KEY = "tvl-language";
 const ACCOUNT_SYNC_KEY = "tvl-language-account-synced";
 const GOOGLE_SCRIPT_ID = "tvl-google-translate";
@@ -49,10 +75,9 @@ declare global {
 
 function readLanguage(): SiteLanguage {
   if (typeof window === "undefined") return "en";
-  const stored = window.localStorage.getItem(STORAGE_KEY);
-  return SITE_LANGUAGES.some((item) => item.value === stored)
-    ? (stored as SiteLanguage)
-    : "en";
+  const stored = window.localStorage.getItem(STORAGE_KEY) as SiteLanguage | null;
+  if (!stored || !TRANSLATABLE.has(stored)) return "en";
+  return stored;
 }
 
 function setGoogleTranslateCookie(language: SiteLanguage) {
@@ -66,15 +91,13 @@ function suppressInjectedGoogleUi() {
   document.body.style.removeProperty("top");
   document.body.style.removeProperty("position");
 
-  const selectors = [
+  [
     ".goog-te-banner-frame",
     ".goog-te-balloon-frame",
     ".VIpgJd-ZVi9od-ORHb-OEVmcd",
     ".VIpgJd-ZVi9od-aZ2wEe-wOHMyf",
     "iframe.goog-te-banner-frame",
-  ];
-
-  selectors.forEach((selector) => {
+  ].forEach((selector) => {
     document.querySelectorAll<HTMLElement>(selector).forEach((element) => {
       element.style.setProperty("display", "none", "important");
       element.setAttribute("aria-hidden", "true");
@@ -84,6 +107,7 @@ function suppressInjectedGoogleUi() {
 
 function applyGoogleLanguage(language: SiteLanguage) {
   if (language === "en") return true;
+  if (!TRANSLATABLE.has(language)) return false;
   const combo = document.querySelector<HTMLSelectElement>(".goog-te-combo");
   if (!combo) return false;
   combo.value = language;
@@ -93,7 +117,7 @@ function applyGoogleLanguage(language: SiteLanguage) {
 }
 
 function ensureGoogleRuntime(language: SiteLanguage) {
-  if (language === "en" || typeof document === "undefined") return;
+  if (language === "en" || !TRANSLATABLE.has(language) || typeof document === "undefined") return;
 
   let attempts = 0;
   const applyWhenReady = () => {
@@ -111,7 +135,7 @@ function ensureGoogleRuntime(language: SiteLanguage) {
       new TranslateElement(
         {
           pageLanguage: "en",
-          includedLanguages: "af,xh,zu",
+          includedLanguages: GOOGLE_LANGUAGES,
           autoDisplay: false,
           multilanguagePage: false,
         },
@@ -146,10 +170,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     const stored = readLanguage();
     setLanguageState(stored);
     document.documentElement.lang = stored === "en" ? "en-ZA" : stored;
-
-    if (stored !== "en") {
-      window.setTimeout(() => ensureGoogleRuntime(stored), 0);
-    }
+    if (stored !== "en") window.setTimeout(() => ensureGoogleRuntime(stored), 0);
 
     return () => {
       delete window.tvlGoogleTranslateInit;
@@ -173,7 +194,7 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
           profile?: { preferred_language?: SiteLanguage } | null;
         };
         const preferred = payload.profile?.preferred_language;
-        if (!active || !preferred || !SITE_LANGUAGES.some((item) => item.value === preferred)) return;
+        if (!active || !preferred || !TRANSLATABLE.has(preferred)) return;
 
         const current = readLanguage();
         if (preferred === current) return;
@@ -183,11 +204,8 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
         document.documentElement.lang = preferred === "en" ? "en-ZA" : preferred;
         setLanguageState(preferred);
 
-        if (preferred === "en") {
-          window.location.reload();
-        } else {
-          ensureGoogleRuntime(preferred);
-        }
+        if (preferred === "en") window.location.reload();
+        else ensureGoogleRuntime(preferred);
       } catch {
         // Local language preference remains valid when account synchronisation is unavailable.
       }
@@ -201,6 +219,8 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   }, [user?.id]);
 
   const setLanguage = useCallback((next: SiteLanguage) => {
+    if (!TRANSLATABLE.has(next)) return;
+
     window.localStorage.setItem(STORAGE_KEY, next);
     setGoogleTranslateCookie(next);
     document.documentElement.lang = next === "en" ? "en-ZA" : next;
@@ -210,7 +230,6 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       window.location.reload();
       return;
     }
-
     ensureGoogleRuntime(next);
   }, []);
 
