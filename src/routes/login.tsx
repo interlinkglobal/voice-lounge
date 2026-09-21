@@ -111,7 +111,7 @@ function LoginCardShowcase() {
         <EditableMembershipCard
           key={tier.id}
           model={tier.model}
-          className="vl-login-card-flip block w-[96%] max-w-[48rem] select-none drop-shadow-[0_30px_45px_rgba(0,0,0,.45)]"
+          className="login-tier-card vl-login-card-flip block w-[96%] max-w-[48rem] select-none drop-shadow-[0_30px_45px_rgba(0,0,0,.45)]"
         />
       </div>
     </div>
@@ -165,6 +165,9 @@ function LoginPage() {
           animation: vl-login-card-flip 2.8s ease-in-out both;
           backface-visibility: hidden;
           transform-style: preserve-3d;
+        }
+        .login-tier-card .member-card-footer {
+          display: none;
         }
         @media (prefers-reduced-motion: reduce) {
           .vl-login-card-flip { animation: none; }
