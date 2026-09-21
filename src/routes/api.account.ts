@@ -10,6 +10,8 @@ type AccountAction =
   | "remove_playlist_item"
   | "save_content"
   | "unsave_content"
+  | "delete_comment"
+  | "remove_like"
   | "submit_contact";
 
 function requestToken(request: Request) {
@@ -241,6 +243,25 @@ export const Route = createFileRoute("/api/account")({
             const response = await rest(
               token,
               `saved_content?collection=eq.${encodeURIComponent(collection)}&content_type=eq.${encodeURIComponent(contentType)}&content_id=eq.${encodeURIComponent(contentId)}`,
+              { method: "DELETE" },
+            );
+            await jsonOrError(response);
+            return Response.json({ success: true });
+          }
+
+          if (action === "delete_comment") {
+            const id = typeof body?.id === "string" ? body.id : "";
+            const response = await rest(token, `website_comments?id=eq.${encodeURIComponent(id)}`, { method: "DELETE" });
+            await jsonOrError(response);
+            return Response.json({ success: true });
+          }
+
+          if (action === "remove_like") {
+            const contentType = typeof body?.content_type === "string" ? body.content_type : "";
+            const contentId = typeof body?.content_id === "string" ? body.content_id : "";
+            const response = await rest(
+              token,
+              `content_likes?content_type=eq.${encodeURIComponent(contentType)}&content_id=eq.${encodeURIComponent(contentId)}`,
               { method: "DELETE" },
             );
             await jsonOrError(response);
