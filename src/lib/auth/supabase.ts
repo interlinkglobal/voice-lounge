@@ -8,41 +8,41 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string;
-  picture?: string;
+  picture?: string | undefined;
   provider: "google" | "email";
   plan: MembershipPlan;
-  nextBillingAt?: string;
-  cardMessage?: string;
+  nextBillingAt?: string | undefined;
+  cardMessage?: string | undefined;
 }
 
 export interface SupabaseUserPayload {
-  id?: string;
-  email?: string;
+  id?: string | undefined;
+  email?: string | undefined;
   app_metadata?: {
-    provider?: string;
-    providers?: string[];
-    plan?: string;
-    membership_plan?: string;
-    next_billing_at?: string;
-    card_message?: string;
+    provider?: string | undefined;
+    providers?: string[] | undefined;
+    plan?: string | undefined;
+    membership_plan?: string | undefined;
+    next_billing_at?: string | undefined;
+    card_message?: string | undefined;
   };
   user_metadata?: {
-    name?: string;
-    full_name?: string;
-    avatar_url?: string;
-    picture?: string;
+    name?: string | undefined;
+    full_name?: string | undefined;
+    avatar_url?: string | undefined;
+    picture?: string | undefined;
   };
 }
 
 export interface SupabaseSessionPayload {
-  access_token?: string;
-  refresh_token?: string;
-  expires_in?: number;
-  token_type?: string;
-  user?: SupabaseUserPayload;
-  error?: string;
-  error_description?: string;
-  msg?: string;
+  access_token?: string | undefined;
+  refresh_token?: string | undefined;
+  expires_in?: number | undefined;
+  token_type?: string | undefined;
+  user?: SupabaseUserPayload | undefined;
+  error?: string | undefined;
+  error_description?: string | undefined;
+  msg?: string | undefined;
 }
 
 export function safeReturnTo(value: string | null | undefined) {

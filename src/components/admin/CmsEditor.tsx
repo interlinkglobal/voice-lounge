@@ -178,7 +178,7 @@ const UPLOAD_SURFACES = [
 ] as const;
 
 export function CmsUploadsControl() {
-  const [active, setActive] = useState(UPLOAD_SURFACES[0]?.title ?? "");
+  const [active, setActive] = useState<string>(UPLOAD_SURFACES[0]?.title ?? "");
 
   return (
     <div>

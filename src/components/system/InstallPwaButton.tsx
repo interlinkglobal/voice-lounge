@@ -28,8 +28,8 @@ export function InstallPwaButton({
   className,
   fullWidth = false,
 }: {
-  className?: string;
-  fullWidth?: boolean;
+  className?: string | undefined;
+  fullWidth?: boolean | undefined;
 }) {
   const ios = useMemo(() => isIosDevice(), []);
   const safari = useMemo(() => isSafariBrowser(), []);

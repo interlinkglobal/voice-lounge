@@ -53,7 +53,7 @@ function Page() {
             body: JSON.stringify({ reference: paymentReference }),
           });
           const payload = (await response.json().catch(() => ({}))) as {
-            error?: string;
+            error?: string | undefined;
           };
           if (!response.ok) {
             throw new Error(payload.error || "Premium activation could not be confirmed.");
@@ -85,8 +85,8 @@ function Page() {
           cache: "no-store",
         });
         const payload = (await response.json().catch(() => ({}))) as {
-          active?: boolean;
-          error?: string;
+          active?: boolean | undefined;
+          error?: string | undefined;
         };
         if (!response.ok) {
           throw new Error(payload.error || "Premium status could not be checked.");
@@ -228,7 +228,7 @@ function Page() {
             ) : (
               <Link
                 to="/login"
-                search={{ returnTo: "/premium" }}
+                search={{ auth: undefined, returnTo: "/premium" }}
                 className="press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[var(--green-action)] px-6 font-bold text-white shadow-glow"
               >
                 Sign in to continue

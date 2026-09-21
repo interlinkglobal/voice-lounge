@@ -15,10 +15,10 @@ const AUTH_MESSAGES: Record<string, string> = {
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>) => ({
-    auth: typeof search.auth === "string" ? search.auth.slice(0, 40) : undefined,
+    auth: typeof search["auth"] === "string" ? search["auth"].slice(0, 40) : undefined,
     returnTo:
-      typeof search.returnTo === "string" && search.returnTo.startsWith("/")
-        ? search.returnTo.slice(0, 180)
+      typeof search["returnTo"] === "string" && search["returnTo"].startsWith("/")
+        ? search["returnTo"].slice(0, 180)
         : "/account",
   }),
   head: () => ({

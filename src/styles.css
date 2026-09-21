@@ -65,6 +65,7 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.75rem;
 
   /* Light — warm neutral editorial */
@@ -120,6 +121,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.155 0.008 155);
   --foreground: oklch(0.97 0.004 110);
   --card: oklch(0.198 0.01 155);

@@ -97,7 +97,7 @@ export function YouTubePlayerProvider({
         return;
       }
       const webkitFrame = frame as HTMLIFrameElement & {
-        webkitRequestFullscreen?: () => Promise<void> | void;
+        webkitRequestFullscreen?: () => Promise<void> | void | undefined;
       };
       await webkitFrame.webkitRequestFullscreen?.();
     } catch (error) {

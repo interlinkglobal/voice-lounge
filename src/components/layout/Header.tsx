@@ -79,6 +79,7 @@ function AccountControl() {
     return (
       <Link
         to="/login"
+        search={{ auth: undefined, returnTo: "/account" }}
         aria-label="Sign in to The Voice Lounge"
         className="press hidden min-h-10 items-center gap-2 rounded-full border border-hairline bg-surface-2 px-3 text-sm font-semibold sm:inline-flex"
       >
@@ -203,7 +204,7 @@ export function Header() {
                 />
               </div>
             </form>
-            <Link to="/search" aria-label="Search" className="press grid size-10 place-items-center rounded-full text-muted-foreground hover:text-foreground lg:hidden">
+            <Link to="/search" search={{ q: "", type: undefined }} aria-label="Search" className="press grid size-10 place-items-center rounded-full text-muted-foreground hover:text-foreground lg:hidden">
               <Search className="size-5" aria-hidden="true" />
             </Link>
             <LanguageSwitcher className="hidden 2xl:block" />
@@ -211,6 +212,7 @@ export function Header() {
             <InstallPwaButton className="hidden 2xl:inline-flex" />
             <Link
               to="/premium"
+              search={{ payment_reference: undefined }}
               preload="intent"
               className="press hidden items-center gap-1.5 rounded-full border border-[color-mix(in_oklab,var(--gold)_55%,transparent)] px-3.5 py-2 text-sm font-semibold text-[var(--gold)] hover:bg-[color-mix(in_oklab,var(--gold)_12%,transparent)] sm:inline-flex"
             >
@@ -311,7 +313,7 @@ export function Header() {
                   </form>
                 </div>
               ) : (
-                <Link to="/login" onClick={() => setOpen(false)} className="press flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--green-action)] px-4 font-semibold text-white">
+                <Link to="/login" search={{ auth: undefined, returnTo: "/account" }} onClick={() => setOpen(false)} className="press flex min-h-11 items-center justify-center gap-2 rounded-full bg-[var(--green-action)] px-4 font-semibold text-white">
                   <LogIn className="size-4" aria-hidden="true" />
                   Sign in
                 </Link>
@@ -321,6 +323,7 @@ export function Header() {
             <div className="mt-3"><InstallPwaButton fullWidth /></div>
             <Link
               to="/premium"
+              search={{ payment_reference: undefined }}
               onClick={() => setOpen(false)}
               className="press mt-3 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--gold)] px-5 py-3 font-semibold text-[oklch(0.16_0.02_90)]"
             >

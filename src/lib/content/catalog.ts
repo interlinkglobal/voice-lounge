@@ -34,13 +34,17 @@ export const categories: Category[] = CATEGORY_DEFS.map(([name, blurb, accent, c
 
 const CATEGORY_ID = Object.fromEntries(categories.map((item) => [item.name, item.id])) as Record<string, string>;
 
+/** Programmes whose label is unmatched default to the flagship interviews strand. */
+const DEFAULT_CATEGORY_ID =
+  categories.find((item) => item.name === "Interviews & Culture")?.id ?? "";
+
 const CREATOR_DEFS: Array<{
   id: string;
   name: string;
   role: string;
   bio: string;
-  shows?: string[];
-  image?: string;
+  shows?: string[] | undefined;
+  image?: string | undefined;
 }> = [
   { id: "network", name: "The Voice Lounge", role: "East London media network", bio: "The Eastern Cape's Voice, Amplified — an East London multimedia organisation spanning radio, podcasts, studio production, editorial work, mobile apps and commercial media.", shows: [] },
   { id: "miss-vee", name: "Miss Vee", role: "Presenter, The Breakfast Plug", bio: "Presenter named on The Voice Lounge current public programme schedule and daily-news catalogue.", shows: ["pod-breakfast-plug"] },
@@ -83,7 +87,7 @@ const SHOW_DEFS: Array<{
   title: string;
   category: string;
   tagline: string;
-  creator?: string;
+  creator?: string | undefined;
 }> = [
   { id: "breakfast-plug", title: "The Breakfast Plug", category: "News & Politics", tagline: "A recurring Voice Lounge programme with public catalogue entries covering daily news and practical current-affairs conversations." },
   { id: "beyond-the-grey", title: "Beyond The Grey", category: "News & Politics", tagline: "Current affairs, politics, community issues and long-form conversation.", creator: "baby-obuhle-sihu" },
@@ -111,7 +115,7 @@ export const podcasts: Podcast[] = SHOW_DEFS.map((item) => ({
   title: item.title,
   tagline: item.tagline,
   description: `${item.tagline} The programme is part of the public Voice Lounge schedule in East London, Eastern Cape.`,
-  categoryId: CATEGORY_ID[item.category] ?? CATEGORY_ID["Interviews & Culture"],
+  categoryId: CATEGORY_ID[item.category] ?? DEFAULT_CATEGORY_ID,
   creatorId: item.creator ? `crt-${item.creator}` : "crt-network",
   language: "English",
   province: "Eastern Cape",
@@ -128,8 +132,8 @@ const EPISODE_DEFS: Array<{
   id: string;
   title: string;
   description: string;
-  podcastId?: string;
-  publishedAt?: string;
+  podcastId?: string | undefined;
+  publishedAt?: string | undefined;
 }> = [
   { id: "lee-generes-music-journey", title: "Lee Generes joins Narcho Mabizela for a conversation about her music journey", description: "Music journey, identity, ambition, entertainment and social-media rise." },
   { id: "sivenathi-nazo-ward-18", title: "Beyond The Grey — Sivenathi Nazo | Ward 18 Councillor Candidate", description: "Local issues, community priorities and ward representation.", podcastId: "pod-beyond-the-grey" },
@@ -400,5 +404,8 @@ export function hash(str: string): number {
 export const between = (seed: string, min: number, max: number) =>
   Math.floor(min + hash(seed) * (max - min));
 
-export const pick = <T,>(arr: readonly T[], seed: string): T =>
-  arr[Math.floor(hash(seed) * arr.length) % arr.length];
+export const pick = <T,>(arr: readonly T[], seed: string): T => {
+  const item = arr[Math.floor(hash(seed) * arr.length) % arr.length];
+  if (item === undefined) throw new Error("pick() needs a non-empty list");
+  return item;
+};

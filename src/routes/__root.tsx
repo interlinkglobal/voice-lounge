@@ -13,7 +13,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import luxuryCss from "../styles-luxury.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
-import { ThemeProvider, themeBootstrapScript } from "@/components/system/theme";
+import { ThemeProvider, initialThemeClass, themeBootstrapScript } from "@/components/system/theme";
 import { TranslationProvider } from "@/components/system/TranslationProvider";
 import { MediaFallbackProvider } from "@/components/system/MediaFallbackProvider";
 import { LibraryProvider } from "@/components/system/library";
@@ -43,7 +43,7 @@ function NotFoundComponent() {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <Link to="/" className="press rounded-full bg-[var(--green-action)] px-5 py-2.5 text-sm font-semibold text-white">Go home</Link>
-          <Link to="/search" className="press hyper-glass rounded-full px-5 py-2.5 text-sm font-semibold">Search the catalogue</Link>
+          <Link to="/search" search={{ q: "", type: undefined }} className="press hyper-glass rounded-full px-5 py-2.5 text-sm font-semibold">Search the catalogue</Link>
         </div>
       </div>
     </div>
@@ -115,8 +115,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter+Tight:wght@400;500;600;700&family=Josefin+Sans:wght@500;600;700&display=swap",
       },
       { rel: "manifest", href: "/manifest.webmanifest" },
-      { rel: "icon", href: "/icon-32x32.png", type: "image/png", sizes: "32x32" },
-      { rel: "icon", href: "/icon-16x16.png", type: "image/png", sizes: "16x16" },
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
       { rel: "apple-touch-icon", href: "/icon-180x180.png", sizes: "180x180" },
     ],
     scripts: [
@@ -142,7 +141,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en-ZA" className="dark">
+    <html lang="en-ZA" className={initialThemeClass()}>
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />

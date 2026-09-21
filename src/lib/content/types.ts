@@ -4,6 +4,11 @@
  * Every entity is a plain, SSR-serialisable DTO so seeded demonstration
  * content can be swapped for a real backend (Lovable Cloud / API) without
  * touching the presentation layer.
+ *
+ * Optional fields are written as `T | undefined` on purpose: the project
+ * compiles with `exactOptionalPropertyTypes`, so a caller passing an
+ * explicit `undefined` (which adapters and mappers do constantly) has to be
+ * legal.
  */
 
 export type MediaKind = "podcast" | "show" | "episode" | "video" | "live" | "news" | "creator" | "collection";
@@ -25,9 +30,9 @@ export interface Artwork {
   /** Deterministic seed used to render procedural artwork. */
   seed: string;
   /** Optional real image URL — replaces procedural artwork when present. */
-  src?: string;
+  src?: string | undefined;
   alt: string;
-  ratio?: "16/9" | "1/1" | "4/5" | "3/2";
+  ratio?: "16/9" | "1/1" | "4/5" | "3/2" | undefined;
 }
 
 export interface Category {
@@ -50,7 +55,7 @@ export interface Creator {
   followers: number;
   shows: string[];
   artwork: Artwork;
-  verified?: boolean;
+  verified?: boolean | undefined;
 }
 
 export interface Podcast {
@@ -67,8 +72,8 @@ export interface Podcast {
   episodeCount: number;
   rating: number;
   plays: number;
-  isOriginal?: boolean;
-  isPremium?: boolean;
+  isOriginal?: boolean | undefined;
+  isPremium?: boolean | undefined;
   artwork: Artwork;
 }
 
@@ -88,7 +93,7 @@ export interface Episode {
   artwork: Artwork;
   mediaUrl: string;
   transcriptAvailable: boolean;
-  isPremium?: boolean;
+  isPremium?: boolean | undefined;
 }
 
 export interface NewsArticle {
@@ -102,9 +107,9 @@ export interface NewsArticle {
   publishedAt: string;
   readingMinutes: number;
   artwork: Artwork;
-  sourceLabel?: string;
-  sourceUrl?: string;
-  featured?: boolean;
+  sourceLabel?: string | undefined;
+  sourceUrl?: string | undefined;
+  featured?: boolean | undefined;
 }
 
 export interface LiveEvent {
@@ -138,7 +143,7 @@ export interface SubscriptionPlan {
   cadence: "month" | "year";
   summary: string;
   perks: string[];
-  highlight?: boolean;
+  highlight?: boolean | undefined;
 }
 
 export interface HistoryEntry {
@@ -168,17 +173,17 @@ export interface MediaCardModel {
   id: string;
   kind: MediaKind;
   title: string;
-  description?: string;
-  subtitle?: string;
-  meta?: string;
-  category?: string;
-  badge?: string;
-  duration?: string;
-  progress?: number;
+  description?: string | undefined;
+  subtitle?: string | undefined;
+  meta?: string | undefined;
+  category?: string | undefined;
+  badge?: string | undefined;
+  duration?: string | undefined;
+  progress?: number | undefined;
   artwork: Artwork;
   href: string;
-  premium?: boolean;
-  live?: boolean;
-  rank?: number;
-  stat?: string;
+  premium?: boolean | undefined;
+  live?: boolean | undefined;
+  rank?: number | undefined;
+  stat?: string | undefined;
 }

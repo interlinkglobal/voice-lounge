@@ -18,10 +18,10 @@ export function WatchButton({
   fullWidth,
 }: {
   targetId: string;
-  label?: string;
-  size?: "xs" | "sm" | "md" | "lg" | "tv";
-  className?: string;
-  fullWidth?: boolean;
+  label?: string | undefined;
+  size?: "xs" | "sm" | "md" | "lg" | "tv" | undefined;
+  className?: string | undefined;
+  fullWidth?: boolean | undefined;
 }) {
   const { play, current, playing, toggle } = usePlayer();
   const youtubeVideo = useYouTubeVideoForKey(targetId);

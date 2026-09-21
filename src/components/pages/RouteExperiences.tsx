@@ -338,7 +338,7 @@ export function PodcastsExperience() {
                     src={thumbnail}
                     data-fallback={fallbackThumbnail}
                     onError={(event) => {
-                      const fallback = event.currentTarget.dataset.fallback;
+                      const fallback = event.currentTarget.dataset["fallback"];
                       if (fallback && event.currentTarget.src !== fallback) {
                         event.currentTarget.src = fallback;
                       }

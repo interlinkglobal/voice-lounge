@@ -138,7 +138,7 @@ function ProgrammeVideoGrid({
 }: {
   title: string;
   slug: string;
-  compact?: boolean;
+  compact?: boolean | undefined;
 }) {
   const feed = useYouTubeFeed();
   const videos = feed?.status === "ready" ? programmeVideos(feed.videos, slug, title) : [];
@@ -219,7 +219,7 @@ export function PodcastDetailExperience({ slug }: { slug: string }) {
 function ScheduleCard({ entry, index }: { entry: (typeof SHOW_SCHEDULE)[number]; index: number }) {
   const show = podcasts.find((item) => item.id === entry.podcastId);
   if (!show) return null;
-  const image = podcastImage(show.id, index);
+  const image = podcastImage(show.id);
 
   return (
     <Link
