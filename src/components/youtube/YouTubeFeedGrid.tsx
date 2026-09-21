@@ -118,7 +118,13 @@ export function YouTubeFeedGrid({ feed, standalone = false }: { feed: YouTubeFee
         <a href={feed.channelUrl} target="_blank" rel="noreferrer" className="press hyper-glass inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold">Open channel <ExternalLink className="size-4" aria-hidden="true" /></a>
       </header>
 
-      {feed.status !== "ready" ? (
+      {feed.status === "loading" ? (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-label="Loading YouTube videos">
+          {Array.from({ length: 8 }).map((_, index) => (
+            <div key={index} className="aspect-video animate-pulse border border-hairline bg-surface-2" />
+          ))}
+        </div>
+      ) : feed.status !== "ready" ? (
         <div className="hyper-glass rounded-3xl p-[clamp(1.25rem,3vw,2.5rem)] vl-component-enter"><div className="flex items-start gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-surface-2 text-[var(--green)]"><Youtube className="size-5" aria-hidden="true" /></span><div><h3 className="font-display text-lg font-bold">{feed.status === "unconfigured" ? "YouTube connection awaiting environment variables" : "YouTube feed unavailable"}</h3><p className="mt-1 max-w-2xl text-sm leading-6 text-muted-foreground">{feed.message}</p>{feed.status === "unconfigured" && <p className="mt-3 text-xs text-muted-foreground">Expected server variables: <code>YOUTUBE_DATA_API_KEY</code> and <code>CHANNEL_ID</code>.</p>}</div></div></div>
       ) : feed.videos.length === 0 ? (
         <div className="hyper-glass rounded-3xl p-8 text-center vl-component-enter"><h3 className="font-display text-xl font-bold">No public uploads were returned.</h3><p className="mt-2 text-sm text-muted-foreground">The channel connection is valid, but there are no public videos to display yet.</p></div>
