@@ -151,9 +151,14 @@ export function EditableMembershipCard({
               The Voice Lounge
             </p>
             <p className="mt-[2.4%] whitespace-nowrap text-[clamp(.5rem,1.5cqw,1.22rem)] font-semibold tracking-[0.29em] text-[var(--member-metal)]">
-              South Africa
+              {promotionalFeatures?.length ? "South Africa" : "SOUTH AFRICA"}
             </p>
-            <p className="mt-[4.1%] whitespace-nowrap text-[clamp(.27rem,.72cqw,.6rem)] uppercase tracking-[0.39em] text-white/70">
+            <p
+              className={cn(
+                "mt-[4.1%] whitespace-nowrap text-[clamp(.27rem,.72cqw,.6rem)] tracking-[0.39em] text-white/70",
+                !promotionalFeatures?.length && "uppercase",
+              )}
+            >
               Podcasts <span className="text-[var(--member-accent)]">•</span> Shows <span className="text-[var(--member-accent)]">•</span> Culture <span className="text-[var(--member-accent)]">•</span> You
             </p>
           </div>
