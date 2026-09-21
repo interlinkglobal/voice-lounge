@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
-import { useAuth } from "@/components/auth/AuthProvider";
 import { AccountSaveButton } from "@/components/account/AccountSaveButton";
 import { Artwork } from "@/components/media/Artwork";
 import { SmartImage } from "@/components/media/SmartImage";
