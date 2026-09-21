@@ -35,7 +35,7 @@ export function AppSelect({
       <SelectTrigger
         aria-label={ariaLabel}
         className={cn(
-          "min-h-11 w-full rounded-xl border-hairline bg-background px-3 text-sm font-semibold shadow-none sm:w-auto",
+          "min-h-11 min-w-0 w-full overflow-hidden rounded-xl border-hairline bg-background px-3 text-sm font-semibold shadow-none [&>span]:min-w-0 [&>span]:truncate sm:w-auto",
           className,
         )}
       >
