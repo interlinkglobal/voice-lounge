@@ -1,5 +1,6 @@
 import { ExternalLink, Play, Youtube } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { SmartImage } from "@/components/media/SmartImage";
 import { useYouTubePlayer } from "@/components/youtube/YouTubePlayerProvider";
 import type { YouTubeFeedResult, YouTubeFeedVideo } from "@/lib/youtube.functions";
 
@@ -37,7 +38,7 @@ export function YouTubeVideoCard({
       <article className={cn(animate && "vl-component-enter", "group w-full", className)}>
         <div className="hyper-glass grid grid-cols-[4.5rem_minmax(0,1fr)_auto] items-center gap-3 rounded-xl px-2 py-2">
           <button type="button" onClick={open} aria-label={`Play ${video.title}`} className="media-shine relative aspect-video overflow-hidden rounded-lg bg-black">
-            <img src={video.thumbnail} alt="" loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
+            <SmartImage src={video.thumbnail} fallbackRatio="16:9" alt="" loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]" />
             <span className="absolute inset-0 grid place-items-center bg-black/15 text-white" aria-hidden="true"><Play className="size-4 fill-current drop-shadow" /></span>
           </button>
           <button type="button" onClick={open} className="min-w-0 text-left">
@@ -55,7 +56,7 @@ export function YouTubeVideoCard({
       <article className={cn(animate && "vl-component-enter", "card-lift hyper-glass group overflow-hidden rounded-3xl", className)}>
         <div className="grid md:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           <button type="button" onClick={open} aria-label={`Play ${video.title}`} className="media-shine relative aspect-video overflow-hidden bg-black text-left md:aspect-auto md:min-h-[20rem]">
-            <img src={video.thumbnail} alt={video.title} loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-out-quick)] group-hover:scale-[1.04]" />
+            <SmartImage src={video.thumbnail} fallbackRatio="16:9" alt={video.title} loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-out-quick)] group-hover:scale-[1.04]" />
             <span className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-white/[0.04]" aria-hidden="true" />
             <span className="absolute bottom-4 left-4 grid size-12 place-items-center rounded-full bg-[var(--green-action)] text-white shadow-glow transition-transform group-hover:scale-105"><Play className="size-5 fill-current" aria-hidden="true" /></span>
           </button>
@@ -76,7 +77,7 @@ export function YouTubeVideoCard({
   return (
     <article className={cn(animate && "vl-component-enter", "card-lift hyper-glass group overflow-hidden rounded-2xl", className)}>
       <button type="button" onClick={open} aria-label={`Play ${video.title}`} className="media-shine relative block aspect-video w-full overflow-hidden bg-black text-left">
-        <img src={video.thumbnail} alt={video.title} loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-out-quick)] group-hover:scale-[1.04]" />
+        <SmartImage src={video.thumbnail} fallbackRatio="16:9" alt={video.title} loading={priority ? "eager" : "lazy"} decoding="async" className="h-full w-full object-cover transition-transform duration-500 ease-[var(--ease-out-quick)] group-hover:scale-[1.04]" />
         <span className="absolute inset-0 bg-gradient-to-t from-black/48 via-transparent to-white/[0.04]" aria-hidden="true" />
         <span className="absolute bottom-3 left-3 grid size-11 place-items-center rounded-full bg-[var(--green-action)] text-white shadow-glow transition-transform group-hover:scale-105"><Play className="size-5 fill-current" aria-hidden="true" /></span>
       </button>
@@ -100,13 +101,13 @@ export function YouTubeFeedGrid({ feed, standalone = false }: { feed: YouTubeFee
   );
 
   return (
-    <section id="youtube-feed" aria-labelledby="youtube-feed-heading" className={cn(!standalone && "vl-section-enter", standalone ? "shell py-[clamp(1rem,3vw,2rem)]" : "shell mt-[var(--section-gap)]")}>
+    <section id="youtube-feed" data-primary-route={standalone ? "youtube" : undefined} aria-labelledby="youtube-feed-heading" className={cn(!standalone && "vl-section-enter", standalone ? "shell py-[clamp(1rem,3vw,2rem)]" : "shell mt-[var(--section-gap)]")}>
       <header className={cn("hyper-glass mb-6 flex flex-col gap-4 rounded-[1.75rem] p-4 sm:flex-row sm:items-end sm:justify-between", !standalone && "vl-component-enter")}>
         <div className="flex min-w-0 items-center gap-3">
           {feed.channelThumbnail ? (
-            <div className="media-shine size-14 shrink-0 overflow-hidden rounded-full"><img src={feed.channelThumbnail} alt="" width={56} height={56} className="h-full w-full object-cover" loading="lazy" decoding="async" /></div>
+            <div className="media-shine size-14 shrink-0 overflow-hidden rounded-full"><SmartImage src={feed.channelThumbnail} fallbackRatio="1:1" alt="" width={56} height={56} className="h-full w-full object-cover" loading="lazy" decoding="async" /></div>
           ) : (
-            <div className="media-shine size-14 shrink-0 overflow-hidden rounded-full"><img src="https://img.freepik.com/free-photo/professional-microphone-sound-recording-macro-photography_169016-23351.jpg" alt="" width={56} height={56} className="h-full w-full object-cover" loading="lazy" decoding="async" /></div>
+            <div className="media-shine size-14 shrink-0 overflow-hidden rounded-full"><SmartImage fallbackRatio="1:1" alt="" width={56} height={56} className="h-full w-full object-cover" loading="lazy" decoding="async" /></div>
           )}
           <div className="min-w-0">
             <p className="text-[0.68rem] font-bold uppercase tracking-[0.18em] text-[var(--green)]">YouTube collection</p>
