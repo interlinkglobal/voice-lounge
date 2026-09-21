@@ -73,7 +73,7 @@ function LanguageSwitcher({ className }: { className?: string }) {
   );
 }
 
-function AccountControl() {
+function AccountControl({ compact = false }: { compact?: boolean }) {
   const user = useAuth();
 
   if (!user) {
@@ -106,10 +106,17 @@ function AccountControl() {
       <form action="/auth/logout" method="post" className="hidden 2xl:block">
         <button
           type="submit"
-          className="press inline-flex min-h-10 items-center gap-1.5 rounded-full border border-hairline bg-surface-2 px-3 text-sm font-semibold"
+          title="Log out"
+          aria-label="Log out"
+          className={cn(
+            "press min-h-10 rounded-full border border-hairline bg-surface-2 text-sm font-semibold",
+            compact
+              ? "grid size-10 place-items-center p-0"
+              : "inline-flex items-center gap-1.5 px-3",
+          )}
         >
-          <LogOut className="size-4" aria-hidden="true" />
-          Log out
+          <LogOut className="size-4 shrink-0" aria-hidden="true" />
+          {!compact && <span className="truncate">Log out</span>}
         </button>
       </form>
     </div>
@@ -206,8 +213,16 @@ export function Header() {
                 </li>
               ))}
               <li className="group relative">
-                <button type="button" className="rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground 2xl:text-base" aria-haspopup="true">
-                  More
+                <button
+                  type="button"
+                  className={cn(
+                    "min-w-0 rounded-full py-2 text-sm font-medium text-muted-foreground hover:text-foreground 2xl:text-base",
+                    translated ? "max-w-[6.5rem] truncate px-2.5" : "px-3",
+                  )}
+                  aria-haspopup="true"
+                  title="More"
+                >
+                  <span className="block truncate">More</span>
                 </button>
                 <ul className="invisible absolute left-0 top-full z-10 w-56 rounded-2xl border border-hairline bg-popover p-2 opacity-0 shadow-lift transition-[opacity,transform] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
                   {overflowPrimary.length > 0 && (
@@ -253,7 +268,7 @@ export function Header() {
                 search={{ q: "", type: undefined }}
                 aria-label="Search The Voice Lounge"
                 title="Search"
-                className="press grid size-10 shrink-0 place-items-center rounded-full border border-hairline bg-surface-2 text-muted-foreground hover:text-foreground"
+                className="press hidden size-10 shrink-0 place-items-center rounded-full border border-hairline bg-surface-2 text-muted-foreground hover:text-foreground lg:grid"
               >
                 <Search className="size-4" aria-hidden="true" />
               </Link>
@@ -311,7 +326,7 @@ export function Header() {
             <LanguageSwitcher className="hidden 2xl:block" />
             <div className={cn("hidden md:block", translated && "xl:hidden")}><ThemeToggle /></div>
             {!translated && <InstallPwaButton className="hidden 2xl:inline-flex" />}
-            <AccountControl />
+            <AccountControl compact={translated} />
             <button
               type="button"
               onClick={() => setOpen(true)}
