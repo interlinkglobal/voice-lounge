@@ -9,6 +9,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { AppSelect } from "@/components/ui/AppSelect";
 import { SITE_LANGUAGES, useTranslationLanguage, type SiteLanguage } from "@/components/system/TranslationProvider";
 import { universalSearch } from "@/lib/content/adapters";
+import { CMS_BASE } from "@/lib/cms/routes";
 
 export const PRIMARY_NAV = [
   { to: "/", label: "Home" },
@@ -138,6 +139,7 @@ function AdaptivePrimaryNav() {
   const navRef = useRef<HTMLElement | null>(null);
   const measureRef = useRef<HTMLUListElement | null>(null);
   const [compact, setCompact] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const visiblePrimary = compact ? PRIMARY_NAV.slice(0, COMPACT_PRIMARY_COUNT) : PRIMARY_NAV;
   const overflowPrimary = compact ? PRIMARY_NAV.slice(COMPACT_PRIMARY_COUNT) : [];
 
@@ -185,7 +187,14 @@ function AdaptivePrimaryNav() {
   }, []);
 
   return (
-    <nav ref={navRef} aria-label="Primary" className="relative hidden min-w-0 justify-center overflow-hidden xl:flex">
+    <nav
+      ref={navRef}
+      aria-label="Primary"
+      className="relative hidden min-w-0 justify-center overflow-visible xl:flex"
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setMoreOpen(false);
+      }}
+    >
       <ul
         ref={measureRef}
         aria-hidden="true"
@@ -199,22 +208,30 @@ function AdaptivePrimaryNav() {
         <li><span className="block px-3 py-2 text-sm font-medium 2xl:text-base">More</span></li>
       </ul>
 
-      <ul className="flex min-w-0 max-w-full items-center justify-center gap-0.5 overflow-hidden">
+      <ul className="flex min-w-0 max-w-full items-center justify-center gap-0.5 overflow-visible">
         {visiblePrimary.map((item) => <PrimaryNavItem key={item.to} item={item} />)}
-        <li className="group relative min-w-0 shrink-0">
+        <li className="relative min-w-0 shrink-0">
           <button
             type="button"
+            onClick={() => setMoreOpen((value) => !value)}
             className="block max-w-[8rem] overflow-hidden rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground 2xl:text-base"
-            aria-haspopup="true"
+            aria-haspopup="menu"
+            aria-expanded={moreOpen}
           >
             <span className="tvl-nav-label block">More</span>
           </button>
-          <ul className="invisible absolute left-0 top-full z-10 w-72 max-w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-hairline bg-popover p-2 opacity-0 shadow-lift transition-[opacity,transform] duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+          <ul
+            role="menu"
+            className={cn(
+              "absolute left-0 top-full z-[80] mt-1 w-72 max-w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-hairline bg-popover p-2 shadow-lift transition-[opacity,transform] duration-150",
+              moreOpen ? "visible translate-y-0 opacity-100" : "invisible -translate-y-1 opacity-0",
+            )}
+          >
             {overflowPrimary.length > 0 && (
               <>
                 {overflowPrimary.map((item) => (
                   <li key={`overflow-${item.to}`}>
-                    <Link to={item.to} preload="intent" className="block rounded-xl px-3 py-2 text-sm leading-5 hover:bg-surface-2">
+                    <Link to={item.to} preload="intent" className="block rounded-xl px-3 py-2 text-sm leading-5 hover:bg-surface-2" onClick={() => setMoreOpen(false)}>
                       <span className="break-words">{item.label}</span>
                     </Link>
                   </li>
@@ -224,7 +241,7 @@ function AdaptivePrimaryNav() {
             )}
             {SECONDARY_NAV.map((item) => (
               <li key={item.to}>
-                <Link to={item.to} preload="intent" className="block rounded-xl px-3 py-2 text-sm leading-5 hover:bg-surface-2">
+                <Link to={item.to} preload="intent" className="block rounded-xl px-3 py-2 text-sm leading-5 hover:bg-surface-2" onClick={() => setMoreOpen(false)}>
                   <span className="break-words">{item.label}</span>
                 </Link>
               </li>
@@ -290,6 +307,7 @@ export function Header() {
   const [searchFocused, setSearchFocused] = useState(false);
   const [compactSearchOpen, setCompactSearchOpen] = useState(false);
   const navigate = useNavigate();
+  const logoClickTimer = useRef<number | null>(null);
   const pathname = useRouterState({ select: (state) => state.location.pathname });
   const suggestions = useMemo(
     () => term.trim().length >= 2 ? universalSearch(term).slice(0, 6) : [],
@@ -340,7 +358,30 @@ export function Header() {
         style={{ paddingTop: "env(safe-area-inset-top)" }}
       >
         <div className="shell grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 py-2.5 2xl:py-4">
-          <Link to="/" aria-label="The Voice Lounge home" className="press shrink-0">
+          <Link
+            to="/"
+            aria-label="The Voice Lounge home"
+            className="press shrink-0"
+            onClick={(event) => {
+              if (!user) return;
+              event.preventDefault();
+              if (logoClickTimer.current !== null) return;
+              logoClickTimer.current = window.setTimeout(() => {
+                logoClickTimer.current = null;
+                navigate({ to: "/" });
+              }, 220);
+            }}
+            onDoubleClick={(event) => {
+              if (!user) return;
+              event.preventDefault();
+              if (logoClickTimer.current !== null) {
+                window.clearTimeout(logoClickTimer.current);
+                logoClickTimer.current = null;
+              }
+              navigate({ to: `${CMS_BASE}/dashboard` });
+            }}
+            title={user ? "Double-click for admin dashboard" : "The Voice Lounge home"}
+          >
             <span className="hidden sm:block"><Logo /></span>
             <span className="sm:hidden"><Logo compact /></span>
           </Link>
