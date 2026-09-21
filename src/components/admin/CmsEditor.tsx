@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { Eye, GripVertical, ImagePlus, Plus, Save, Search, Settings2, ToggleLeft, ToggleRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AppSelect } from "@/components/ui/AppSelect";
+import { SmartImage } from "@/components/media/SmartImage";
 
 interface CmsSlot {
   title: string;
@@ -132,7 +134,22 @@ export function CmsContentControl({ area }: { area: keyof typeof DEFAULTS }) {
 
               <div className="mt-6 grid gap-4">
                 <label className="grid gap-2 text-sm font-semibold">Display title<input defaultValue={current.title} className="min-h-11 rounded-xl border border-hairline bg-background px-3 font-normal outline-none focus:border-[var(--green)]" /></label>
-                <label className="grid gap-2 text-sm font-semibold">Section type<select defaultValue={current.type} className="min-h-11 rounded-xl border border-hairline bg-background px-3 font-normal outline-none"><option>{current.type}</option><option>Curated collection</option><option>YouTube collection</option><option>Podcast collection</option><option>Editorial slot</option></select></label>
+                <div className="grid gap-2 text-sm font-semibold">
+                  <span>Section type</span>
+                  <AppSelect
+                    value={current.type}
+                    onValueChange={() => undefined}
+                    ariaLabel="Section type"
+                    options={[
+                      { value: current.type, label: current.type },
+                      { value: "Curated collection", label: "Curated collection" },
+                      { value: "YouTube collection", label: "YouTube collection" },
+                      { value: "Podcast collection", label: "Podcast collection" },
+                      { value: "Editorial slot", label: "Editorial slot" },
+                    ].filter((option, index, items) => items.findIndex((item) => item.value === option.value) === index)}
+                    className="w-full"
+                  />
+                </div>
                 <div className="grid gap-3 sm:grid-cols-2">
                   <button type="button" className="press flex min-h-28 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-hairline text-sm font-semibold text-muted-foreground"><ImagePlus className="size-5" /> Choose artwork</button>
                   <button type="button" className="press flex min-h-28 flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-hairline text-sm font-semibold text-muted-foreground"><Settings2 className="size-5" /> Select content</button>
@@ -142,6 +159,72 @@ export function CmsContentControl({ area }: { area: keyof typeof DEFAULTS }) {
             </>
           ) : <p className="text-sm text-muted-foreground">Select a section to edit it.</p>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+const UPLOAD_SURFACES = [
+  { title: "Home membership card assets", route: "/", ratio: "1:1 / card", fallback: "1:1", note: "Logo, badge and editable membership-card presentation." },
+  { title: "Podcast artwork", route: "/podcasts", ratio: "1:1", fallback: "1:1", note: "Directory, podcast detail and programme identity artwork." },
+  { title: "Show cards", route: "/shows", ratio: "9:16", fallback: "9:16", note: "Tall schedule cards and show imagery." },
+  { title: "Guest profiles", route: "/guests", ratio: "1:1", fallback: "1:1", note: "Circular portraits; YouTube appearance thumbnails can populate automatically." },
+  { title: "Creator profiles", route: "/creators", ratio: "1:1", fallback: "1:1", note: "Host and creator portraits." },
+  { title: "News & blog artwork", route: "/news", ratio: "16:9", fallback: "16:9", note: "Article cards, detail headers and editorial imagery." },
+  { title: "YouTube/video thumbnails", route: "/youtube · /watch", ratio: "16:9", fallback: "16:9", note: "Remote YouTube thumbnails fall back locally when unavailable." },
+  { title: "Live/offline media", route: "/live", ratio: "16:9", fallback: "16:9", note: "Live player imagery and previous-broadcast cards." },
+  { title: "Community avatars", route: "/community", ratio: "1:1", fallback: "1:1", note: "YouTube commenter avatars and future website-user profile imagery." },
+  { title: "About/editorial imagery", route: "/about", ratio: "16:9 / 1:1", fallback: "16:9", note: "Research article imagery and brand-supporting media." },
+] as const;
+
+export function CmsUploadsControl() {
+  const [active, setActive] = useState(UPLOAD_SURFACES[0]?.title ?? "");
+
+  return (
+    <div>
+      <CmsHeading
+        eyebrow="Upload-dependent surfaces"
+        title="Uploads & media"
+        copy="Front-end administration coverage for every image-dependent website feature. This is deliberately UI-only: selecting, uploading, replacing and publishing files are not connected to storage yet."
+      />
+
+      <div className="mt-7 grid gap-4 xl:grid-cols-[minmax(0,1.1fr)_minmax(20rem,.9fr)]">
+        <div className="grid gap-3 sm:grid-cols-2">
+          {UPLOAD_SURFACES.map((surface) => (
+            <button
+              key={surface.title}
+              type="button"
+              onClick={() => setActive(surface.title)}
+              className={cn(
+                "press min-w-0 border p-4 text-left",
+                active === surface.title ? "border-[var(--green)] bg-[color-mix(in_oklab,var(--green)_7%,transparent)]" : "border-hairline bg-card",
+              )}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <h2 className="font-display text-lg font-black">{surface.title}</h2>
+                <span className="shrink-0 text-[0.65rem] font-black uppercase tracking-[0.12em] text-[var(--gold)]">{surface.ratio}</span>
+              </div>
+              <p className="mt-2 text-xs font-semibold text-[var(--green)]">{surface.route}</p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">{surface.note}</p>
+            </button>
+          ))}
+        </div>
+
+        <aside className="border border-hairline bg-card p-5 xl:sticky xl:top-8 xl:self-start">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[var(--gold)]">Media staging</p>
+          <h2 className="mt-2 font-display text-2xl font-black">{active}</h2>
+          <div className="mt-5 grid grid-cols-3 gap-2">
+            <SmartImage fallbackRatio="1:1" alt="Square fallback preview" className="aspect-square w-full object-cover" />
+            <SmartImage fallbackRatio="9:16" alt="Portrait fallback preview" className="aspect-[9/16] w-full object-cover" />
+            <SmartImage fallbackRatio="16:9" alt="Landscape fallback preview" className="aspect-video w-full object-cover" />
+          </div>
+          <div className="mt-5 grid gap-2">
+            <button type="button" className="press flex min-h-12 items-center justify-center gap-2 border border-dashed border-hairline text-sm font-bold"><ImagePlus className="size-4" /> Choose replacement</button>
+            <button type="button" className="press flex min-h-12 items-center justify-center gap-2 border border-hairline text-sm font-bold"><Eye className="size-4" /> Preview placement</button>
+            <button type="button" disabled className="min-h-12 bg-[var(--green-action)] px-4 text-sm font-bold text-white opacity-45">Upload disabled — backend not authorized</button>
+          </div>
+          <p className="mt-4 text-xs leading-5 text-muted-foreground">Fallback policy: 1:1 for compact/profile cards, 9:16 for tall cards, and 16:9 for video thumbnails and editorial/blog media.</p>
+        </aside>
       </div>
     </div>
   );
