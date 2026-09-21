@@ -1,3 +1,4 @@
+import { useAuth } from "@/components/auth/AuthProvider";
 import {
   createContext,
   useCallback,
@@ -60,6 +61,7 @@ function setGoogleTranslateCookie(language: SiteLanguage) {
 }
 
 export function TranslationProvider({ children }: { children: ReactNode }) {
+  const user = useAuth();
   const [language, setLanguageState] = useState<SiteLanguage>("en");
 
   useEffect(() => {
@@ -95,6 +97,59 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
       delete window.tvlGoogleTranslateInit;
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    let active = true;
+
+    const syncAccountLanguage = async () => {
+      try {
+        const response = await fetch("/api/account", {
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        });
+        const payload = (await response.json().catch(() => ({}))) as {
+          profile?: { preferred_language?: SiteLanguage } | null;
+        };
+        const preferred = payload.profile?.preferred_language;
+        if (!active || !preferred || !SITE_LANGUAGES.some((item) => item.value === preferred)) return;
+
+        const current = readLanguage();
+        if (preferred === current) return;
+
+        window.localStorage.setItem(STORAGE_KEY, preferred);
+        setGoogleTranslateCookie(preferred);
+        document.documentElement.lang = preferred === "en" ? "en-ZA" : preferred;
+        setLanguageState(preferred);
+
+        if (preferred === "en") {
+          window.location.reload();
+          return;
+        }
+
+        let attempts = 0;
+        const apply = () => {
+          if (!active) return;
+          const combo = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+          if (combo) {
+            combo.value = preferred;
+            combo.dispatchEvent(new Event("change", { bubbles: true }));
+            return;
+          }
+          attempts += 1;
+          if (attempts < 20) window.setTimeout(apply, 250);
+        };
+        apply();
+      } catch {
+        // Account language sync is progressive enhancement; local preference remains valid.
+      }
+    };
+
+    void syncAccountLanguage();
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
 
   const setLanguage = useCallback((next: SiteLanguage) => {
     window.localStorage.setItem(STORAGE_KEY, next);
