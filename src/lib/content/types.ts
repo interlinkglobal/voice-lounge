@@ -11,7 +11,7 @@
  * legal.
  */
 
-export type MediaKind = "podcast" | "show" | "episode" | "video" | "live" | "news" | "creator" | "collection";
+export type MediaKind = "podcast" | "show" | "episode" | "video" | "live" | "news" | "creator" | "guest" | "collection";
 
 export type SALanguage = "English" | "isiZulu" | "isiXhosa" | "Sesotho" | "Setswana" | "Afrikaans";
 
