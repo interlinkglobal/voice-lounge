@@ -37,7 +37,7 @@ export const SITE_LANGUAGES: Array<{
   { value: "nso", label: "Sepedi" },
   { value: "tn", label: "Setswana" },
   { value: "st", label: "Sesotho" },
-  { value: "ts", label: "itsonga" },
+  { value: "ts", label: "XiTsonga" },
   { value: "ve", label: "Tshivenda" },
   { value: "sasl", label: "South African Sign Language · text translation unavailable", disabled: true },
 ];
