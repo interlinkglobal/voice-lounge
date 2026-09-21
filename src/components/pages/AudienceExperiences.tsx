@@ -17,9 +17,10 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 import { useYouTubePlayer } from "@/components/youtube/YouTubePlayerProvider";
 import { YouTubeVideoCard } from "@/components/youtube/YouTubeFeedGrid";
+import { SmartImage } from "@/components/media/SmartImage";
+import { AppSelect } from "@/components/ui/AppSelect";
 import { categories, creators, podcasts } from "@/lib/content/catalog";
 import {
-  PODCAST_FALLBACK_THUMBNAILS,
   PODCAST_THUMBNAILS,
   normalizeProgrammeText,
   programmeVideos,
@@ -81,9 +82,8 @@ const DISCOVER_OPTIONS: Record<DiscoverTab, string[]> = {
   date: ["Last 7 days", "Last 30 days", "Last 90 days", "2026"],
 };
 
-function podcastImage(id: string, index = 0) {
-  return PODCAST_THUMBNAILS[id]
-    ?? PODCAST_FALLBACK_THUMBNAILS[index % PODCAST_FALLBACK_THUMBNAILS.length];
+function podcastImage(id: string) {
+  return PODCAST_THUMBNAILS[id] ?? null;
 }
 
 function matchesDuration(video: YouTubeFeedVideo, values: string[]) {
@@ -286,7 +286,7 @@ export function DiscoverWorkspaceExperience() {
                 params={{ slug: podcast.slug }}
                 className="press grid min-h-24 grid-cols-[6rem_minmax(0,1fr)_auto] items-center border border-hairline bg-card/35"
               >
-                <img src={podcastImage(podcast.id, index)} alt="" className="h-full w-24 object-cover" loading="lazy" decoding="async" />
+                <SmartImage src={podcastImage(podcast.id)} fallbackRatio="1:1" alt="" className="h-full w-24 object-cover" loading="lazy" decoding="async" />
                 <span className="min-w-0 px-4 py-3">
                   <span className="block truncate font-display font-black">{podcast.title}</span>
                   <span className="mt-1 block line-clamp-1 text-sm text-muted-foreground">{podcast.tagline}</span>
