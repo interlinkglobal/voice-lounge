@@ -618,3 +618,68 @@ header .press {
     display: none;
   }
 }
+
+
+.live-offline-panel {
+  position: relative;
+  isolation: isolate;
+}
+
+.live-offline-panel::before,
+.live-offline-panel::after {
+  content: "";
+  position: absolute;
+  width: min(34rem, 70vw);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  pointer-events: none;
+  filter: blur(58px);
+  opacity: .18;
+  z-index: -1;
+}
+
+.live-offline-panel::before {
+  left: -12%;
+  top: -28%;
+  background: color-mix(in oklab, var(--green) 55%, transparent);
+  animation: live-offline-orbit 8s ease-in-out infinite alternate;
+}
+
+.live-offline-panel::after {
+  right: -10%;
+  bottom: -32%;
+  background: color-mix(in oklab, var(--gold) 40%, transparent);
+  animation: live-offline-orbit 10s 1.2s ease-in-out infinite alternate-reverse;
+}
+
+.live-offline-content {
+  animation: live-offline-float 6.5s ease-in-out infinite;
+}
+
+.live-offline-icon {
+  animation: live-offline-pulse 2.8s ease-in-out infinite;
+}
+
+@keyframes live-offline-orbit {
+  from { transform: translate3d(-4%, -2%, 0) scale(.92); }
+  to { transform: translate3d(9%, 8%, 0) scale(1.08); }
+}
+
+@keyframes live-offline-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+@keyframes live-offline-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in oklab, var(--green) 0%, transparent); }
+  50% { transform: scale(1.045); box-shadow: 0 0 0 12px color-mix(in oklab, var(--green) 7%, transparent); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .live-offline-panel::before,
+  .live-offline-panel::after,
+  .live-offline-content,
+  .live-offline-icon {
+    animation: none !important;
+  }
+}
