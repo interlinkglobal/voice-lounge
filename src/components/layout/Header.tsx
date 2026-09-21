@@ -363,7 +363,6 @@ export function Header() {
             aria-label="The Voice Lounge home"
             className="press shrink-0"
             onClick={(event) => {
-              if (!user) return;
               event.preventDefault();
               if (logoClickTimer.current !== null) return;
               logoClickTimer.current = window.setTimeout(() => {
@@ -372,7 +371,6 @@ export function Header() {
               }, 220);
             }}
             onDoubleClick={(event) => {
-              if (!user) return;
               event.preventDefault();
               if (logoClickTimer.current !== null) {
                 window.clearTimeout(logoClickTimer.current);
@@ -380,7 +378,7 @@ export function Header() {
               }
               window.location.assign(`${CMS_BASE}/dashboard`);
             }}
-            title={user ? "Double-click for admin dashboard" : "The Voice Lounge home"}
+            title="Double-click for admin dashboard"
           >
             <span className="hidden sm:block"><Logo /></span>
             <span className="sm:hidden"><Logo compact /></span>
