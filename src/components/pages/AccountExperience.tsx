@@ -398,6 +398,17 @@ export function AccountExperience() {
       {mobileOpen && (
         <div className="fixed inset-x-3 top-20 z-50 border border-hairline bg-background p-3 shadow-lift lg:hidden">
           {navigation}
+          <div className="mt-3 border-t border-hairline pt-3">
+            <form action="/auth/logout" method="post">
+              <button
+                type="submit"
+                className="press flex min-h-11 w-full items-center gap-2 border border-hairline px-3 text-left text-sm font-semibold"
+              >
+                <LogOut className="size-4" aria-hidden="true" />
+                Log out
+              </button>
+            </form>
+          </div>
         </div>
       )}
 
