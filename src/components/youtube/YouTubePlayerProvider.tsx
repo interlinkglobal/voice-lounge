@@ -19,7 +19,6 @@ import {
   ExternalLink,
   Heart,
   Maximize2,
-  MessageCircle,
   Play,
   Send,
   X,
