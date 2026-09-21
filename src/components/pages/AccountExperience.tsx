@@ -18,7 +18,7 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { EditableMembershipCard } from "@/components/premium/EditableMembershipCard";
@@ -189,7 +189,7 @@ export function AccountExperience() {
   const [premiumActive, setPremiumActive] = useState(false);
   const [profileName, setProfileName] = useState(user?.name ?? "");
 
-  const reload = async () => {
+  const reload = useCallback(async () => {
     if (!user) return;
     setLoading(true);
     try {
@@ -207,7 +207,7 @@ export function AccountExperience() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -221,7 +221,7 @@ export function AccountExperience() {
         if (response.ok) setPremiumActive(Boolean(payload.active));
       })
       .catch(() => undefined);
-  }, [user?.id]);
+  }, [reload, user?.id]);
 
   if (!user) {
     return (
