@@ -30,7 +30,7 @@ import { track } from "@/lib/analytics";
 import { usePlayer } from "@/components/player/PlayerProvider";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { SmartImage } from "@/components/media/SmartImage";
-import type { YouTubeFeedVideo } from "@/lib/youtube.functions";
+import { getYouTubeComments, type YouTubeComment, type YouTubeFeedVideo } from "@/lib/youtube.functions";
 import { useYouTubeFeed } from "@/components/youtube/YouTubeFeedProvider";
 
 type YouTubePlayerSurface = "modal" | "dock" | null;
@@ -60,13 +60,12 @@ interface WebsiteDiscussionComment {
 
 function VideoDiscussion({
   video,
-  feed,
 }: {
   video: YouTubeFeedVideo;
-  feed: YouTubeFeedResult;
 }) {
   const user = useAuth();
   const [websiteComments, setWebsiteComments] = useState<WebsiteDiscussionComment[]>([]);
+  const [youtubeComments, setYoutubeComments] = useState<YouTubeComment[]>([]);
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [draft, setDraft] = useState("");
@@ -75,10 +74,13 @@ function VideoDiscussion({
 
   const reload = useCallback(async () => {
     try {
-      const response = await fetch(`/api/discussion?videoId=${encodeURIComponent(video.id)}`, {
-        headers: { Accept: "application/json" },
-        cache: "no-store",
-      });
+      const [response, channelComments] = await Promise.all([
+        fetch(`/api/discussion?videoId=${encodeURIComponent(video.id)}`, {
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        }),
+        getYouTubeComments().catch(() => [] as YouTubeComment[]),
+      ]);
       const payload = (await response.json().catch(() => ({}))) as {
         comments?: WebsiteDiscussionComment[];
         liked?: boolean;
@@ -89,6 +91,7 @@ function VideoDiscussion({
         setLiked(Boolean(payload.liked));
         setLikeCount(payload.likeCount ?? 0);
       }
+      setYoutubeComments(channelComments.filter((comment) => comment.videoId === video.id));
     } catch {
       // Discussion failure should never block video playback.
     }
@@ -100,10 +103,6 @@ function VideoDiscussion({
     setSaved(false);
     void reload();
   }, [reload]);
-
-  const youtubeComments = feed.status === "ready"
-    ? feed.comments.filter((comment) => comment.videoId === video.id)
-    : [];
 
   const merged = useMemo(
     () => [
@@ -488,7 +487,7 @@ export function YouTubePlayerProvider({
                 </div>
               </div>
 
-              <VideoDiscussion video={current} feed={feed} />
+              <VideoDiscussion video={current} />
 
               {upNext.length > 0 && (
                 <section
