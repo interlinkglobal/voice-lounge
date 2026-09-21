@@ -13,7 +13,7 @@ import {
   UserRound,
   WalletCards,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "@/components/auth/AuthProvider";
 import { EditableMembershipCard } from "@/components/premium/EditableMembershipCard";
@@ -155,6 +155,7 @@ export function AccountExperience() {
   const [contactSubject, setContactSubject] = useState("");
   const [contactMessage, setContactMessage] = useState("");
   const [premiumActive, setPremiumActive] = useState(false);
+  const [profileName, setProfileName] = useState(user?.name ?? "");
 
   const reload = async () => {
     if (!user) return;
@@ -163,7 +164,9 @@ export function AccountExperience() {
       const response = await fetch("/api/account", { headers: { Accept: "application/json" }, cache: "no-store" });
       const payload = (await response.json().catch(() => ({}))) as Partial<AccountPayload> & { error?: string };
       if (!response.ok) throw new Error(payload.error || "Account data could not be loaded.");
-      setData({ ...EMPTY, ...payload });
+      const next = { ...EMPTY, ...payload };
+      setData(next);
+      setProfileName(next.profile?.display_name?.trim() || user.name);
     } catch (error) {
       setNotice(error instanceof Error ? error.message : "Account data could not be loaded.");
     } finally {
@@ -226,6 +229,25 @@ export function AccountExperience() {
     const payload = (await response.json().catch(() => ({}))) as { error?: string };
     if (!response.ok) throw new Error(payload.error || "Account action failed.");
     await reload();
+  };
+
+  const updateProfileName = async () => {
+    const name = profileName.trim();
+    if (!name) return;
+    setNotice("");
+    try {
+      const response = await fetch("/api/account", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ display_name: name }),
+      });
+      const payload = (await response.json().catch(() => ({}))) as { error?: string; profile?: ProfileRow };
+      if (!response.ok) throw new Error(payload.error || "Profile could not be updated.");
+      if (payload.profile) setData((current) => ({ ...current, profile: payload.profile ?? current.profile }));
+      setNotice("Profile updated.");
+    } catch (error) {
+      setNotice(error instanceof Error ? error.message : "Profile could not be updated.");
+    }
   };
 
   const updateLanguage = async (next: string) => {
@@ -411,7 +433,46 @@ export function AccountExperience() {
               <div className="mt-8">
                 <h2 className="font-display text-2xl font-black">Saved content</h2>
                 <div className="mt-3 grid gap-2">
-                  {data.saved.map((item) => <div key={item.id} className="flex items-center justify-between gap-3 border border-hairline p-3 text-sm"><span className="min-w-0 truncate">{item.title || item.content_id}</span><span className="text-xs uppercase text-muted-foreground">{item.collection.replace("_"," ")}</span></div>)}
+                  {data.saved.map((item) => (
+                    <div key={item.id} className="grid gap-3 border border-hairline p-3 text-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                      <div className="min-w-0">
+                        <p className="truncate font-semibold">{item.title || item.content_id}</p>
+                        <p className="mt-1 text-xs uppercase text-muted-foreground">{item.content_type} · {item.collection.replace("_"," ")}</p>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {data.playlists.length > 0 && ["video","podcast","episode","show"].includes(item.content_type) && (
+                          <AppSelect
+                            value={undefined}
+                            onValueChange={(playlistId) => void postAction({
+                              action: "add_playlist_item",
+                              playlist_id: playlistId,
+                              content_type: item.content_type,
+                              content_id: item.content_id,
+                              title: item.title,
+                              image_url: item.image_url,
+                            })}
+                            options={data.playlists.map((playlist) => ({ value: playlist.id, label: `Add to ${playlist.name}` }))}
+                            placeholder="Add to playlist"
+                            ariaLabel={`Add ${item.title || item.content_id} to playlist`}
+                            className="w-full sm:w-48"
+                          />
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => void postAction({
+                            action: "unsave_content",
+                            collection: item.collection,
+                            content_type: item.content_type,
+                            content_id: item.content_id,
+                          })}
+                          className="press grid size-10 place-items-center border border-hairline text-muted-foreground"
+                          aria-label={`Remove ${item.title || item.content_id} from saved content`}
+                        >
+                          <Trash2 className="size-4" aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
@@ -423,18 +484,54 @@ export function AccountExperience() {
             <article className="border border-hairline bg-card/40 p-5">
               <div className="flex items-center gap-2"><MessageCircle className="size-5 text-[var(--green)]" /><h2 className="font-display text-xl font-black">Website comments</h2></div>
               <div className="mt-4 grid gap-3">
-                {data.comments.map((comment) => <div key={comment.id} className="border-t border-hairline pt-3"><p className="line-clamp-3 text-sm leading-6">{comment.body}</p><p className="mt-1 text-xs text-muted-foreground">{comment.content_id} · {formatDate(comment.created_at)}</p></div>)}
+                {data.comments.map((comment) => (
+                  <div key={comment.id} className="border-t border-hairline pt-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="line-clamp-3 text-sm leading-6">{comment.body}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{comment.content_id} · {formatDate(comment.created_at)}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => void postAction({ action: "delete_comment", id: comment.id })}
+                        className="press grid size-9 shrink-0 place-items-center border border-hairline text-muted-foreground"
+                        aria-label="Delete comment"
+                      >
+                        <Trash2 className="size-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
                 {!data.comments.length && <p className="text-sm text-muted-foreground">No website comments yet.</p>}
               </div>
             </article>
             <article className="border border-hairline bg-card/40 p-5">
               <div className="flex items-center gap-2"><Heart className="size-5 text-[var(--green)]" /><h2 className="font-display text-xl font-black">Likes & personal data</h2></div>
-              <dl className="mt-4 grid gap-3 text-sm">
-                <div className="border-t border-hairline pt-3"><dt className="text-muted-foreground">Voice Lounge likes</dt><dd className="mt-1 font-semibold">{data.likes.length}</dd></div>
-                <div className="border-t border-hairline pt-3"><dt className="text-muted-foreground">Email</dt><dd className="mt-1 break-all font-semibold">{user.email}</dd></div>
-                <div className="border-t border-hairline pt-3"><dt className="text-muted-foreground">Authentication</dt><dd className="mt-1 font-semibold">{user.provider}</dd></div>
-                <div className="border-t border-hairline pt-3"><dt className="text-muted-foreground">Preferred language</dt><dd className="mt-1 font-semibold">{SITE_LANGUAGES.find((item) => item.value === (data.profile?.preferred_language || language))?.label}</dd></div>
-              </dl>
+              <div className="mt-4 grid gap-4">
+                <label className="grid gap-2 text-sm font-bold">
+                  Display name
+                  <span className="flex gap-2">
+                    <input value={profileName} onChange={(event) => setProfileName(event.target.value)} className="min-h-11 min-w-0 flex-1 border border-hairline bg-background px-3 font-normal outline-none focus:border-[var(--green)]" />
+                    <button type="button" onClick={() => void updateProfileName()} className="press min-h-11 border border-hairline px-4">Save</button>
+                  </span>
+                </label>
+                <dl className="grid gap-3 text-sm">
+                  <div className="border-t border-hairline pt-3"><dt className="text-muted-foreground">Email</dt><dd className="mt-1 break-all font-semibold">{user.email}</dd></div>
+                  <div className="border-t border-hairline pt-3"><dt className="text-muted-foreground">Authentication</dt><dd className="mt-1 font-semibold">{user.provider}</dd></div>
+                  <div className="border-t border-hairline pt-3"><dt className="text-muted-foreground">Preferred language</dt><dd className="mt-1 font-semibold">{SITE_LANGUAGES.find((item) => item.value === (data.profile?.preferred_language || language))?.label}</dd></div>
+                </dl>
+                <div>
+                  <p className="text-sm font-bold">Voice Lounge likes · {data.likes.length}</p>
+                  <div className="mt-2 grid gap-2">
+                    {data.likes.slice(0,12).map((like) => (
+                      <div key={like.id} className="flex items-center justify-between gap-3 border-t border-hairline pt-2 text-xs">
+                        <span className="min-w-0 truncate">{like.content_type} · {like.content_id}</span>
+                        <button type="button" onClick={() => void postAction({ action: "remove_like", content_type: like.content_type, content_id: like.content_id })} className="press text-muted-foreground hover:text-foreground">Remove</button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             </article>
           </section>
         )}
