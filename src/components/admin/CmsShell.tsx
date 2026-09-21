@@ -1,7 +1,6 @@
 import { Outlet, useRouterState } from "@tanstack/react-router";
 import {
   BarChart3,
-  BookOpen,
   Database,
   ExternalLink,
   Home,
